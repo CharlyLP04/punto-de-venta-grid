@@ -1,0 +1,16 @@
+import { useRef,useState,type FormEvent } from 'react';
+import { invoke } from '../api';
+import { decimal,quantity,type Product } from '../model';
+
+export default function InventoryCount({products,onRefresh}:{products:Product[];onRefresh:()=>Promise<void>}) {
+  const [product,setProduct]=useState('');const [counted,setCounted]=useState('');const [reason,setReason]=useState('');
+  const [review,setReview]=useState<{product:number;expected:number;counted:number;reason:string;requestId:string}>();
+  const [busy,setBusy]=useState(false);const [message,setMessage]=useState('');const [error,setError]=useState('');
+  const inFlight=useRef(false);const selected=products.find(p=>p.id===Number(product));
+  function prepare(e:FormEvent){e.preventDefault();if(!selected)return;setError('');setMessage('');try{const amount=decimal(counted,3);setReview({product:selected.id,expected:selected.physical_stock,counted:amount,reason,requestId:crypto.randomUUID()});}catch(e){setError(String(e));}}
+  async function apply(){if(!review||inFlight.current)return;inFlight.current=true;setBusy(true);setError('');try{const {requestId,...operation}=review;await invoke('operate',{requestId,approval:null,operation:{type:'count',...operation}});setReview(undefined);setCounted('');setReason('');setMessage('Ajuste guardado con usuario, motivo y diferencia.');try{await onRefresh();}catch{setError('El ajuste se guardó. Actualiza el inventario antes de continuar.');}}catch(e){setError(String(e));}finally{inFlight.current=false;setBusy(false);}}
+  return <details className="panel inventory-count"><summary>Conteo físico y diferencias</summary><p>Cuenta todas las existencias físicas, incluidos los productos vencidos. Los faltantes de lotes se registran desde Lotes y caducidad.</p>
+    {error&&<p role="alert" className="error">{error}</p>}<p role="status">{message}</p>
+    {!review?<form onSubmit={prepare}><div className="form-pair"><label className="field"><span>Producto</span><select required value={product} onChange={e=>setProduct(e.target.value)}><option value="">Selecciona un producto</option>{products.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}</select></label><label className="field"><span>Cantidad contada · {selected?.unit??'unidades'}</span><input required type="number" min="0" max="100000" step={selected?.unit==='pieza'?'1':'0.001'} value={counted} onChange={e=>setCounted(e.target.value)}/></label></div><label className="field"><span>Motivo / referencia del conteo</span><input required maxLength={200} value={reason} onChange={e=>setReason(e.target.value)}/></label><button className="light">Revisar diferencia</button></form>:<div className="count-review"><strong>{selected?.name}</strong><p>Registrado: {quantity(review.expected)} · Contado: {quantity(review.counted)} · Diferencia: {quantity(review.counted-review.expected)}</p><p>{review.reason}</p><div className="form-actions"><button type="button" className="primary" disabled={busy||review.expected===review.counted} onClick={()=>void apply()}>{busy?'Guardando…':'Confirmar ajuste'}</button><button type="button" className="light" disabled={busy} onClick={()=>setReview(undefined)}>Volver al conteo</button></div></div>}
+  </details>;
+}

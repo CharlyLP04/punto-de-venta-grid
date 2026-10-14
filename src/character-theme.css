@@ -1,0 +1,534 @@
+/* Mario / Luigi share geometry; their palettes change with the selected mode. */
+:root[data-theme=light]{color-scheme:light;--character:#237846;--character-ink:#fff;--character-soft:#e5f0e3;--bg-canvas:#f3f7f0;--bg-surface:#fff;--bg-surface-elevated:#eaf0e6;--bg-input:#fff;--text-primary:#21362b;--text-secondary:#58695e;--border-subtle:#dce5d9;--border-strong:#b8c9b8;--accent-gold:#C88A00;--focus:#237846}
+:root[data-theme=dark]{color-scheme:dark;--character:#e34940;--character-ink:#fff;--character-soft:#3c2527;--bg-canvas:#17191e;--bg-surface:#22252b;--bg-surface-elevated:#2c3038;--bg-input:#1b1e24;--text-primary:#f5f4ef;--text-secondary:#b7bbc4;--border-subtle:#383d47;--border-strong:#5a606d;--accent-gold:#FDB813;--focus:#FDB813}
+
+/* Prices, quantities and status labels must remain readable in either palette. */
+html[data-theme=light] .shell{--price-ink:#805600;--stock-ink:#235534;--stock-bg:#ecf6ed}
+html[data-theme=dark] .shell{--price-ink:#ffd166;--stock-ink:#c5edce;--stock-bg:#243c2d}
+html[data-theme] .shell .product-card .product-footer .promo-price{color:var(--price-ink)}
+html[data-theme] .shell .product-category>span{color:var(--text-secondary)}
+html[data-theme] .shell .stock-badge{background:var(--stock-bg);color:var(--stock-ink);border-color:var(--border-strong)}
+html[data-theme] .shell .stock-badge .stock-label{color:inherit}
+html[data-theme] .shell .catalog-meta b{color:var(--text-primary);background:var(--bg-surface-elevated)}
+html[data-theme=light] .shell .shift-button.shift-open{color:#245832}
+html[data-theme] .shell .ticket-number{color:var(--text-secondary);opacity:1}
+html[data-theme] .shell .ticket-empty p{color:var(--text-secondary)}
+html[data-theme] .shell .goal-track>span{color:var(--text-secondary)}
+.common-product-trigger{display:flex;align-items:center;justify-content:center;gap:8px;padding:10px 14px;border:1px solid var(--border-strong);border-radius:16px;background:var(--bg-surface);color:var(--text-primary);font-weight:650;white-space:nowrap}
+.shell .cash-toolbar{grid-template-columns:minmax(160px,1fr) auto auto}
+.shell .cash-toolbar .cash-movement-trigger{width:auto}
+@media(max-width:900px){.shell .cash-toolbar{grid-template-columns:1fr 1fr}.shell .cash-toolbar .search{grid-column:1/-1}}
+.common-total{display:flex;justify-content:space-between;align-items:center;padding:16px;background:var(--bg-surface-elevated);border-radius:12px}
+.common-total strong{font-size:24px;font-variant-numeric:tabular-nums}
+.filter-pagination{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px}
+.filter-pagination button{padding:8px;min-height:36px}
+@media(max-height:820px) and (min-width:901px){
+  .checkout-shell .catalog .master-filters{gap:6px;margin-block:6px}
+  .checkout-shell .catalog .master-filters .quick-categories{max-height:44px;overflow:auto;flex-wrap:nowrap}
+  .checkout-shell .catalog .catalog-meta{margin-block:6px}
+  .checkout-shell .catalog .product-grid{min-height:260px}
+  .checkout-shell .catalog .product-grid .product-card{min-height:190px;padding:10px}
+  .checkout-shell .catalog .product-grid .product-card .product-face{height:54px}
+  .checkout-shell .catalog .goal-track{margin-block:4px;padding-block:6px}
+  .checkout-shell .cash-toolbar .search{min-height:48px}
+  .checkout-shell .cash-toolbar{gap:8px}
+  .checkout-shell .common-product-trigger{font-size:12px;padding:8px}
+}
+
+/* Grid POS Theme system: palettes adapt seamlessly between light and dark modes. */
+html[data-theme=light] .shell[data-accent=emerald]{--character:#059669;--character-ink:#fff;--character-soft:#ecfdf5;--focus:#10b981}
+html[data-theme=light] .shell[data-accent=slate]{--character:#0f172a;--character-ink:#fff;--character-soft:#f1f5f9;--focus:#00e676}
+html[data-theme=light] .shell[data-accent=gold]{--character:#C88A00;--character-ink:#fff;--character-soft:#FFF8E1;--focus:#FDB813}
+html[data-theme=light] .shell[data-accent=green]{--character:#2d7a3c;--character-ink:#fff;--character-soft:#e3f0e1}
+html[data-theme=light] .shell[data-accent=blue]{--character:#1f66a6;--character-ink:#fff;--character-soft:#e0ecf8}
+html[data-theme=light] .shell[data-accent=rose]{--character:#c0463b;--character-ink:#fff;--character-soft:#fae5e2}
+html[data-theme=dark] .shell[data-accent=emerald]{--character:#00e676;--character-ink:#062314;--character-soft:#064e3b;--focus:#00e676}
+html[data-theme=dark] .shell[data-accent=slate]{--character:#10b981;--character-ink:#022c22;--character-soft:#1e293b;--focus:#00e676}
+html[data-theme=dark] .shell[data-accent=gold]{--character:#FDB813;--character-ink:#1F1500;--character-soft:#382A0A;--focus:#FFE57F}
+html[data-theme=dark] .shell[data-accent=green]{--character:#7cc47f;--character-ink:#10240f;--character-soft:#22342a}
+html[data-theme=dark] .shell[data-accent=blue]{--character:#70b4ef;--character-ink:#0d2236;--character-soft:#1e2d3d}
+html[data-theme=dark] .shell[data-accent=rose]{--character:#ff8a7a;--character-ink:#3a0f0a;--character-soft:#3d2624}
+html[data-theme] .shell[data-accent]{--action:var(--character);--action-ink:var(--character-ink);--focus:var(--character)}
+[data-theme] .shell .brand-mark,[data-theme] .character-login .brand-mark{color:var(--character);background:transparent;box-shadow:none}
+
+/* Native Windows selects need explicit option colors, not inherited transparency. */
+html[data-theme] select{color-scheme:inherit;background-color:var(--bg-input);color:var(--text-primary)}
+html[data-theme] option,html[data-theme] optgroup{background-color:var(--bg-surface);color:var(--text-primary)}
+html[data-theme] select option:disabled{color:var(--text-secondary)}
+
+/* Product cards: face supports both brand badges and aisle tiles cleanly. */
+.shell .product-card .product-face{position:relative;background:transparent!important;border:0!important;box-shadow:none!important;padding:0;overflow:hidden}
+.shell .product-card .product-face::before,.shell .product-card .product-face::after{display:none}
+
+/* Aisle tiles: family hue + what the product is + size chip without collisions */
+.product-tile{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;border-radius:14px;background:hsl(var(--tile-hue) 72% 94%);color:hsl(var(--tile-hue) 58% 30%);border:1px solid hsl(var(--tile-hue) 45% 85%);transition:transform .25s cubic-bezier(.2,.9,.3,1.3)}
+.product-card .product-tile{position:absolute;inset:0}
+.product-tile svg{width:36px;height:36px;margin-bottom:2px}
+.product-tile.compact{width:40px;height:40px;border-radius:10px}.product-tile.compact svg{width:22px;height:22px;margin-bottom:0}
+.tile-size{position:absolute;right:8px;bottom:8px;left:auto;padding:2px 6px;border-radius:5px;font-size:10px;font-weight:750;line-height:1.1;letter-spacing:.1px;background:hsl(var(--tile-hue) 70% 99% / .94);color:hsl(var(--tile-hue) 55% 26%);pointer-events:none}
+.product-tile.compact .tile-size{display:none!important}
+.shell[data-density=compact] .product-tile svg{width:24px;height:24px;margin-bottom:0}
+.shell[data-density=compact] .product-tile .tile-size{display:none!important}
+[data-theme=dark] .product-tile{background:hsl(var(--tile-hue) 26% 19%);color:hsl(var(--tile-hue) 78% 74%);border-color:hsl(var(--tile-hue) 22% 28%)}
+[data-theme=dark] .tile-size{background:hsl(var(--tile-hue) 30% 11% / .88);color:hsl(var(--tile-hue) 70% 82%)}
+.product-card:not(:disabled):hover .product-tile svg{transform:scale(1.08) rotate(-4deg);transition:transform .25s cubic-bezier(.2,.9,.3,1.3)}
+.product-card .add-mark{position:absolute;right:8px;bottom:8px;z-index:3}
+
+/* Brand badges */
+.shell .product-card .brand-badge{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:12px 14px;border-radius:14px;transform:none;border:1px solid var(--badge-border);background:var(--badge-bg);color:var(--badge-ink);box-shadow:none}
+.shell .product-card .brand-badge .brand-lettering{font-size:20px;font-weight:850;line-height:1.1;letter-spacing:-.6px}
+.shell .product-card .brand-badge .brand-detail{display:block;font-size:8px;font-weight:750;letter-spacing:1.2px;text-transform:uppercase;margin-top:4px;opacity:.85}
+.shell .brand-badge.compact{padding:4px 8px;align-items:center;justify-content:center}
+.shell .brand-badge.compact .brand-lettering{font-size:12px;letter-spacing:0}
+.shell .brand-badge.compact .brand-detail{display:none}
+.brand-patrona{--badge-bg:#f5f0db;--badge-border:#e2d9b0;--badge-ink:#695922}
+[data-theme=dark] .brand-patrona{--badge-bg:#35301e;--badge-border:#524a2e;--badge-ink:#f0e6b6}
+[data-theme=dark] .shell .brand-badge{box-shadow:inset 0 1px 0 #ffffff15,0 4px 12px #00000028}
+
+@media(prefers-reduced-motion:reduce){.product-card:hover .product-tile svg{transform:none}}
+.shell .product-footer{gap:8px;flex-wrap:wrap;align-items:center}
+.shell .stock-badge{display:inline-flex;flex-direction:row;align-items:center;justify-content:center;gap:5px;min-height:24px;width:auto;min-width:0;height:auto;padding:4px 8px;border-radius:7px;white-space:nowrap;line-height:1.2;font-size:11px}
+.shell .stock-badge.stock-unavailable{background:var(--bg-surface-elevated);color:var(--text-secondary);border:1px solid var(--border-strong)}
+.shell .stock-battery{display:inline-flex;flex-direction:row;align-items:center;gap:2px;width:auto;height:13px;padding:2px;flex-shrink:0}
+.shell .stock-battery i{display:block;width:3px;height:7px;min-height:0;margin:0}
+
+/* Compact disclosures: pointer clicks are not a full-width keyboard focus frame. */
+.shell .report-options>summary,.shell .report-extra>summary{display:inline-flex;align-items:center;gap:7px;width:fit-content;min-height:40px;padding:9px 14px!important;border:1px solid var(--border-strong);border-radius:10px;line-height:1.3;background:var(--bg-surface-elevated);cursor:pointer;font-size:12px}
+.shell .report-options>summary::before,.shell .report-extra>summary::before{content:'+';font-weight:700;font-size:16px}
+.shell .report-options[open]>summary::before,.shell .report-extra[open]>summary::before{content:'−'}
+.shell .report-options>summary:focus:not(:focus-visible),.shell .report-extra>summary:focus:not(:focus-visible){outline:none;box-shadow:none}
+.shell .report-options>summary:focus-visible,.shell .report-extra>summary:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+
+/* A quiet access desk: one emblem, team roster and immediately usable password. */
+html[data-theme] .quick-login.character-login{background:var(--bg-canvas)!important;--bg-input:var(--bg-surface);padding:0 5vw}
+html[data-theme] .quick-login.character-login::before,html[data-theme] .quick-login.character-login::after{display:none}
+html[data-theme=light] .quick-login.character-login{--bg-canvas:#f4f7f2;--bg-surface:#fff;--bg-surface-elevated:#f8faf6;--border-subtle:#e2e8de;--border-strong:#c2cebd;--text-primary:#21362b;--text-secondary:#58695e}
+.character-login .kiosk-top{border-bottom:1px solid var(--border-subtle);min-height:72px}
+.character-login .kiosk-wordmark small{display:none}
+.quick-login.character-login .kiosk-body{max-width:1040px;padding:28px 0}
+.character-login .login-heading{display:flex;align-items:center;gap:16px;margin:0 0 28px;padding:0}
+.character-login .login-heading h1{font-size:32px;letter-spacing:-.8px;margin:0;color:var(--text-primary)}.character-login .login-heading p{margin:8px 0 0;font-size:14px}
+html[data-theme] .quick-login.character-login .login-console{grid-template-columns:minmax(260px,.85fr) minmax(0,1.15fr);border:1px solid var(--border-subtle)!important;border-radius:20px;box-shadow:0 16px 40px rgba(0,0,0,0.06)!important;background:var(--bg-surface);overflow:hidden}
+.quick-login.character-login .login-console .profile-picker{padding:28px 24px;background:var(--bg-surface-elevated);border-right:1px solid var(--border-subtle)}
+.quick-login.character-login .login-console .kiosk-unlock{padding:40px 48px;min-height:350px;justify-content:center}
+
+/* Profile choices */
+.quick-login.character-login .profile-choice{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-height:66px;
+  padding:12px 16px;
+  border-radius:14px;
+  background:var(--bg-surface);
+  border:1px solid var(--border-subtle);
+  color:var(--text-primary);
+  box-shadow:0 1px 3px rgba(0,0,0,0.03);
+  transition:all .18s cubic-bezier(.16,1,.3,1);
+  cursor:pointer;
+}
+.quick-login.character-login .profile-choice:hover{
+  border-color:var(--border-strong);
+  box-shadow:0 3px 8px rgba(0,0,0,0.06);
+  transform:translateY(-1px);
+}
+html[data-theme] .quick-login.character-login .profile-choice.selected{
+  background:var(--bg-surface)!important;
+  border:2px solid var(--character)!important;
+  box-shadow:0 4px 14px color-mix(in srgb,var(--character) 18%,transparent)!important;
+  color:var(--text-primary)!important;
+}
+.quick-login.character-login .profile-choice>svg:last-child{
+  margin-left:auto;
+  color:var(--character);
+  opacity:.8;
+  transition:transform .18s ease;
+}
+.quick-login.character-login .profile-choice:hover>svg:last-child{
+  transform:translateX(3px);
+  opacity:1;
+}
+
+/* Mario Golden Profile Medallions - LIGHT MODE */
+html[data-theme=light] .quick-login.character-login .profile-monogram{
+  display:grid;
+  place-items:center;
+  width:44px;
+  height:44px;
+  border-radius:12px;
+  flex-shrink:0;
+  background:linear-gradient(145deg,#FFF9E6 0%,#FFEBA3 100%)!important;
+  border:1px solid #ECC047!important;
+  box-shadow:0 2px 5px rgba(180,120,0,0.14),inset 0 1px 0 rgba(255,255,255,0.85)!important;
+  transition:all .2s ease;
+}
+html[data-theme=light] .quick-login.character-login .profile-monogram svg{
+  color:#946000!important;
+  stroke:#946000!important;
+  width:22px;
+  height:22px;
+}
+html[data-theme=light] .quick-login.character-login .profile-choice:hover .profile-monogram,
+html[data-theme=light] .quick-login.character-login .profile-choice.selected .profile-monogram{
+  background:linear-gradient(145deg,#FDB813 0%,#F5A800 100%)!important;
+  border:1px solid #D69400!important;
+  box-shadow:0 4px 12px rgba(214,144,0,0.38),inset 0 1px 1px rgba(255,255,255,0.6)!important;
+  transform:scale(1.04);
+}
+html[data-theme=light] .quick-login.character-login .profile-choice:hover .profile-monogram svg,
+html[data-theme=light] .quick-login.character-login .profile-choice.selected .profile-monogram svg{
+  color:#FFFFFF!important;
+  stroke:#FFFFFF!important;
+  filter:drop-shadow(0 1px 2px rgba(120,70,0,0.5))!important;
+}
+
+/* Mario Golden Profile Medallions - DARK MODE */
+html[data-theme=dark] .quick-login.character-login .profile-monogram{
+  display:grid;
+  place-items:center;
+  width:44px;
+  height:44px;
+  border-radius:12px;
+  flex-shrink:0;
+  background:linear-gradient(145deg,#2D2309 0%,#3B2E0B 100%)!important;
+  border:1.5px solid #D6990D!important;
+  box-shadow:0 0 12px rgba(253,184,19,0.25)!important;
+  transition:all .2s ease;
+}
+html[data-theme=dark] .quick-login.character-login .profile-monogram svg{
+  color:#FDB813!important;
+  stroke:#FDB813!important;
+  width:22px;
+  height:22px;
+}
+html[data-theme=dark] .quick-login.character-login .profile-choice:hover .profile-monogram,
+html[data-theme=dark] .quick-login.character-login .profile-choice.selected .profile-monogram{
+  background:linear-gradient(145deg,#FDB813 0%,#E5A100 100%)!important;
+  border-color:#FFE57F!important;
+  box-shadow:0 0 18px rgba(253,184,19,0.55)!important;
+  transform:scale(1.04);
+}
+html[data-theme=dark] .quick-login.character-login .profile-choice:hover .profile-monogram svg,
+html[data-theme=dark] .quick-login.character-login .profile-choice.selected .profile-monogram svg{
+  color:#1F1500!important;
+  stroke:#1F1500!important;
+}
+
+/* "Otro usuario" monogram matching frame */
+.quick-login.character-login .profile-monogram.other-monogram{
+  background:var(--bg-surface-elevated)!important;
+  border:1px solid var(--border-subtle)!important;
+  box-shadow:none!important;
+}
+.quick-login.character-login .profile-monogram.other-monogram svg{
+  color:var(--text-secondary)!important;
+  stroke:var(--text-secondary)!important;
+  filter:none!important;
+}
+.quick-login.character-login .profile-choice:hover .profile-monogram.other-monogram,
+.quick-login.character-login .profile-choice.selected .profile-monogram.other-monogram{
+  background:var(--character-soft)!important;
+  border-color:var(--character)!important;
+}
+.quick-login.character-login .profile-choice:hover .profile-monogram.other-monogram svg,
+.quick-login.character-login .profile-choice.selected .profile-monogram.other-monogram svg{
+  color:var(--character)!important;
+  stroke:var(--character)!important;
+  filter:none!important;
+}
+
+html[data-theme] .quick-login.character-login .arcade-primary{background:var(--character)!important;color:var(--character-ink)!important;border:0!important;box-shadow:none!important;border-radius:12px;min-height:52px}
+.quick-login.character-login .password-control:focus-within{border-color:var(--character);box-shadow:0 0 0 2px color-mix(in srgb,var(--character) 25%,transparent)}
+.quick-login.character-login .login-options{background:var(--bg-surface-elevated)!important;border-top:1px solid var(--border-subtle)!important;padding:12px 24px!important}
+.quick-login.character-login .login-console.login-setup{grid-template-columns:1fr}.character-login .login-setup .kiosk-unlock{grid-column:1}
+
+@media(max-width:700px){html[data-theme] .quick-login.character-login .login-console{grid-template-columns:1fr}.quick-login.character-login .login-console .kiosk-unlock{grid-column:1;grid-row:2;padding:24px;min-height:0}.quick-login.character-login .login-console .profile-picker{grid-column:1;padding:18px}.character-login .login-heading h1{font-size:25px}}
+@media(max-height:780px) and (min-width:701px){.quick-login.character-login .kiosk-body{padding:14px 0}.character-login .login-heading{margin-bottom:16px}.quick-login.character-login .login-console .kiosk-unlock{padding:24px 34px;min-height:300px}.quick-login.character-login .profile-grid{max-height:235px}}
+
+/* Search: one frame only. The field inside the bar never draws its own border/ring. */
+.shell .cash-toolbar .search input,.shell .cash-toolbar .search input:focus,.shell .cash-toolbar .search input:focus-visible{border:0!important;outline:0!important;box-shadow:none!important;background:transparent!important}
+.shell .cash-toolbar .search:focus-within{border-color:var(--character)!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--character) 22%,transparent)!important}
+
+/* Login emblem: storefront tile */
+.character-login .login-character{display:inline-grid!important;place-items:center!important;width:52px!important;height:52px!important;min-width:52px!important;min-height:52px!important;border:0!important;border-radius:16px!important;background:var(--character)!important;color:var(--character-ink)!important;font-size:0;box-shadow:0 8px 22px color-mix(in srgb,var(--character) 32%,transparent)!important;flex-shrink:0!important;box-sizing:border-box!important;overflow:hidden!important}
+.character-login .login-character svg{width:26px!important;height:26px!important;display:block!important}
+@media(max-width:700px){.character-login .login-character{width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important;border-radius:14px!important}.character-login .login-character svg{width:22px!important;height:22px!important}}
+
+
+/* "Hoy" coin reads as gold money in both themes. */
+.shell .today-coin{background:color-mix(in srgb,var(--accent-gold) 20%,var(--bg-surface))!important;color:var(--accent-gold)!important;border:1px solid color-mix(in srgb,var(--accent-gold) 40%,transparent)!important;box-shadow:none!important}
+
+/* Icon picker in the product form. */
+.icon-picker{display:grid;gap:10px}
+.icon-picker-head{display:flex;align-items:center;gap:12px}
+.icon-picker-head .product-tile{width:56px;height:56px}.icon-picker-head .product-tile svg{width:28px;height:28px}
+.icon-picker-head small{display:block;color:var(--text-secondary);font-size:12px}
+.icon-picker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:6px;max-height:190px;overflow-y:auto;padding:4px;border:1px solid var(--border-subtle);border-radius:12px;background:var(--bg-surface-elevated)}
+.icon-picker-grid button{display:grid;place-items:center;height:44px;border-radius:10px;border:1px solid transparent;background:var(--bg-surface);color:var(--text-primary);cursor:pointer;padding:0}
+.icon-picker-grid button:hover{border-color:var(--border-strong)}
+.icon-picker-grid button[aria-pressed=true]{border-color:var(--character);background:var(--character-soft);color:var(--character)}
+.icon-picker-grid button.auto-choice{font-size:10px;font-weight:700;line-height:1.1}
+
+/* Product cards: category line and size */
+.shell .product-card .category-size{font-weight:750;color:var(--text-primary);opacity:.9}
+
+/* Brand picker tabs and custom controls in IconPicker */
+.icon-picker-tabs{display:flex;gap:6px;border-bottom:1px solid var(--border-subtle);padding-bottom:8px;margin-bottom:6px;overflow-x:auto}
+.icon-picker-tab{display:inline-flex;align-items:center;padding:7px 12px;font-size:12px;font-weight:600;border-radius:9px;border:1px solid var(--border-subtle);background:var(--bg-surface);color:var(--text-secondary);cursor:pointer;white-space:nowrap;transition:all .15s}
+.icon-picker-tab:hover{border-color:var(--border-strong);color:var(--text-primary)}
+.icon-picker-tab.active{border-color:var(--character);background:var(--character-soft);color:var(--character);font-weight:750}
+
+.brand-picker-box{display:grid;gap:12px;padding:12px;border:1px solid var(--border-subtle);border-radius:14px;background:var(--bg-surface-elevated)}
+.brand-picker-presets{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;max-height:165px;overflow-y:auto;padding:2px}
+.brand-preset-btn{position:relative;height:52px;padding:8px 10px;border-radius:10px;border:1px solid transparent;cursor:pointer;text-align:left;display:flex;flex-direction:column;justify-content:center;transition:transform .15s,filter .15s}
+.brand-preset-btn:hover{filter:brightness(1.04);transform:scale(1.02)}
+.brand-preset-btn[aria-pressed=true]{outline:2px solid var(--character);outline-offset:2px}
+
+.brand-custom-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.brand-custom-fields label{display:flex;flex-direction:column;gap:5px;font-size:11px;font-weight:600;color:var(--text-secondary)}
+.brand-custom-fields input{font-size:13px;padding:8px 12px;border-radius:9px;border:1px solid var(--border-subtle);background:var(--bg-surface);color:var(--text-primary)}
+.brand-custom-fields input:focus{border-color:var(--character);outline:none}
+
+.brand-tone-grid{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.brand-tone-chip{font-size:11px;font-weight:600;padding:4px 10px;border-radius:7px;border:1px solid var(--border-subtle);background:var(--bg-surface);cursor:pointer;color:var(--text-primary);transition:all .15s}
+.brand-tone-chip:hover{border-color:var(--border-strong)}
+.brand-tone-chip[aria-pressed=true]{border-color:var(--character);background:var(--character-soft);color:var(--character);font-weight:750}
+
+.save-brand-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:7px 14px;
+  font-size:12px;
+  font-weight:700;
+  border-radius:9px;
+  border:1px solid var(--border-strong);
+  background:var(--bg-surface);
+  color:var(--text-primary);
+  cursor:pointer;
+  transition:all .18s ease;
+}
+.save-brand-btn:hover:not(:disabled){
+  background:var(--character-soft);
+  border-color:var(--character);
+  color:var(--character);
+  transform:translateY(-1px);
+}
+.save-brand-btn:disabled{
+  opacity:.6;
+  cursor:default;
+}
+.saved-badge-indicator{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  font-size:11px;
+  font-weight:700;
+  color:var(--character);
+  background:var(--character-soft);
+  padding:4px 10px;
+  border-radius:8px;
+  border:1px solid color-mix(in srgb,var(--character) 30%,transparent);
+}
+.brand-preset-wrapper{
+  position:relative;
+  display:flex;
+}
+.remove-brand-chip-btn{
+  position:absolute;
+  top:-5px;
+  right:-5px;
+  width:20px!important;
+  min-width:20px!important;
+  max-width:20px!important;
+  height:20px!important;
+  min-height:20px!important;
+  max-height:20px!important;
+  padding:0!important;
+  border-radius:50%!important;
+  border:1px solid var(--border-strong);
+  background:var(--bg-surface);
+  color:var(--text-secondary);
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  opacity:0;
+  transition:opacity .15s ease,background-color .15s ease,color .15s ease;
+  z-index:4;
+  box-shadow:0 2px 4px rgba(0,0,0,0.15);
+}
+.brand-preset-wrapper:hover .remove-brand-chip-btn{
+  opacity:1;
+}
+.remove-brand-chip-btn:hover{
+  background:#e34940;
+  color:#fff;
+  border-color:#e34940;
+}
+
+
+/* Pixel-perfect Theme Toggle switch (immune to touch stretch & stray rays) */
+.theme-toggle{
+  position:relative;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  flex:0 0 66px!important;
+  width:66px!important;
+  min-width:66px!important;
+  max-width:66px!important;
+  height:36px!important;
+  min-height:36px!important;
+  max-height:36px!important;
+  padding:0 8px!important;
+  border-radius:999px!important;
+  background:var(--bg-surface-elevated)!important;
+  color:var(--text-secondary)!important;
+  border:1px solid var(--border-strong)!important;
+  box-shadow:inset 0 2px 4px #00000015!important;
+  cursor:pointer;
+  box-sizing:border-box!important;
+  overflow:hidden;
+  vertical-align:middle;
+}
+.theme-toggle:focus-visible{
+  outline:2px solid var(--character)!important;
+  outline-offset:2px!important;
+}
+.theme-track-icon{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:16px;
+  height:16px;
+  opacity:.65;
+  pointer-events:none;
+}
+[data-theme=light] .theme-track-sun{
+  opacity:0!important;
+  visibility:hidden!important;
+}
+[data-theme=dark] .theme-track-moon{
+  opacity:0!important;
+  visibility:hidden!important;
+}
+.theme-thumb{
+  position:absolute!important;
+  left:4px!important;
+  top:50%!important;
+  transform:translateY(-50%)!important;
+  width:28px!important;
+  height:28px!important;
+  border-radius:50%!important;
+  display:grid!important;
+  place-items:center!important;
+  color:var(--accent-gold)!important;
+  background:var(--bg-surface)!important;
+  box-shadow:0 2px 6px #00000028,0 1px 2px #00000018!important;
+  transition:transform 220ms cubic-bezier(.16,1,.3,1),color 200ms ease,background-color 200ms ease!important;
+  z-index:2;
+  box-sizing:border-box!important;
+}
+[data-theme=dark] .theme-thumb{
+  transform:translateY(-50%) translateX(30px)!important;
+  color:#FFE57F!important;
+  background:#2b2f38!important;
+}
+
+/* Sound Switch inside Settings */
+.sound-switch{
+  width:44px!important;
+  min-width:44px!important;
+  max-width:44px!important;
+  height:26px!important;
+  min-height:26px!important;
+  max-height:26px!important;
+  box-sizing:border-box!important;
+  padding:3px!important;
+}
+
+/* Search bar clear button */
+.search-clear{
+  width:32px!important;
+  min-width:32px!important;
+  max-width:32px!important;
+  height:32px!important;
+  min-height:32px!important;
+  max-height:32px!important;
+  padding:0!important;
+}
+
+/* Touch tactile responsiveness & Comfortable Density Polish */
+[data-input-mode=touch] .product-card{
+  cursor:pointer;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+}
+[data-input-mode=touch] .product-card:active{
+  transform:scale(0.97)!important;
+  transition:transform 80ms ease-out!important;
+}
+[data-input-mode=touch] .shell[data-density=comfortable] .product-grid{
+  grid-template-columns:repeat(auto-fill,minmax(185px,1fr));
+  gap:16px;
+}
+[data-input-mode=touch] .shell[data-density=comfortable] .product-card{
+  min-height:230px;
+  padding:14px;
+}
+[data-input-mode=touch] .shell[data-density=comfortable] .product-face{
+  height:95px;
+}
+[data-input-mode=touch] .shell[data-density=comfortable] .product-name{
+  font-size:15px;
+  line-height:1.25;
+}
+[data-input-mode=touch] .kiosk-top .theme-toggle{
+  flex-shrink:0!important;
+}
+
+/* Modal de Cobro & Libreta: verde con texto y precio blanco */
+.retail-dialog.dialog-pay .payment-total,
+.retail-dialog.dialog-credit .payment-total,
+.retail-dialog .payment-total,
+.payment-total {
+  background: #237846 !important;
+  color: #ffffff !important;
+}
+
+.retail-dialog .payment-total .number-ticker,
+.retail-dialog .payment-total .number-ticker *,
+.payment-total .number-ticker,
+.payment-total .number-ticker * {
+  color: #ffffff !important;
+}
+
+.retail-dialog .payment-total small,
+.payment-total small {
+  color: rgba(255, 255, 255, 0.92) !important;
+}
+
+/* Emblema con logo de monedas en el encabezado del modal de cobro: verde con icono blanco */
+.dialog-pay .dialog-emblem,
+.dialog-credit .dialog-emblem {
+  background: #237846 !important;
+  color: #ffffff !important;
+}
+
+.dialog-pay .dialog-emblem svg,
+.dialog-credit .dialog-emblem svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+
+
+
+/* Operational tools: bounded previews and readable forms. */
+.fiscal-preview{max-height:320px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;padding:16px;background:var(--surface);border:1px solid var(--border)}
+.fiscal-sandbox{padding:12px;border:1px solid currentColor;border-radius:12px}
+.fiscal-panel fieldset{margin:12px 0;padding:12px;min-width:0}
+.network-settings textarea{width:100%;max-width:100%;font-family:monospace}
+.fiscal-panel td small{display:block;overflow-wrap:anywhere}
+.catalog-import,.network-settings{margin-block:16px;padding:20px}

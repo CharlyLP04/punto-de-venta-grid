@@ -1,0 +1,49 @@
+.input-mode-picker{border:0;margin:0;padding:20px 26px;border-bottom:1px solid var(--border-subtle);min-width:0}
+.input-mode-picker legend{float:left;width:100%;font-size:15px;font-weight:700;margin-bottom:12px}
+.input-mode-picker>div{clear:both;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.input-mode-picker label{display:flex;align-items:center;gap:10px;cursor:pointer;padding:14px 12px;min-height:64px;border:2px solid var(--border-strong);border-radius:16px;background:var(--bg-surface-elevated);color:var(--text-primary)}
+.input-mode-picker label.selected{border-color:var(--focus)}
+.input-mode-picker label:focus-within{outline:3px solid var(--focus);outline-offset:3px}
+.input-mode-picker input{width:18px;height:18px;margin:0;accent-color:var(--focus);flex-shrink:0}
+.input-mode-picker small{display:block;font-size:12px;margin-top:4px;color:var(--text-secondary)}
+.input-mode-picker p{font-size:12px;color:var(--text-secondary);line-height:1.5;margin:12px 0 0}
+.input-mode-picker.compact{padding:0;border:0}
+:where(button,input,select,textarea,summary,a,[tabindex]:not([tabindex="-1"])):focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+:where(button,input,select,textarea,summary,a){scroll-margin-block:24px}
+button,summary,.check-row,.input-mode-picker label{touch-action:manipulation}
+textarea,select{color:var(--text-primary);background:var(--bg-input)}
+.product-name,.profile-choice,.input-mode-picker span{overflow-wrap:anywhere;min-width:0}
+.product-grid{contain:layout style}
+.product-card{content-visibility:auto;contain-intrinsic-size:auto 240px}
+[data-input-mode=touch] :is(button:not(.theme-toggle):not(.sound-switch):not(.search-clear):not(.brand-tone-chip):not(.quick-mute),input:not([type=checkbox]):not([type=radio]):not([type=hidden]),select,summary){min-height:48px}
+[data-input-mode=touch] :is(button:not(.theme-toggle):not(.sound-switch):not(.search-clear):not(.brand-tone-chip):not(.quick-mute),.icon-button){min-width:48px}
+[data-input-mode=touch] :is(input,select,textarea){font-size:16px}
+[data-input-mode=touch] input:is([type=checkbox],[type=radio]){width:24px;height:24px;flex-shrink:0}
+[data-input-mode=touch] :is(.check-row,.master-options label){min-height:48px;gap:12px;padding-block:8px}
+[data-input-mode=touch] .product-grid{grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:14px}
+[data-input-mode=touch] .product-name{font-size:16px;-webkit-line-clamp:3}
+[data-input-mode=touch] nav.workspace-tabs{gap:8px}
+[data-input-mode=touch] nav.workspace-tabs button{max-height:none;white-space:normal}
+[data-input-mode=touch] .quick-categories{gap:10px}
+[data-input-mode=touch] .ticket-tabs button{min-height:56px}
+[data-input-mode=touch] .checkout-layout{grid-template-columns:minmax(0,1fr) minmax(340px,390px)}
+@media(max-width:900px){
+  [data-input-mode=touch] :is(.checkout-shell .workspace,.shell .workspace){height:auto;min-height:100dvh;overflow:visible}
+  [data-input-mode=touch] .product-grid{max-height:65dvh;overflow:auto;padding:5px}
+}
+[data-input-mode=touch] .catalog-meta>span:last-child{display:none}
+[data-input-mode=touch] .password-control button{min-width:48px}
+@media(max-width:1100px){[data-input-mode=touch] .checkout-layout{grid-template-columns:minmax(0,1fr)}[data-input-mode=touch] .ticket-panel{min-height:480px}}
+@media(max-width:600px){.input-mode-picker>div{grid-template-columns:1fr}}
+@media(forced-colors:active){button,.input-mode-picker label{border:1px solid ButtonText}.input-mode-picker label.selected{outline:2px solid Highlight}.stock-dot{background:CanvasText}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+.catalog-load-more{grid-column:1/-1;min-height:48px;padding:12px}
+
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible,a:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+[data-input-mode=touch] .line-detail>strong{font-size:15px}
+[data-input-mode=touch] .line-detail>small{font-size:12px}
+[data-input-mode=touch] .stepper{gap:12px;font-size:15px}
+[data-input-mode=touch] .stepper button{width:48px;height:48px}
+[data-input-mode=touch] .line-end b{font-size:16px}
+[data-input-mode=touch] .kiosk-access{min-width:0}

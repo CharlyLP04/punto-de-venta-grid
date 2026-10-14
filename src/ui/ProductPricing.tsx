@@ -1,0 +1,7 @@
+import {useState} from 'react';
+import {decimal,money,type Product} from '../model';
+export default function ProductPricing({product}:{product?:Product}){
+ const [cost,setCost]=useState(product&&product.cost_known!==0?(product.cost/100).toFixed(2):'');const [price,setPrice]=useState(product?(product.price/100).toFixed(2):'');
+ let margin:string|null=null;let difference:number|null=null;try{const c=decimal(cost),p=decimal(price);if(p>0){difference=p-c;margin=((p-c)/p*100).toFixed(1);}}catch{/* Keep the preview empty until both amounts are valid. */}
+ return <fieldset className="pricing-block"><legend>Costo y precio</legend><div className="form-pair"><label className="field"><span>Costo de compra ($), opcional</span><input name="cost" type="number" inputMode="decimal" min="0" max="1000000" step="0.01" value={cost} onChange={e=>setCost(e.target.value)}/></label><label className="field"><span>Precio de venta ($)</span><input name="price" type="number" inputMode="decimal" min="0.01" max="1000000" step="0.01" required value={price} onChange={e=>setPrice(e.target.value)}/></label></div><p className={`margin-preview ${difference!==null&&difference<0?'negative':''}`} role="status">{margin===null?'Completa ambos importes para ver el margen.':`Margen: ${margin}% · Diferencia por unidad: ${money(difference!)}`}</p><small>Deja el costo vacío si no lo conoces. Escribe 0 solo para mercancía realmente gratuita. Sobre el precio de venta. No incluye gastos, descuentos ni impuestos.</small></fieldset>;
+}

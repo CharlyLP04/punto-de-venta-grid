@@ -1,0 +1,16 @@
+PRAGMA foreign_keys=ON;
+PRAGMA journal_mode=WAL;
+PRAGMA synchronous=FULL;
+PRAGMA busy_timeout=5000;
+CREATE TABLE IF NOT EXISTS products(id INTEGER PRIMARY KEY,code TEXT NOT NULL UNIQUE,name TEXT NOT NULL,category TEXT NOT NULL,icon TEXT NOT NULL,price INTEGER NOT NULL CHECK(price>0),cost INTEGER NOT NULL CHECK(cost>=0),unit TEXT NOT NULL CHECK(unit IN ('kg','pieza')),stock INTEGER NOT NULL DEFAULT 0 CHECK(stock>=0));
+CREATE TABLE IF NOT EXISTS cart(ticket INTEGER NOT NULL CHECK(ticket BETWEEN 1 AND 4),product INTEGER NOT NULL REFERENCES products(id),quantity INTEGER NOT NULL,PRIMARY KEY(ticket,product));
+CREATE TABLE IF NOT EXISTS customers(id INTEGER PRIMARY KEY,name TEXT NOT NULL,phone TEXT NOT NULL,credit_limit INTEGER NOT NULL CHECK(credit_limit>0),balance INTEGER NOT NULL DEFAULT 0 CHECK(balance>=0));
+CREATE TABLE IF NOT EXISTS shifts(id INTEGER PRIMARY KEY,opening INTEGER NOT NULL,created TEXT NOT NULL DEFAULT(strftime('%Y-%m-%dT%H:%M:%fZ','now')),closed TEXT,counted INTEGER,expected INTEGER);
+
+CREATE TABLE IF NOT EXISTS sales(id TEXT PRIMARY KEY,shift INTEGER NOT NULL REFERENCES shifts(id),total INTEGER NOT NULL,payment TEXT NOT NULL CHECK(payment IN ('cash','credit')),receipt TEXT NOT NULL,print_status TEXT NOT NULL DEFAULT 'pending',created TEXT NOT NULL DEFAULT(strftime('%Y-%m-%dT%H:%M:%fZ','now')));
+CREATE TABLE IF NOT EXISTS movements(id INTEGER PRIMARY KEY,shift INTEGER NOT NULL REFERENCES shifts(id),amount INTEGER NOT NULL,note TEXT NOT NULL,created TEXT NOT NULL DEFAULT(strftime('%Y-%m-%dT%H:%M:%fZ','now')));
+CREATE TABLE IF NOT EXISTS ledger(id INTEGER PRIMARY KEY,customer INTEGER NOT NULL REFERENCES customers(id),amount INTEGER NOT NULL,note TEXT NOT NULL,created TEXT NOT NULL DEFAULT(strftime('%Y-%m-%dT%H:%M:%fZ','now')));
+CREATE TABLE IF NOT EXISTS inventory(id INTEGER PRIMARY KEY,product INTEGER NOT NULL REFERENCES products(id),quantity INTEGER NOT NULL,note TEXT NOT NULL,created TEXT NOT NULL DEFAULT(strftime('%Y-%m-%dT%H:%M:%fZ','now')));
+CREATE TABLE IF NOT EXISTS settings(key TEXT PRIMARY KEY,value TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS outbox(id TEXT PRIMARY KEY,kind TEXT NOT NULL,payload TEXT NOT NULL,sent TEXT);
+CREATE TABLE IF NOT EXISTS audit(id INTEGER PRIMARY KEY,event TEXT NOT NULL,created TEXT NOT NULL DEFAULT(strftime('%Y-%m-%dT%H:%M:%fZ','now')));
