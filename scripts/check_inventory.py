@@ -1,7 +1,7 @@
 import csv
 from collections import Counter
 
-with open('scripts/catalog_inventory_raw.tsv', encoding='utf-8') as f:
+with open('scripts/mario_inventory_raw.tsv', encoding='utf-8') as f:
     reader = csv.reader(f, delimiter='\t')
     header = next(reader)
     rows = list(reader)
@@ -19,4 +19,3 @@ dups = {k: v for k, v in code_counts.items() if v > 1}
 print('Duplicate codes:', len(dups))
 for k, v in list(dups.items())[:15]:
     print(f'Code "{k}": {v} occurrences')
-

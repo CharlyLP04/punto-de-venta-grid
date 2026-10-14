@@ -1,6 +1,6 @@
 import csv, re
 
-with open('scripts/catalog_inventory_raw.tsv', encoding='utf-8') as f:
+with open('scripts/mario_inventory_raw.tsv', encoding='utf-8') as f:
     reader = csv.reader(f, delimiter='\t')
     header = next(reader)
     rows = list(reader)
@@ -74,4 +74,3 @@ print(f"Total PIECE items: {len(piece_items)}")
 print("\nAll KG items:")
 for idx, it in enumerate(kg_items):
     print(f"  {idx+1}. [{it[0]}] {it[1]} | {it[2]} | Stock: {it[3]} kg | Precio: {it[4]}")
-

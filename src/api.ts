@@ -22,10 +22,7 @@ export async function invoke<T = unknown>(command: string, args: Record<string, 
     return await transport<T>(command, { ...request, sessionToken });
   }
   catch (error) {
-    if (String(error).includes('SESSION_EXPIRED')) {
-      window.dispatchEvent(new Event('grid-session-expired'));
-      window.dispatchEvent(new Event('mario-session-expired'));
-    }
+    if (String(error).includes('SESSION_EXPIRED')) window.dispatchEvent(new Event('mario-session-expired'));
     throw error;
   }
 }

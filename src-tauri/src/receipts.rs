@@ -25,7 +25,7 @@ pub async fn print_sale(store:State<'_,Store>,session_token:String,id:String,rep
         if status=="sent"&&!reprint{return Err("El ticket ya fue enviado; solicita una copia".into());}
         let receipt:Value=serde_json::from_str(&raw).map_err(err)?;
         let port=setting(&db,"printer","");if port.is_empty(){return Err("Configura la impresora".into());}
-        let mut text=format!("{}\n{}\n{}\n{}\nFolio: {}\nCajero: {}\n--------------------------------\n",receipt["store"].as_str().unwrap_or("GRID POS"),receipt["address"].as_str().unwrap_or(""),receipt["phone"].as_str().unwrap_or(""),if reprint{"COPIA"}else{"VENTA"},id,receipt["cashier"].as_str().unwrap_or("Historico"));
+        let mut text=format!("{}\n{}\n{}\n{}\nFolio: {}\nCajero: {}\n--------------------------------\n",receipt["store"].as_str().unwrap_or("MARIO POS"),receipt["address"].as_str().unwrap_or(""),receipt["phone"].as_str().unwrap_or(""),if reprint{"COPIA"}else{"VENTA"},id,receipt["cashier"].as_str().unwrap_or("Historico"));
         for item in receipt["items"].as_array().ok_or("Recibo inválido")? {text.push_str(&format!("{}\n{:.3} {}  ${:.2}\n",item["name"].as_str().unwrap_or(""),item["quantity"].as_i64().unwrap_or(0) as f64/1000.,item["unit"].as_str().unwrap_or(""),item["subtotal"].as_i64().unwrap_or(0) as f64/100.));}
         text.push_str(&format!("--------------------------------\nTOTAL ${:.2}\n{}\nCambio ${:.2}\n{}\n",receipt["total"].as_i64().unwrap_or(0) as f64/100.,receipt["payment"].as_str().unwrap_or(""),receipt["change"].as_i64().unwrap_or(0) as f64/100.,receipt["footer"].as_str().unwrap_or("Gracias por tu compra")));
         for key in ["cash","card","credit","transfer","voucher","check","usd"]{if let Some(amount)=receipt["tender"][key].as_i64(){if amount>0{text.push_str(&format!("{}: ${:.2}\n",key,amount as f64/100.));}}}
@@ -52,7 +52,7 @@ pub async fn print_repayment(store:State<'_,Store>,session_token:String,id:Strin
         if owner!=actor.id&&!actor.can("reports.view"){return Err("Abono de otro usuario".into());}
         let port=setting(&db,"printer","");if port.is_empty(){return Err("Configura la impresora".into());}
         security::audit(&db,actor.id,json!({"type":"repayment.print","id":id}))?;
-        (port,setting(&db,"baud","9600").parse::<u32>().unwrap_or(9600),format!("{}\nCOMPROBANTE DE ABONO\n{}\nFolio: {}\nCliente: {}\nSaldo anterior: ${:.2}\nAbono: ${:.2}\nSaldo restante: ${:.2}\n{}\n",setting(&db,"store_name","GRID POS"),created,id,name,previous as f64/100.,amount as f64/100.,balance as f64/100.,setting(&db,"receipt_footer","Gracias")))
+        (port,setting(&db,"baud","9600").parse::<u32>().unwrap_or(9600),format!("{}\nCOMPROBANTE DE ABONO\n{}\nFolio: {}\nCliente: {}\nSaldo anterior: ${:.2}\nAbono: ${:.2}\nSaldo restante: ${:.2}\n{}\n",setting(&db,"store_name","MARIO POS"),created,id,name,previous as f64/100.,amount as f64/100.,balance as f64/100.,setting(&db,"receipt_footer","Gracias")))
     };
     tauri::async_runtime::spawn_blocking(move||send(port,baud,text,false)).await.map_err(err)?
 }

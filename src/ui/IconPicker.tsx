@@ -13,7 +13,7 @@ import {
 import { brandBadges } from './ProductCard';
 import type { Product } from '../model';
 
-const STORAGE_KEY = 'grid_custom_brand_badges_v1';
+const STORAGE_KEY = 'mario_custom_brand_badges_v1';
 
 export type CustomBrand = {
   tone: string;

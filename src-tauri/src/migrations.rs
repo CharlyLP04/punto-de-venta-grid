@@ -52,7 +52,7 @@ pub fn migrate(db: &mut Connection) -> Result<()> {
           SELECT json_extract(j.value,'$.id'),json_extract(j.value,'$.name'),
             -(json_extract(j.value,'$.subtotal')-json_extract(j.value,'$.cost')),r.created
           FROM refunds r,json_each(r.receipt,'$.items') j;
-        INSERT OR IGNORE INTO settings VALUES('store_name','Punto de Venta Grid'),('receipt_footer','Gracias por tu compra'),('store_address',''),('store_phone',''),('accent','emerald'),('density','comfortable'),('idle_minutes','15'),('daily_goal','600000');
+        INSERT OR IGNORE INTO settings VALUES('store_name','Abarrotes Mario'),('receipt_footer','Gracias por tu compra'),('store_address',''),('store_phone',''),('accent','gold'),('density','comfortable'),('idle_minutes','15'),('daily_goal','600000');
         DELETE FROM settings WHERE key='admin_pin';
         PRAGMA user_version=2;
     "#).map_err(err)?;

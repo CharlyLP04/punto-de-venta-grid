@@ -1,4 +1,4 @@
--- Semilla de catálogo inicial para Grid POS (1,309 productos)
+-- Semilla de catálogo real de Mario POS (1,309 productos)
 -- Transaction managed by initialize; seed and markers commit together.
 INSERT OR IGNORE INTO products(code,name,category,icon,price,cost,unit,stock,minimum,target,wholesale_quantity,wholesale_price,favorite,created,enabled) VALUES('QUESILLO','Quesillo Oaxaca','Lácteos y Refrigerados','📦',13000,0,'pieza',870,1000,4000,0,0,0,strftime('%Y-%m-%dT%H:%M:%fZ','now'),1);
 INSERT OR REPLACE INTO product_codes(code,product) SELECT 'QUESILLO',id FROM products WHERE code='QUESILLO';

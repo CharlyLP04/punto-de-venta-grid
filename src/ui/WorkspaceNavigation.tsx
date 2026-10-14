@@ -12,7 +12,7 @@ const groups:{name:string;hint:string;icon:typeof Package;tabs:Tab[]}[]=[
 import AudioControls from './AudioControls';
 export function firstPage(can:(permission:string)=>boolean):Page{return groups.flatMap(group=>group.tabs).find(tab=>tab.permissions.some(can))?.page??'Ajustes';}
 export function WorkspaceSidebar({page,onChange,can,name,onLock,soundEnabled=true,remote=false}:{page:Page;onChange:(page:Page)=>void;can:(permission:string)=>boolean;name:string;onLock:()=>void;soundEnabled?:boolean;remote?:boolean}){
-  return <aside className="sidebar workspace-sidebar"><div className="workspace-brand"><BrandMark/><span>GRID<small>PUNTO DE VENTA</small></span></div><span className="nav-eyebrow">TU MOSTRADOR</span><nav aria-label="Áreas principales">{groups.map(group=>{
+  return <aside className="sidebar workspace-sidebar"><div className="workspace-brand"><BrandMark/><span>MARIO<small>MI TIENDA</small></span></div><span className="nav-eyebrow">TU MOSTRADOR</span><nav aria-label="Áreas principales">{groups.map(group=>{
     const visible=group.tabs.filter(tab=>tab.permissions.some(can));if(!visible.length)return null;
     const active=group.tabs.some(tab=>tab.page===page);const Icon=group.icon;
     return <button key={group.name} className={active?'active':''} aria-current={active?'page':undefined} onClick={()=>onChange(visible[0].page)}><span className="nav-icon"><Icon size={21} aria-hidden="true"/></span><span className="nav-label">{group.name}<small>{group.hint}</small></span>{active&&<ChevronRight size={14}/>}</button>;

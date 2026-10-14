@@ -1,6 +1,6 @@
 import csv
 
-with open('scripts/catalog_inventory_raw.tsv', encoding='utf-8') as f:
+with open('scripts/mario_inventory_raw.tsv', encoding='utf-8') as f:
     reader = csv.reader(f, delimiter='\t')
     header = next(reader)
     rows = list(reader)
@@ -19,4 +19,3 @@ for idx, r in enumerate(rows):
 print(f"Total empty codes: {empty_codes}")
 print(f"Total short codes (<=5 chars): {len(short_codes)}")
 print("Sample short codes:", short_codes[:10])
-

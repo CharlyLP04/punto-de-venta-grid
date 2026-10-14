@@ -1,10 +1,10 @@
 import {useSyncExternalStore} from 'react';
 import {Volume2,VolumeX} from 'lucide-react';
 let volume=0.65;
-try{const stored=localStorage.getItem('grid_audio_volume')??localStorage.getItem('mario_audio_volume');if(stored!==null&&Number.isFinite(Number(stored)))volume=Math.max(0,Math.min(1,Number(stored)));}catch{/* Local preference is optional. */}
+try{const stored=localStorage.getItem('mario_audio_volume');if(stored!==null&&Number.isFinite(Number(stored)))volume=Math.max(0,Math.min(1,Number(stored)));}catch{/* Local preference is optional. */}
 const listeners=new Set<()=>void>();
 export const soundVolume=()=>volume;
-function setVolume(value:number){volume=Math.max(0,Math.min(1,value));try{localStorage.setItem('grid_audio_volume',String(volume));}catch{/* Keep the current volume in memory. */}listeners.forEach(listener=>listener());}
+function setVolume(value:number){volume=Math.max(0,Math.min(1,value));try{localStorage.setItem('mario_audio_volume',String(volume));}catch{/* Keep the current volume in memory. */}listeners.forEach(listener=>listener());}
 function subscribe(listener:()=>void){listeners.add(listener);return()=>{listeners.delete(listener);};}
 export default function AudioControls({enabled}:{enabled:boolean}){
   const value=useSyncExternalStore(subscribe,soundVolume);

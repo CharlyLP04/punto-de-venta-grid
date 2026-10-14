@@ -4,10 +4,10 @@ $project = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $outputs = [IO.Path]::GetFullPath((Join-Path $project '..'))
 $desktopDirectory = [Environment]::GetFolderPath('Desktop')
 if (!$desktopDirectory -or !(Test-Path -LiteralPath $desktopDirectory)) { throw 'No se encontro el escritorio de Windows.' }
-$destination = Join-Path $desktopDirectory 'Grid POS.exe'
-$binary = Join-Path $project 'src-tauri\target\release\grid-pos.exe'
-$published = Join-Path $project 'Grid POS.exe'
-$previous = Join-Path $project 'Grid POS anterior.exe'
+$destination = Join-Path $desktopDirectory 'Mario POS.exe'
+$binary = Join-Path $project 'src-tauri\target\release\mario-pos.exe'
+$published = Join-Path $outputs 'Mario POS.exe'
+$previous = Join-Path $outputs 'Mario POS anterior.exe'
 $lockPath = Join-Path $project '.desktop-update.lock'
 $lock = $null
 
@@ -29,7 +29,7 @@ function Get-SourceFingerprint {
 
 function Publish-Executable {
     # Stage in the destination directory so replacement is atomic, even across drives.
-    $staged = Join-Path $desktopDirectory ('.grid-update-' + [guid]::NewGuid().ToString('N') + '.tmp')
+    $staged = Join-Path $desktopDirectory ('.mario-update-' + [guid]::NewGuid().ToString('N') + '.tmp')
     try {
         $sourceHash = (Get-FileHash -LiteralPath $binary -Algorithm SHA256).Hash
         Copy-Item -LiteralPath $binary -Destination $staged
@@ -46,7 +46,7 @@ function Publish-Executable {
         return $true
     } catch {
         Write-Warning "No se pudo publicar: $($_.Exception.Message)"
-        Write-Warning 'Si Grid POS esta abierto, cierralo. No se cerrara la caja automaticamente.'
+        Write-Warning 'Si Mario POS esta abierto, cierralo. No se cerrara la caja automaticamente.'
         return $false
     } finally {
         if (Test-Path -LiteralPath $staged) { Remove-Item -LiteralPath $staged -Force }

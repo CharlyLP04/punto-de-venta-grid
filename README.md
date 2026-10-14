@@ -1,154 +1,60 @@
-<div align="center">
+# Mario POS · Grid MX
 
-<img src="src/assets/logo.png" alt="Grid POS Logo" width="128" height="128" style="border-radius: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.3);" />
+Base de aplicación **nativa de escritorio para Windows**, con Tauri 2, React 19, Vite, Tailwind 4 y SQLite mediante Rust. No utiliza navegador externo, IndexedDB ni servicios remotos para cobrar.
 
-# Grid POS · Punto de Venta Profesional
+## Ejecutar desde el código
 
-**Sistema de Punto de Venta para Comercio y Retail · 100% Autónomo, Offline-First y de Alto Rendimiento**
+Requisitos de desarrollo: Node.js 20.19+ o 22.12+, Rust estable con toolchain MSVC, Visual Studio Build Tools con Desktop development with C++, Windows SDK y WebView2.
 
-[![Tauri 2](https://img.shields.io/badge/Tauri-v2.0-blue.svg?logo=tauri)](https://tauri.app/)
-[![React 19](https://img.shields.io/badge/React-v19.0-61dafb.svg?logo=react)](https://react.dev/)
-[![Rust](https://img.shields.io/badge/Rust-2021_Edition-orange.svg?logo=rust)](https://www.rust-lang.org/)
-[![SQLite](https://img.shields.io/badge/SQLite-WAL_ACID-003B57.svg?logo=sqlite)](https://www.sqlite.org/)
-[![Platform](https://img.shields.io/badge/Platform-Windows_x64-brightgreen.svg?logo=windows)](https://microsoft.com)
-
-</div>
-
----
-
-## ⚡ Descripción General
-
-**Grid POS** es una solución integral de punto de venta de escritorio desarrollada con **Tauri 2**, **React 19**, **Rust** y **SQLite nativo**. 
-
-Diseñada para abarrotes, tiendas de conveniencia, papelerías, carnicerías y comercios minoristas, su arquitectura garantiza una **operación continua sin conexión a internet**, con una interfaz ultra-rápida, soporte para lectores de códigos de barra, básculas seriales e impresoras térmicas ESC/POS.
-
----
-
-## 🌟 Características Principales
-
-### 🛒 Mostrador y Cobro Rápido
-- **Multi-Ticket simultáneo:** Atiende hasta 5 clientes en paralelo (F5–F9) sin perder los artículos del carrito.
-- **Transacciones ACID atómicas:** Cada cobro descuenta existencias, registra el pago, genera el folio y persiste el ticket en SQLite en milisegundos.
-- **Soporte de Escáneres de Códigos de Barra:** Detección de ráfagas HID a alta velocidad con terminador Enter y compatibilidad con códigos alternos/alias.
-- **Venta por Pieza y a Granel:** Cálculo automático en kilogramos o venta fraccionada por importe exacto (ej. "$20 pesos de queso").
-- **Múltiples Formas de Pago:** Efectivo, tarjetas bancarias, transferencias, vales, dólares con tipo de cambio en pesos y pagos mixtos.
-
-### 👥 Clientes y Libreta de Confianza (Fiado)
-- **Límites de crédito personalizados:** Control estricto de endeudamiento por cliente.
-- **Registro de abonos y comprobantes:** Generación e impresión de recibos de abono.
-- **Integración con WhatsApp:** Envío de estados de cuenta claros y directos al cliente en un clic.
-
-### 📦 Gestión de Inventario y Catálogo
-- **Control de existencias y alertas de agotamiento:** Indicadores visuales en tiempo real.
-- **Lotes y fechas de caducidad:** Módulo de seguimiento para prevenir mermas.
-- **Combos y productos compuestos:** Descuento automático de existencias de insumos por cada combo vendido.
-- **Precios de mayoreo y promociones:** Reglas automáticas basadas en cantidad y vigencia.
-- **Importador de catálogos masivos:** Soporte para archivos Excel (.xlsx) y CSV.
-
-### 🛡️ Seguridad y Control de Turnos
-- **Cuentas de usuario y roles granulares:** Propietario, Encargado, Cajero, Inventario y permisos personalizados.
-- **Arqueo ciego de caja:** El cajero cuenta el dinero físico antes de revelar el balance esperado del sistema.
-- **Cortes de turno (Corte Z):** Inmutables y auditables con cálculo de diferencias.
-- **Bitácora de auditoría:** Registro detallado de cancelaciones, descuentos manuales, movimientos de efectivo y cambios de configuración.
-
-### 🖨️ Hardware Comercial
-- **Impresoras térmicas de tickets:** Soporte para puertos COM y comandos ESC/POS estándar (corte de papel y apertura automática de cajón de dinero).
-- **Básculas electrónicas:** Lectura de peso en tiempo real vía puerto serial (RS-232).
-- **Modo Táctil / Modo PC:** Optimización de la interfaz para pantallas táctiles de kiosco o teclado físico.
-
----
-
-## ⌨️ Atajos de Teclado del Mostrador
-
-| Atajo | Acción |
-| :--- | :--- |
-| <kbd>F1</kbd> | Enfocar buscador / escanear código |
-| <kbd>F2</kbd> | Abrir pantalla de cobro del ticket actual |
-| <kbd>F3</kbd> | Registrar entrada / salida de efectivo |
-| <kbd>F4</kbd> | Modificar precio o descuento especial |
-| <kbd>F5</kbd> – <kbd>F9</kbd> | Cambiar entre Tickets 1 al 5 |
-| <kbd>F10</kbd> | Asignar a la libreta de fiado |
-| <kbd>+</kbd> / <kbd>-</kbd> | Aumentar / disminuir cantidad de la línea seleccionada |
-| <kbd>Supr</kbd> | Eliminar producto del ticket |
-| <kbd>Esc</kbd> | Cancelar modal o bloquear sesión |
-
----
-
-## 🏗️ Requisitos del Sistema
-
-- **Sistema Operativo:** Windows 10 / 11 (64-bit)
-- **Runtime:** Microsoft Edge WebView2 (incluido de fábrica en Windows 10/11)
-- **Node.js:** v20.x o superior
-- **Rust Toolchain:** Stable (MSVC 2021 edition)
-- **Herramientas de Compilación:** Visual Studio C++ Build Tools & Windows SDK
-
----
-
-## 🚀 Instalación y Desarrollo
-
-### 1. Clonar el repositorio
-```bash
-git clone https://github.com/CharlyLP04/punto-de-venta-grid.git
-cd punto-de-venta-grid
-```
-
-### 2. Instalar dependencias
-```bash
+```powershell
+cd "C:\Users\col28\Documents\Codex\2026-10-05\resumen-de-los-pilares-clave-1\outputs\mario-pos"
 npm install
-```
-
-### 3. Ejecutar en modo desarrollo
-```bash
 npm run desktop
 ```
 
-### 4. Compilar ejecutable de producción
-```bash
-npm run tauri -- build --no-bundle
-```
-El archivo ejecutable `Grid POS.exe` se generará en:
-```
-src-tauri/target/release/Grid POS.exe
+Para producir el instalador NSIS:
+
+```powershell
+npm run installer
 ```
 
----
+Se instalaron las dependencias y se compiló correctamente el ejecutable Windows x64 en modo release con npm run tauri -- build --no-bundle. Se incluyen package-lock.json y Cargo.lock. No se ejecutaron pruebas ni se abrió la aplicación, por petición del usuario. La compilación no equivale a validación para operación comercial. El ejecutable directo requiere WebView2, ya instalado en esta computadora; no es un instalador.
 
-## 🗄️ Arquitectura de Archivos
+## Flujos implementados
 
-```
-punto-de-venta-grid/
-├── src/                          # Interfaz React 19 + TypeScript
-│   ├── assets/                   # Logotipo oficial e iconos de marca
-│   ├── management/               # Módulos de administración, catálogo y reportes
-│   ├── security/                 # Autenticación, perfiles y control de sesiones
-│   ├── ui/                       # Componentes de diseño, modales y mostrador
-│   ├── api.ts                    # Puente IPC con Tauri
-│   ├── App.tsx                   # Controlador principal del punto de venta
-│   └── model.ts                  # Tipos de datos y aritmética financiera
-├── src-tauri/                    # Núcleo nativo en Rust
-│   ├── src/
-│   │   ├── main.rs               # Entrada de la app, ventana nativa y single-instance
-│   │   ├── business.rs           # Motor de transacciones y cálculo de tickets
-│   │   ├── receipts.rs           # Control de impresión serial ESC/POS
-│   │   ├── backups.rs            # Respaldos y restauración SQLite WAL
-│   │   ├── security.rs           # Hashing Argon2 y permisos de usuarios
-│   │   └── schema.sql            # Estructura de base de datos relacional
-│   ├── icons/                    # Iconos empaquetados para Windows y desktop
-│   ├── Cargo.toml                # Dependencias nativas de Rust
-│   └── tauri.conf.json           # Configuración de Tauri 2 y ventanas
-└── package.json                  # Scripts y dependencias del frontend
-```
+- Cuatro tickets guardados inmediatamente en SQLite y recuperados al reiniciar.
+- F1 buscar, F2 cobrar, F3 efectivo, F5–F8 cambiar ticket, F10 fiado. +/− ajustan la línea seleccionada fuera de campos de texto.
+- Escáner HID con terminador Enter: código exacto desde el buscador; captura de ráfagas fuera de campos de edición. Umbral por carácter 50 ms, configurable en App.tsx. No es una garantía de rendimiento medida.
+- Venta por pieza, por kilogramos o por monto convertido al gramo más cercano. El importe final puede variar por redondeo.
+- Cobro atómico: verifica existencias, descuenta stock, carga crédito si procede, guarda recibo, vacía ticket y encola evento en la misma transacción. UUID por solicitud para evitar duplicación al reintentar el mismo cobro.
+- Fiado con límites de crédito, historial de cargos y abonos en efectivo.
+- Apertura de turno, movimientos justificados, arqueo con conteo ingresado antes de revelar el esperado y corte Z inmutable desde la interfaz.
+- Alta y edición de productos y precios, y entradas de inventario. La edición se bloquea si el producto está en un ticket pendiente. No se permite vender con stock insuficiente.
+- Recibos ESC/POS mediante puerto serial, corte y pulso de cajón al imprimir venta en efectivo. Las copias no disparan el cajón.
+- Copias consistentes mediante la API de respaldo SQLite.
 
----
+## Primer uso
 
-## 🔒 Privacidad y Respaldo de Datos
+1. Abrir un turno e ingresar el fondo real.
+2. Usar el catálogo **de demostración** con códigos `DEMO001`–`DEMO008` y `LOCAL001`–`LOCAL004`. Son nombres y precios ilustrativos; no se presentan como EAN oficiales ni como catálogo autorizado de marcas.
+3. Para mercancía real, dar de alta su código, precio y costo, luego registrar la entrada en Inventario. Los datos demo también afectan las ventas si se utilizan: emplear una instalación limpia y catálogo real antes de trabajar en producción.
+4. Cobrar; la impresión es opcional y nunca revierte una venta guardada. Si falla, usar Historial para reintentar. Una escritura serial exitosa solo confirma envío, no que salió papel. Revisar el papel antes de repetir un envío incierto.
+5. Contar físicamente el cajón, completar todos los tickets y hacer corte.
 
-- Todos los datos comerciales residen en la base de datos local `grid.sqlite` dentro de `%APPDATA%/mx.grid.pos`.
-- Se realizan respaldos automáticos rotativos en la subcarpeta `respaldos/`.
-- La información de tu negocio nunca sale de tu computadora sin tu autorización explícita.
+## Hardware y límites actuales
 
----
+- **Impresora:** implementado transporte serial 8N1 configurable, sin handshake. No incluye spooler RAW de Windows ni USB directo. Impresoras USB que no expongan COM necesitan un adaptador distinto. Ancho de papel, codificación, comandos ESC/POS, corte y pulso deben adaptarse al modelo. Texto ASCII con transliteración básica.
+- **Báscula:** devuelve una trama cruda del puerto en modo lectura continua; requiere ingresar el peso manualmente. Falta parser específico del modelo, validación de estabilidad/unidad y protocolo de solicitud si aplica. Nunca se toma una trama desconocida como peso confirmado.
+- **Seguridad:** modo propietario único, sin PIN ni roles de empleados. El arqueo no constituye una barrera de autorización. Falta control de acceso antes de delegar la caja a personal.
+- **Grid MX:** outbox local de ventas, sin transportador, endpoint, credenciales ni confirmaciones del servidor. No hay sincronización ni dashboard móvil ni WhatsApp automático.
+- **Pendiente:** devoluciones/cancelaciones compensatorias, configuración fiscal/CFDI, importación del catálogo verificado, restauración asistida de respaldos, autoinicio y actualizaciones firmadas. No hay promesas de latencia o tamaño del instalador.
+- **Datos:** archivo `mario.sqlite` dentro del directorio de datos de Tauri para `mx.grid.mario-pos`. Respaldos en su subdirectorio `respaldos`. La interfaz muestra la ruta completa al crearlos. La desinstalación/limpieza manual del sistema sigue requiriendo cuidado; copiar respaldos fuera del disco.
+- **Instalación offline:** el instalador está configurado para incluir WebView2 offline; aumenta considerablemente el tamaño y exige conexión durante su construcción. La caja instalada no necesita internet para sus operaciones locales.
 
-## 📄 Licencia
+## Estructura
 
-Desarrollado con dedicación por **Grid MX**. Todos los derechos reservados.
+`src/App.tsx`: caja, módulos, atajos y diálogos. `src/model.ts`: contratos y aritmética de entrada. `src/style.css`: diseño local sin fuentes remotas. `src-tauri/src/main.rs`: comandos, operaciones atómicas y hardware. `src-tauri/src/schema.sql`: esquema inicial v1, WAL, claves foráneas y restricciones.
+
+Referencias de implementación: [comunicación de Tauri](https://v2.tauri.app/concept/inter-process-communication/) y [instalador Windows / WebView2 offline](https://v2.tauri.app/distribute/windows-installer/).
+
+

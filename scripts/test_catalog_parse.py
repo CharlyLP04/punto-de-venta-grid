@@ -2,7 +2,7 @@ import csv
 from collections import Counter
 import prepare_mario_catalog as mc
 
-with open('scripts/catalog_inventory_raw.tsv', encoding='utf-8') as f:
+with open('scripts/mario_inventory_raw.tsv', encoding='utf-8') as f:
     reader = csv.reader(f, delimiter='\t')
     header = next(reader)
     rows = list(reader)
@@ -57,4 +57,3 @@ for d, c in depts.most_common(15):
 print("\nTop 15 Icons:")
 for ic, c in icons.most_common(15):
     print(f"  {ic}: {c}")
-

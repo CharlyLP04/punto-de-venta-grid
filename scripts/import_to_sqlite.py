@@ -1,8 +1,8 @@
 import csv, sqlite3, sys
 import prepare_mario_catalog as mc
 
-db_path = r'C:\Users\col28\AppData\Roaming\mx.grid.pos\grid.sqlite'
-tsv_path = r'scripts\catalog_inventory_raw.tsv'
+db_path = r'C:\Users\col28\AppData\Roaming\mx.grid.mario-pos\mario.sqlite'
+tsv_path = r'scripts\mario_inventory_raw.tsv'
 
 print(f"Connecting to {db_path}...")
 conn = sqlite3.connect(db_path, timeout=10.0)
@@ -82,4 +82,3 @@ print(f"Total products in DB: {total_prods}")
 print(f"Total codes in DB: {total_codes}")
 
 conn.close()
-

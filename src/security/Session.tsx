@@ -4,6 +4,7 @@ import { isTauri } from '@tauri-apps/api/core';
 import { ArrowRight,Lock,ShieldCheck,UserRound,Store,Keyboard,Eye,EyeOff,Crown,Star,Flower2,Package } from 'lucide-react';
 import { invoke,setSessionToken,transport as nativeInvoke } from '../api';
 import InputModePicker,{pcMode,useInputMode} from '../ui/InputMode';
+import MarioScene from '../ui/MarioScene';
 import BrandMark from '../ui/BrandMark';
 import ArcadeButton from '../ui/ArcadeButton';
 import ThemeToggle,{useTheme} from '../ui/Theme';
@@ -26,16 +27,14 @@ export default function SessionProvider({children}:{children:ReactNode}){
     if(session)return;
     if(!isTauri()){setError('Abre la aplicación nativa para iniciar sesión.');return;}
     let live=true;
-    nativeInvoke<{setup:boolean;profiles:Profile[]}>('auth_status').then(result=>{if(live){setSetup(result.setup);setProfiles(result.profiles);try{const saved=Number(localStorage.getItem('grid_last_profile')??localStorage.getItem('mario_last_profile'));const previous=result.profiles.find(p=>p.id===saved)??(result.profiles.length===1?result.profiles[0]:undefined);if(previous)setSelected(previous);}catch{/* Profile recall is optional. */}}}).catch(e=>{if(live)setError(String(e));});
+    nativeInvoke<{setup:boolean;profiles:Profile[]}>('auth_status').then(result=>{if(live){setSetup(result.setup);setProfiles(result.profiles);try{const saved=Number(localStorage.getItem('mario_last_profile'));const previous=result.profiles.find(p=>p.id===saved)??(result.profiles.length===1?result.profiles[0]:undefined);if(previous)setSelected(previous);}catch{/* Profile recall is optional. */}}}).catch(e=>{if(live)setError(String(e));});
     return()=>{live=false;};
   },[session?.token]);
   useEffect(()=>{
-    window.addEventListener('grid-session-expired',lock);
     window.addEventListener('mario-session-expired',lock);
     const policy=(event:Event)=>{const minutes=Number((event as CustomEvent).detail);if(minutes>=1&&minutes<=120)setSession(current=>current&&current.idleMinutes!==minutes?{...current,idleMinutes:minutes}:current);};
-    window.addEventListener('grid-idle-policy',policy);
     window.addEventListener('mario-idle-policy',policy);
-    return()=>{window.removeEventListener('grid-session-expired',lock);window.removeEventListener('mario-session-expired',lock);window.removeEventListener('grid-idle-policy',policy);window.removeEventListener('mario-idle-policy',policy);};
+    return()=>{window.removeEventListener('mario-session-expired',lock);window.removeEventListener('mario-idle-policy',policy);};
   },[lock]);
   useEffect(()=>{
     if(!session)return;
@@ -54,14 +53,14 @@ export default function SessionProvider({children}:{children:ReactNode}){
     try{
       if(setup){if(password!==values.get('confirm'))throw new Error('Las contraseñas no coinciden');await nativeInvoke('bootstrap_owner',{username,password,name:String(values.get('name')??'')});setSetup(false);}
       const result=await nativeInvoke<{token:string;user:User;idleMinutes:number}>('login',{username,password});
-      try{localStorage.setItem('grid_last_profile',String(result.user.id));}catch{/* No password is stored. */}
+      try{localStorage.setItem('mario_last_profile',String(result.user.id));}catch{/* No password is stored. */}
       form.reset();setSessionToken(result.token);setSession(result);
     }catch(e){setError(String(e));setFailures(n=>n+1);passwordInput.current?.select();}finally{flight.current=false;setBusy(false);}
   }
   const sessionValue=useMemo<Session|null>(()=>session?{user:session.user,can:permission=>session.user.role==='owner'||session.user.permissions.includes(permission),lock}:null,[session?.user,lock]);
   if(session&&sessionValue)return <Context.Provider value={sessionValue}><div key={session.token}>{children}</div></Context.Provider>;
   return <main className="kiosk-console quick-login character-login" onKeyDown={e=>{if(e.key==='Escape'&&!busy)choose(null);}}>
-    <header className="kiosk-top"><div className="kiosk-wordmark"><BrandMark/><span>GRID <b>POS</b><small>PUNTO DE VENTA PROFESIONAL · GRID MX</small></span></div><div className="kiosk-status"><span><i/> Trabajo sin internet</span><ThemeToggle/></div></header>
+    <header className="kiosk-top"><div className="kiosk-wordmark"><BrandMark/><span>SUPER MARIO <b>TIENDA</b><small>POTENCIADO POR GRID MX · PUNTO DE VENTA</small></span></div><div className="kiosk-status"><span><i/> Trabajo sin internet</span><ThemeToggle/></div></header>
     <div className="kiosk-body"><div className="login-heading"><span className="login-character" aria-hidden="true"><Store/></span><div><h1>{setup?'Prepara tu tienda':'Entra a tu tienda'}</h1><p>{setup?'Crea la cuenta del propietario.':'Elige tu perfil y escribe tu contraseña.'}</p></div></div>
     <section className={`kiosk-access login-console ${setup?'login-setup':''}`} aria-label="Acceso al mostrador"><details className="login-options"><summary>{mode==='touch'?'Modo táctil':'Modo PC'} · Cambiar</summary><InputModePicker compact disabled={busy}/></details>{!setup&&<div className="profile-picker"><div className="section-head"><div><span className="eyebrow">USUARIOS</span><h2>Equipo</h2></div><UserRound size={22}/></div><div className="profile-grid" onKeyDown={e=>{if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key))return;const items=Array.from(e.currentTarget.querySelectorAll<HTMLButtonElement>('button'));const i=items.indexOf(document.activeElement as HTMLButtonElement);if(i<0)return;e.preventDefault();items[(i+(e.key==='ArrowLeft'||e.key==='ArrowUp'?-1:1)+items.length)%items.length]?.focus();}}>{profiles.map(profile=><button type="button" key={profile.id} disabled={busy} aria-pressed={selected?.id===profile.id} className={`profile-choice ${selected?.id===profile.id?'selected':''}`} onClick={()=>choose(profile)}><span className={`profile-monogram role-${profile.role}`} aria-hidden="true">{profile.role==='owner'?<Crown/>:profile.role==='manager'?<Flower2/>:profile.role==='stock'?<Package/>:<Star/>}</span><span>{profile.name}<small>{roles[profile.role]??'Personalizado'}</small></span><ArrowRight size={16}/></button>)}<button type="button" className={`profile-choice other-profile ${selected===null?'selected':''}`} disabled={busy} onClick={()=>choose(null)}><span className="profile-monogram other-monogram" aria-hidden="true"><UserRound size={20}/></span><span>Otro usuario<small>Escribir mi acceso</small></span><ArrowRight size={16}/></button></div></div>}
     <form className="kiosk-unlock" onSubmit={submit}><div className="unlock-heading"><span className="lock-medallion"><Lock size={20}/></span><div><span className="eyebrow">{setup?'CONFIGURA TU TIENDA':'ACCESO'}</span><h2>{setup?'Empieza como propietario':selected?selected.name:'Iniciar sesión'}</h2>{selected&&!setup&&<p className="selected-profile-note">{roles[selected.role]??'Acceso personalizado'} · Escribe tu contraseña</p>}</div></div>

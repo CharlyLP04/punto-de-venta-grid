@@ -2,7 +2,7 @@ import {createContext,useContext,useLayoutEffect,useState,type ReactNode} from '
 import {Monitor,Hand} from 'lucide-react';
 
 type Mode='pc'|'touch';
-const key='grid_input_mode_v1';
+const key='mario_input_mode_v1';
 const Context=createContext<{mode:Mode;setMode:(mode:Mode)=>void}|null>(null);
 function read():Mode{
   try{const value=localStorage.getItem(key);if(value==='pc'||value==='touch')return value;}catch{/* Keep access available when storage is unavailable. */}

@@ -185,8 +185,7 @@ def parse_stock_to_milli(inv_str, unit):
     except:
         val = 0.0
     val = max(0.0, val)
-    # in Grid POS, both pieces and kg are stored in milli-units (e.g. 1 pza = 1000, 1 kg = 1000)
+    # in Mario POS, both pieces and kg are stored in milli-units (e.g. 1 pza = 1000, 1 kg = 1000)
     return int(round(val * 1000))
 
 print("Parser module ready")
-

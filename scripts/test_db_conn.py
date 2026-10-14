@@ -1,6 +1,6 @@
 import sqlite3
 
-db_path = r'C:\Users\col28\AppData\Roaming\mx.grid.pos\grid.sqlite'
+db_path = r'C:\Users\col28\AppData\Roaming\mx.grid.mario-pos\mario.sqlite'
 try:
     conn = sqlite3.connect(db_path, timeout=5.0)
     cur = conn.cursor()
@@ -10,4 +10,3 @@ try:
     print("Database is accessible!")
 except Exception as e:
     print("Error:", e)
-

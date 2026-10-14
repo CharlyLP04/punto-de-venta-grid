@@ -17,7 +17,7 @@ export default function SavedFilters({ value, search, onApply }: {
   value: CatalogFilters; search: string; onApply: (filters: CatalogFilters, search: string) => void;
 }) {
   const { user } = useSession();
-  const key = `grid:filter-views:v1:${user.id}`;
+  const key = `mario:filter-views:v1:${user.id}`;
   const [views, setViews] = useState<View[]>(() => {
     try { const raw: unknown = JSON.parse(localStorage.getItem(key) ?? '[]'); return Array.isArray(raw) ? raw.filter(valid).slice(0,20) : []; }
     catch { return []; }

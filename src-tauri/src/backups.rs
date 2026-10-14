@@ -22,7 +22,7 @@ fn retain_automatic(directory:&Path,keep:usize)->Result<()> {
     for entry in std::fs::read_dir(&root).map_err(err)? {
         let entry=entry.map_err(err)?;
         let name=entry.file_name().to_string_lossy().into_owned();
-        if entry.file_type().map_err(err)?.is_file()&&(name.starts_with("grid-auto-")||name.starts_with("mario-auto-"))&&name.ends_with(".sqlite") {
+        if entry.file_type().map_err(err)?.is_file()&&name.starts_with("mario-auto-")&&name.ends_with(".sqlite") {
             copies.push((entry.metadata().map_err(err)?.modified().map_err(err)?,entry.path()));
         }
     }
@@ -39,13 +39,13 @@ fn retain_automatic(directory:&Path,keep:usize)->Result<()> {
 pub fn export_backup(store:State<Store>,session_token:String,name:String,destination:String)->Result<String>{
     let _maintenance=MAINTENANCE.lock().map_err(err)?;
     let actor={let db=store.db.lock().map_err(err)?;security::authorize(&store,&db,&session_token,"backup.create")?};
-    if name.contains(['/', '\\', ':'])||(!name.starts_with("grid-")&&!name.starts_with("mario-"))||!name.ends_with(".sqlite"){return Err("Selecciona un respaldo válido".into());}
+    if name.contains(['/', '\\', ':'])||!name.starts_with("mario-")||!name.ends_with(".sqlite"){return Err("Selecciona un respaldo válido".into());}
     let root=store.directory.join("respaldos").canonicalize().map_err(err)?;
     let source=root.join(&name).canonicalize().map_err(err)?;
     if source.parent()!=Some(root.as_path()){return Err("Respaldo fuera de la carpeta autorizada".into());}
     let directory=PathBuf::from(destination.trim()).canonicalize().map_err(err)?;
     if !directory.is_dir()||directory==root{return Err("Elige otra carpeta existente, por ejemplo una memoria USB".into());}
-    let target=directory.join(format!("grid-export-{}.sqlite",uuid::Uuid::new_v4()));
+    let target=directory.join(format!("mario-export-{}.sqlite",uuid::Uuid::new_v4()));
     let mut input=std::fs::File::open(source).map_err(err)?;
     let mut output=std::fs::OpenOptions::new().write(true).create_new(true).open(&target).map_err(err)?;
     std::io::copy(&mut input,&mut output).map_err(err)?;output.sync_all().map_err(err)?;
@@ -57,7 +57,7 @@ pub fn export_backup(store:State<Store>,session_token:String,name:String,destina
 pub fn create(db:&Connection,directory:&Path,kind:&str)->Result<PathBuf>{
     let root=directory.join("respaldos");std::fs::create_dir_all(&root).map_err(err)?;
     let stamp:String=db.query_row("SELECT strftime('%Y%m%d-%H%M%S','now','localtime')",[],|r|r.get(0)).map_err(err)?;
-    let target=root.join(format!("grid-{}-{}-{}.sqlite",kind,stamp,uuid::Uuid::new_v4()));
+    let target=root.join(format!("mario-{}-{}-{}.sqlite",kind,stamp,uuid::Uuid::new_v4()));
     let pending=target.with_extension("partial");
     db.backup(DatabaseName::Main,&pending,None).map_err(err)?;
     std::fs::rename(&pending,&target).map_err(err)?;Ok(target)
@@ -75,7 +75,7 @@ pub fn automatic(store:&Store)->Result<()> {
     // Release the checkout connection while SQLite copies a consistent WAL snapshot.
     let keep=setting(&db,"backup_keep","0").parse::<usize>().unwrap_or(0);
     drop(db);
-    let reader=Connection::open_with_flags(store.directory.join("grid.sqlite"),OpenFlags::SQLITE_OPEN_READ_ONLY).map_err(err)?;
+    let reader=Connection::open_with_flags(store.directory.join("mario.sqlite"),OpenFlags::SQLITE_OPEN_READ_ONLY).map_err(err)?;
     reader.busy_timeout(std::time::Duration::from_secs(5)).map_err(err)?;
     let outcome=create(&reader,&store.directory,"auto").and_then(|path|{retain_automatic(&store.directory,keep)?;Ok(path)});
     drop(reader);
@@ -111,7 +111,7 @@ pub fn restore_backup(store:State<Store>,session_token:String,name:String,confir
     let mut db=store.db.lock().map_err(err)?;
     let actor=security::authorize(&store,&db,&session_token,"backup.create")?;
     if actor.role!="owner"||confirmation!="RESTAURAR"{return Err("Solo el propietario puede restaurar; escribe RESTAURAR para confirmar".into());}
-    if (!name.starts_with("grid-")&&!name.starts_with("mario-"))||!name.ends_with(".sqlite")||name.contains(['/', '\\', ':'])||name.contains(".."){return Err("Selecciona un respaldo de la lista".into());}
+    if !name.starts_with("mario-")||!name.ends_with(".sqlite")||name.contains(['/', '\\', ':'])||name.contains(".."){return Err("Selecciona un respaldo de la lista".into());}
     let pending:i64=db.query_row("SELECT (SELECT count(*) FROM shifts WHERE closed IS NULL)+(SELECT count(*) FROM cart)+(SELECT count(*) FROM common_cart)+(SELECT count(*) FROM sales WHERE print_status='sending')",[],|r|r.get(0)).map_err(err)?;
     if pending>0{return Err("Cierra el turno, vacía los tickets y resuelve impresiones pendientes antes de restaurar".into());}
     let root=store.directory.join("respaldos").canonicalize().map_err(err)?;

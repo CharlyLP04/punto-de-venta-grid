@@ -1,7 +1,6 @@
 {
-  "name": "punto-de-venta-grid",
-  "version": "1.0.0",
-  "description": "Punto de Venta moderno, autónomo y offline para comercio y retail. Desarrollado con Tauri 2, React 19, Rust y SQLite por Grid MX.",
+  "name": "mario-pos-gridmx",
+  "version": "0.1.0",
   "private": true,
   "type": "module",
   "scripts": {

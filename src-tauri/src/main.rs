@@ -314,7 +314,7 @@ fn main() {
         // Windows denies a second open while this process holds the handle.
         let mut instance_options=std::fs::OpenOptions::new();
         instance_options.read(true).write(true).create(true);
-        let instance = match instance_options.open(directory.join(".grid-instance.lock")) {
+        let instance = match instance_options.open(directory.join(".mario-instance.lock")) {
             Ok(f) => f,
             Err(_) => {
                 #[cfg(windows)]
@@ -324,7 +324,7 @@ fn main() {
                         fn SetForegroundWindow(hwnd: isize) -> i32;
                         fn ShowWindow(hwnd: isize, cmd: i32) -> i32;
                     }
-                    let title: Vec<u16> = "Grid POS · Punto de Venta\0".encode_utf16().collect();
+                    let title: Vec<u16> = "Super Mario Tienda · Grid MX\0".encode_utf16().collect();
                     let hwnd = FindWindowW(std::ptr::null(), title.as_ptr());
                     if hwnd != 0 {
                         ShowWindow(hwnd, 9);
@@ -334,7 +334,7 @@ fn main() {
                 std::process::exit(0);
             }
         };
-        let mut db = Connection::open(directory.join("grid.sqlite"))?;
+        let mut db = Connection::open(directory.join("mario.sqlite"))?;
         db.busy_timeout(Duration::from_secs(5))?;
         let integrity:String=db.query_row("PRAGMA integrity_check",[],|r|r.get(0))?;
         if integrity!="ok"{return Err(std::io::Error::other("La base de datos requiere recuperación desde un respaldo").into());}
@@ -358,7 +358,7 @@ fn main() {
             std::process::exit(0);
         }
     }).invoke_handler(tauri::generate_handler![network::connection_call,network::connection_save,network::connection_status,network::network_start,network::network_pair,network::network_registers,catalog_import::catalog_preview,catalog_import::catalog_apply,open_whatsapp,security::approve_operation,procurement::procurement_list,procurement::procurement_save,history::sale_history,advanced::advanced_save,advanced::advanced_list,advanced::filtered_report,backups::backup_retention,backups::export_backup,backups::backup_center,backups::backup_schedule,backups::restore_backup,snapshot,mutate,business::checkout,business::operate,business::management,security::auth_status,security::bootstrap_owner,security::login,security::logout,security::users_list,security::user_save,backup,serial_ports,receipts::print_sale,receipts::print_repayment,receipts::resolve_print,scale_read])
-      .run(tauri::generate_context!()).expect("No se pudo iniciar Grid POS");
+      .run(tauri::generate_context!()).expect("No se pudo iniciar Mario POS");
 }
 
 

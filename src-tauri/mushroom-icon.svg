@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="shroom-red-ico" cx="42%" cy="30%" r="68%">
+      <stop offset="0%" stop-color="#FF4D42" />
+      <stop offset="65%" stop-color="#E52521" />
+      <stop offset="100%" stop-color="#B81410" />
+    </radialGradient>
+    <linearGradient id="shroom-stem-ico" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFF5E8" />
+      <stop offset="100%" stop-color="#FCD5AF" />
+    </linearGradient>
+    <clipPath id="shroom-cap-clip-ico">
+      <path d="M 85 270 C 60 230 65 170 130 110 C 185 60 327 60 382 110 C 447 170 452 230 427 270 C 405 302 355 306 256 306 C 157 306 107 302 85 270 Z" />
+    </clipPath>
+  </defs>
+
+  <!-- Sombra inferior -->
+  <ellipse cx="256" cy="460" rx="175" ry="24" fill="#3D1217" opacity="0.3" />
+
+  <!-- Tallo / Rostro del hongo -->
+  <path
+    d="M 160 260 C 160 395 185 435 256 435 C 327 435 352 395 352 260 Z"
+    fill="url(#shroom-stem-ico)"
+    stroke="#181516"
+    stroke-width="15"
+    stroke-linejoin="round"
+  />
+
+  <!-- Ojos clásicos de Mario -->
+  <rect x="206" y="305" width="20" height="52" rx="10" fill="#181516" />
+  <circle cx="212" cy="318" r="5.5" fill="#FFFFFF" />
+
+  <rect x="286" y="305" width="20" height="52" rx="10" fill="#181516" />
+  <circle cx="292" cy="318" r="5.5" fill="#FFFFFF" />
+
+  <!-- Sombrero del hongo (cap) -->
+  <path
+    d="M 85 270 C 60 230 65 170 130 110 C 185 60 327 60 382 110 C 447 170 452 230 427 270 C 405 302 355 306 256 306 C 157 306 107 302 85 270 Z"
+    fill="url(#shroom-red-ico)"
+    stroke="#181516"
+    stroke-width="16"
+    stroke-linejoin="round"
+  />
+
+  <!-- Lunares blancos recortados -->
+  <g clip-path="url(#shroom-cap-clip-ico)">
+    <!-- Lunar central gigante -->
+    <ellipse cx="256" cy="180" rx="66" ry="60" fill="#FFFDF7" stroke="#181516" stroke-width="15" />
+    <!-- Lunar lateral izquierdo -->
+    <ellipse cx="85" cy="200" rx="58" ry="68" fill="#FFFDF7" stroke="#181516" stroke-width="15" />
+    <!-- Lunar lateral derecho -->
+    <ellipse cx="427" cy="200" rx="58" ry="68" fill="#FFFDF7" stroke="#181516" stroke-width="15" />
+    <!-- Lunar superior -->
+    <ellipse cx="256" cy="68" rx="52" ry="28" fill="#FFFDF7" stroke="#181516" stroke-width="14" />
+  </g>
+
+  <!-- Contorno exterior definitivo -->
+  <path
+    d="M 85 270 C 60 230 65 170 130 110 C 185 60 327 60 382 110 C 447 170 452 230 427 270 C 405 302 355 306 256 306 C 157 306 107 302 85 270 Z"
+    fill="none"
+    stroke="#181516"
+    stroke-width="16"
+    stroke-linejoin="round"
+  />
+</svg>

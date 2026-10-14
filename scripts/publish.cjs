@@ -4,32 +4,32 @@ const path = require('path');
 const cp = require('child_process');
 
 try {
-  cp.execSync('powershell -Command "Stop-Process -Name \'grid-pos\',\'Grid POS\' -Force -ErrorAction SilentlyContinue"', { stdio: 'ignore' });
+  cp.execSync('powershell -Command "Stop-Process -Name \'Mario POS\' -Force -ErrorAction SilentlyContinue"', { stdio: 'ignore' });
 } catch (e) {}
 
-const src = path.resolve('src-tauri/target/release/grid-pos.exe');
-const desktop = path.join(os.homedir(), 'Desktop', 'Grid POS.exe');
-const rootRelease = path.resolve('Grid POS.exe');
+const src = path.resolve('src-tauri/target/release/mario-pos.exe');
+const desktop = path.join(os.homedir(), 'OneDrive', 'Desktop', 'Mario POS.exe');
+const outputs = path.resolve('../Mario POS.exe');
+const previous = path.resolve('../Mario POS anterior.exe');
 
-if (fs.existsSync(src)) {
-  console.log('Source binary size:', fs.statSync(src).size);
+console.log('Source size:', fs.statSync(src).size);
 
-  const desktopDir = path.dirname(desktop);
-  if (fs.existsSync(desktopDir)) {
+const desktops = [
+  path.join(os.homedir(), 'OneDrive', 'Desktop', 'Mario POS.exe'),
+  path.join(os.homedir(), 'Desktop', 'Mario POS.exe')
+];
+
+for (const dest of desktops) {
+  const dir = path.dirname(dest);
+  if (fs.existsSync(dir)) {
     try {
-      fs.copyFileSync(src, desktop);
-      console.log('Successfully updated desktop:', desktop);
+      fs.copyFileSync(src, dest);
+      console.log('Successfully updated:', dest);
     } catch (e) {
-      console.warn('Could not copy to desktop:', e.message);
+      console.warn('Could not update:', dest, e.message);
     }
   }
-
-  try {
-    fs.copyFileSync(src, rootRelease);
-    console.log('Successfully updated release executable in project root:', rootRelease);
-  } catch (e) {
-    console.warn('Could not copy to project root:', e.message);
-  }
-} else {
-  console.log('Release binary not found yet at:', src);
 }
+
+fs.copyFileSync(src, outputs);
+console.log('Successfully updated outputs Mario POS.exe!');

@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <radialGradient id="redGrad" cx="35%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#FF3838" />
+      <stop offset="60%" stop-color="#E52521" />
+      <stop offset="100%" stop-color="#B81410" />
+    </radialGradient>
+    <radialGradient id="whiteGrad" cx="40%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="85%" stop-color="#F6F6F6" />
+      <stop offset="100%" stop-color="#E5E8EB" />
+    </radialGradient>
+    <filter id="dropShadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="16" stdDeviation="24" flood-color="#000000" flood-opacity="0.35" />
+    </filter>
+    <filter id="mShadow" x="-10%" y="-10%" width="125%" height="125%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#7A0B08" flood-opacity="0.4" />
+    </filter>
+  </defs>
+
+  <!-- Outer Mario Red Circle with Depth -->
+  <circle cx="512" cy="512" r="480" fill="url(#redGrad)" filter="url(#dropShadow)" />
+  
+  <!-- Subtle specular highlight ring on red outer edge -->
+  <circle cx="512" cy="512" r="474" fill="none" stroke="#FFA1A1" stroke-width="6" opacity="0.45" />
+
+  <!-- Inner Pure White Circular Disc (Mario Cap Emblem) -->
+  <circle cx="512" cy="512" r="375" fill="url(#whiteGrad)" stroke="#B81410" stroke-width="12" />
+
+  <!-- Iconic Mario 'M' Emblem -->
+  <!-- Designed with dynamic forward slant, crisp apex, and balanced weight -->
+  <g transform="matrix(1, 0, -0.21, 1, 108, 0)" filter="url(#mShadow)">
+    <path fill="#E52521" d="
+      M 320,680
+      L 320,344
+      L 410,344
+      L 512,540
+      L 614,344
+      L 704,344
+      L 704,680
+      L 606,680
+      L 606,478
+      L 545,598
+      L 479,598
+      L 418,478
+      L 418,680
+      Z
+    " />
+  </g>
+</svg>

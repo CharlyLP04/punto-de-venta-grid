@@ -1,7 +1,7 @@
 import csv
 import prepare_mario_catalog as mc
 
-tsv_path = r'scripts\catalog_inventory_raw.tsv'
+tsv_path = r'scripts\mario_inventory_raw.tsv'
 sql_path = r'src-tauri\src\inventory_seed.sql'
 
 with open(tsv_path, encoding='utf-8') as f:
@@ -10,7 +10,7 @@ with open(tsv_path, encoding='utf-8') as f:
     rows = list(reader)
 
 lines = []
-lines.append("-- Semilla de catálogo real de Grid POS (1,309 productos)")
+lines.append("-- Semilla de catálogo real de Mario POS (1,309 productos)")
 lines.append("-- Transaction managed by initialize; seed and markers commit together.")
 
 for idx, r in enumerate(rows):
@@ -48,4 +48,3 @@ with open(sql_path, 'w', encoding='utf-8') as f:
     f.write("\n".join(lines) + "\n")
 
 print(f"Generated {sql_path} with {len(rows)} product seeds!")
-

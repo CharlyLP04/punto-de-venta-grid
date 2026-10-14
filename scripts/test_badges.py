@@ -1,6 +1,6 @@
 import csv, re
 
-with open('scripts/catalog_inventory_raw.tsv', encoding='utf-8') as f:
+with open('scripts/mario_inventory_raw.tsv', encoding='utf-8') as f:
     reader = csv.reader(f, delimiter='\t')
     next(reader)
     names = [r[1].strip() for r in reader]
@@ -86,4 +86,3 @@ for n in names:
 
 print(f"Enhanced badges match: {enhanced_matches} of {len(names)} ({enhanced_matches/len(names)*100:.1f}%)")
 print(f"Remaining {len(names) - enhanced_matches} will render with rich Category Emoji (🥑, 🧀, 🥩, 🥚, 🍚, 🌶️, 🍞, etc.)!")
-

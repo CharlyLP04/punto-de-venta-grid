@@ -35,15 +35,11 @@ html[data-theme] .shell .goal-track>span{color:var(--text-secondary)}
   .checkout-shell .common-product-trigger{font-size:12px;padding:8px}
 }
 
-/* Grid POS Theme system: palettes adapt seamlessly between light and dark modes. */
-html[data-theme=light] .shell[data-accent=emerald]{--character:#059669;--character-ink:#fff;--character-soft:#ecfdf5;--focus:#10b981}
-html[data-theme=light] .shell[data-accent=slate]{--character:#0f172a;--character-ink:#fff;--character-soft:#f1f5f9;--focus:#00e676}
+/* The accent chosen in "Mi tienda" owns the whole interface; "classic" keeps Mario (dark) / Luigi (light). */
 html[data-theme=light] .shell[data-accent=gold]{--character:#C88A00;--character-ink:#fff;--character-soft:#FFF8E1;--focus:#FDB813}
 html[data-theme=light] .shell[data-accent=green]{--character:#2d7a3c;--character-ink:#fff;--character-soft:#e3f0e1}
 html[data-theme=light] .shell[data-accent=blue]{--character:#1f66a6;--character-ink:#fff;--character-soft:#e0ecf8}
 html[data-theme=light] .shell[data-accent=rose]{--character:#c0463b;--character-ink:#fff;--character-soft:#fae5e2}
-html[data-theme=dark] .shell[data-accent=emerald]{--character:#00e676;--character-ink:#062314;--character-soft:#064e3b;--focus:#00e676}
-html[data-theme=dark] .shell[data-accent=slate]{--character:#10b981;--character-ink:#022c22;--character-soft:#1e293b;--focus:#00e676}
 html[data-theme=dark] .shell[data-accent=gold]{--character:#FDB813;--character-ink:#1F1500;--character-soft:#382A0A;--focus:#FFE57F}
 html[data-theme=dark] .shell[data-accent=green]{--character:#7cc47f;--character-ink:#10240f;--character-soft:#22342a}
 html[data-theme=dark] .shell[data-accent=blue]{--character:#70b4ef;--character-ink:#0d2236;--character-soft:#1e2d3d}
