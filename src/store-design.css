@@ -23,7 +23,8 @@ html.store-ui[data-theme=dark] {
 .store-ui body {background:var(--bg-canvas);color:var(--text-primary)}
 .store-ui :is(button,input,select,textarea){font:inherit}
 .store-ui button {touch-action:manipulation;transition:background-color 120ms ease,border-color 120ms ease}
-.store-ui :is(button,input,select,textarea,summary):focus-visible {outline:3px solid var(--focus);outline-offset:3px}
+.store-ui :is(button,select,summary):focus-visible {outline:2px solid var(--action,var(--focus));outline-offset:1px}
+.store-ui :is(input,textarea):focus-visible {outline:none!important;border-color:var(--action,var(--focus))!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--action,var(--focus)) 22%,transparent)!important}
 .store-ui .shell {--action:var(--store-blue);--action-ink:#fff;--action-soft:var(--store-blue-soft);--price-ink:var(--text-primary);background:var(--bg-canvas);color:var(--text-primary)}
 .store-ui[data-theme=dark] .shell {--action-ink:#163246;--price-ink:var(--text-primary)}
 
@@ -93,8 +94,9 @@ html.store-ui[data-theme=dark] {
 .counter-shortcuts button {display:flex;align-items:center;gap:5px;min-height:36px;padding:8px 10px;border:1px solid transparent;border-radius:7px;font-size:12px;background:transparent;color:var(--text-secondary)}
 .counter-shortcuts button[aria-pressed=true] {background:var(--bg-surface);border-color:var(--border-strong);color:var(--text-primary);font-weight:650}
 .store-ui .shell .cash-toolbar {display:flex;flex-wrap:wrap;gap:8px}
-.store-ui .shell .cash-toolbar .search {flex:1 1 100%;height:54px;min-height:54px;padding:0 14px;border:2px solid var(--action,var(--store-blue));border-radius:10px;background:var(--bg-input);box-shadow:none}
-.store-ui .shell .search input {font-size:16px;min-width:0;color:var(--text-primary)}
+.store-ui .shell .cash-toolbar .search {flex:1 1 100%;height:52px;min-height:52px;padding:0 14px;border:1.5px solid var(--border-strong);border-radius:10px;background:var(--bg-input);box-shadow:0 1px 2px rgba(0,0,0,0.02);transition:border-color 140ms ease,box-shadow 140ms ease}
+.store-ui .shell .cash-toolbar .search:focus-within {border-color:var(--action,var(--store-blue));box-shadow:0 0 0 3px color-mix(in srgb,var(--action,var(--store-blue)) 22%,transparent)}
+.store-ui .shell .search input {border:none!important;background:transparent!important;box-shadow:none!important;outline:none!important;font-size:16px;min-width:0;color:var(--text-primary)}
 .store-ui :is(kbd,.kbd-badge) {color:var(--text-primary);background:var(--bg-surface-elevated);border:1px solid var(--border-strong);box-shadow:0 1px 0 var(--border-strong);font-weight:600}
 .store-ui .shell .cash-toolbar :is(.common-product-trigger,.cash-movement-trigger) {min-height:36px;padding:7px 11px;border:1px solid var(--border-strong);border-radius:7px;box-shadow:none;background:var(--bg-surface);color:var(--text-primary);font-size:12px;gap:6px;width:auto}
 .store-ui .shell .cash-movement-trigger {margin-left:auto}
@@ -104,8 +106,10 @@ html.store-ui[data-theme=dark] {
 .store-ui .shell .master-filters .filter-trigger b {display:inline-block;padding:1px 6px;border-radius:999px;background:var(--action);color:var(--action-ink);font-size:11px}
 .store-ui .shell .master-filters .light {min-height:36px;padding:7px 12px;font-size:12px;border:1px solid var(--border-subtle);border-radius:8px;background:transparent;color:var(--text-secondary)}
 
-/* Category pills - comfortable, clear, easy to tap in a retail counter */
-.store-ui .shell .quick-categories {display:flex;gap:8px;overflow-x:auto;white-space:nowrap;padding:4px 2px 8px;scrollbar-width:thin}
+/* Category pills - comfortable, clear, zero native scrollbar clutter */
+.store-ui :is(.quick-categories,.category-pills,.master-chips,.workspace-tabs,.ticket-tabs) {scrollbar-width:none!important;-ms-overflow-style:none!important}
+.store-ui :is(.quick-categories,.category-pills,.master-chips,.workspace-tabs,.ticket-tabs)::-webkit-scrollbar {display:none!important;width:0!important;height:0!important}
+.store-ui .shell .quick-categories {display:flex;gap:8px;overflow-x:auto;white-space:nowrap;padding:4px 2px 8px}
 .store-ui .shell .quick-categories button {display:inline-flex;align-items:center;gap:6px;padding:8px 14px;font-size:13px;font-weight:600;border-radius:999px;background:var(--bg-surface);color:var(--text-primary);border:1px solid var(--border-strong);box-shadow:0 1px 2px rgba(0,0,0,0.03);cursor:pointer;flex-shrink:0;transition:all 120ms ease}
 .store-ui .shell .quick-categories button b {display:inline-block;padding:1px 7px;border-radius:999px;font-size:11px;font-weight:700;background:var(--bg-surface-elevated);color:var(--text-secondary);border:1px solid var(--border-subtle)}
 .store-ui .shell .quick-categories button:hover:not(:disabled) {border-color:var(--action);color:var(--action)}
@@ -113,9 +117,15 @@ html.store-ui[data-theme=dark] {
 .store-ui .shell .quick-categories button[aria-pressed=true] b {background:color-mix(in srgb,var(--action-ink) 25%,transparent)!important;color:var(--action-ink)!important;border-color:transparent!important}
 
 .store-ui .shell .master-sort {display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--text-secondary);margin:4px 0}
-.store-ui .shell .master-sort select {min-height:32px;height:32px;padding:3px 10px;font-size:12px;border-radius:7px;background:var(--bg-surface);border:1px solid var(--border-strong);color:var(--text-primary)}
+.store-ui .shell .master-sort select {min-height:32px;height:32px;padding:3px 10px;font-size:12px;border-radius:7px;background:var(--bg-surface);border:1px solid var(--border-strong);color:var(--text-primary);outline:none}
+.store-ui .shell .master-sort select:focus-visible {border-color:var(--action);box-shadow:0 0 0 2px color-mix(in srgb,var(--action) 25%,transparent)}
 .store-ui .shell .master-chips {display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 6px}
 .store-ui .shell .master-chips button {min-height:28px;padding:3px 10px;font-size:11px;border-radius:999px;background:var(--bg-surface-elevated);border:1px solid var(--border-strong);color:var(--text-primary)}
+
+/* Adorned search boxes with icons */
+.store-ui .input-adornment {position:relative;display:flex;align-items:center;border:1px solid var(--border-strong)!important;border-radius:8px!important;background:var(--bg-input)!important;transition:border-color 140ms ease,box-shadow 140ms ease;overflow:hidden}
+.store-ui .input-adornment:focus-within {border-color:var(--action,var(--store-blue))!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--action,var(--store-blue)) 22%,transparent)!important;outline:none!important}
+.store-ui .input-adornment input {border:none!important;background:transparent!important;box-shadow:none!important;outline:none!important;flex:1;min-width:0;padding:0 12px!important;min-height:42px!important}
 
 .store-ui .shell .catalog-meta {margin:0;min-height:22px;font-size:12px;color:var(--text-secondary)}
 .store-ui .shell .catalog-meta b {background:transparent;padding:0 5px;font-size:12px}
@@ -222,7 +232,7 @@ html.store-ui[data-theme=dark] {
 .store-ui .quick-login .profile-grid {display:flex;flex-direction:column;gap:8px;max-height:300px;overflow:auto}
 .store-ui .quick-login .profile-choice {display:flex;align-items:center;padding:12px 14px;min-height:60px;border:1px solid var(--border-subtle)!important;border-radius:10px;box-shadow:none!important;background:var(--bg-surface)!important;color:var(--text-primary)!important;gap:12px;cursor:pointer;transition:all 120ms ease}
 .store-ui .quick-login .profile-choice:hover:not(:disabled) {border-color:var(--border-strong)!important;background:var(--bg-surface-elevated)!important}
-.store-ui .quick-login .profile-choice.selected {background:color-mix(in srgb,var(--action,var(--store-blue)) 10%,var(--bg-surface))!important;border-color:var(--action,var(--store-blue))!important;box-shadow:inset 3px 0 var(--action,var(--store-blue)),0 2px 6px rgba(0,0,0,0.04)!important;color:var(--text-primary)!important}
+.store-ui .quick-login .profile-choice.selected {background:color-mix(in srgb,var(--action,var(--store-blue)) 8%,var(--bg-surface))!important;border:1.5px solid var(--action,var(--store-blue))!important;box-shadow:0 0 0 1px var(--action,var(--store-blue)),0 2px 6px rgba(0,0,0,0.04)!important;color:var(--text-primary)!important}
 .store-ui .quick-login .profile-choice.selected small {color:var(--text-secondary)!important}
 .store-ui .quick-login .profile-monogram {width:38px;height:38px;min-width:38px;border-radius:9px;background:color-mix(in srgb,var(--action,var(--store-blue)) 14%,var(--bg-surface-elevated));color:var(--action,var(--store-blue));font-weight:700;font-size:14px;display:grid;place-items:center;border:0}
 .store-ui .quick-login .profile-choice.selected .profile-monogram {background:var(--action,var(--store-blue));color:var(--action-ink,#fff)}
@@ -233,20 +243,30 @@ html.store-ui[data-theme=dark] {
 .store-ui .unlock-heading {margin-bottom:22px}
 .store-ui .unlock-heading h2 {font-size:24px;margin:5px 0;color:var(--text-primary)}
 .store-ui .lock-medallion {display:none}
+
+/* Password control single border & zero inner outline collision */
+.store-ui .password-control {position:relative;display:flex;align-items:center;border:1.5px solid var(--border-strong)!important;border-radius:8px!important;background:var(--bg-input)!important;box-shadow:none!important;min-height:44px;transition:border-color 140ms ease,box-shadow 140ms ease;overflow:hidden}
+.store-ui .password-control:focus-within {border-color:var(--action,var(--store-blue))!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--action,var(--store-blue)) 22%,transparent)!important;outline:none!important}
+.store-ui .password-control input {border:0!important;outline:none!important;box-shadow:none!important;background:transparent!important;width:100%!important;min-height:42px!important;height:42px!important;padding:0 44px 0 12px!important;color:var(--text-primary)!important}
+.store-ui .password-control input:focus,.store-ui .password-control input:focus-visible {border:0!important;outline:none!important;box-shadow:none!important}
+.store-ui .password-control button {position:absolute!important;right:6px!important;top:50%!important;transform:translateY(-50%)!important;background:transparent!important;border:0!important;box-shadow:none!important;padding:6px!important;margin:0!important;color:var(--text-secondary)!important;border-radius:6px!important;cursor:pointer!important;display:grid!important;place-items:center!important;min-height:32px!important;min-width:32px!important}
+.store-ui .password-control button:hover {color:var(--text-primary)!important;background:var(--bg-surface-elevated)!important}
+
 .store-ui .login-options {grid-column:1/-1;grid-row:2;padding:14px 24px;background:var(--bg-surface);border-top:1px solid var(--border-subtle)}
 .store-ui .login-options summary {font-size:13px;color:var(--text-secondary)}
 .store-ui .login-setup {grid-template-columns:1fr;max-width:560px;margin:auto}
 .store-ui .login-setup .kiosk-unlock {grid-column:1}
 
-/* Multicaja wrapper and drawer on login */
-.store-ui .kiosk-network-wrapper {max-width:850px;margin:14px auto 0;width:100%}
-.store-ui .kiosk-network-wrapper .network-settings {border:1px solid var(--border-subtle);border-radius:10px;background:var(--bg-surface);box-shadow:0 1px 3px rgba(0,0,0,0.03);padding:0;overflow:hidden;max-width:620px;margin:0 auto}
-.store-ui .kiosk-network-wrapper .network-settings>summary {display:flex;align-items:center;gap:8px;padding:9px 15px;font-size:12.5px;font-weight:600;color:var(--text-secondary);background:var(--bg-surface-elevated);cursor:pointer;user-select:none;transition:color 120ms ease}
-.store-ui .kiosk-network-wrapper .network-settings>summary:hover {color:var(--text-primary)}
-.store-ui .kiosk-network-wrapper .network-settings[open]>summary {border-bottom:1px solid var(--border-subtle)}
-.store-ui .kiosk-network-wrapper .network-settings>*:not(summary) {padding:0 16px}
-.store-ui .kiosk-network-wrapper .network-settings p {font-size:12px;line-height:1.45;color:var(--text-secondary);margin:12px 0 8px}
-.store-ui .kiosk-network-wrapper .network-settings .network-actions {display:flex;gap:10px;margin:10px 0 16px}
+/* Multicaja wrapper and drawer on login - centered and compact */
+.store-ui .kiosk-network-wrapper {max-width:480px;margin:18px auto 0;width:100%}
+.store-ui .kiosk-network-wrapper .network-settings {border:1px solid var(--border-subtle);border-radius:10px;background:var(--bg-surface);box-shadow:0 1px 3px rgba(0,0,0,0.03);padding:0;overflow:hidden;margin:0 auto}
+.store-ui .kiosk-network-wrapper .network-settings>summary {display:flex;align-items:center;justify-content:center;gap:8px;padding:10px 16px;font-size:13px;font-weight:600;color:var(--text-secondary);background:var(--bg-surface-elevated);cursor:pointer;user-select:none;transition:all 120ms ease;border-radius:9px}
+.store-ui .kiosk-network-wrapper .network-settings:not([open])>summary {border:none}
+.store-ui .kiosk-network-wrapper .network-settings[open]>summary {border-bottom:1px solid var(--border-subtle);border-radius:9px 9px 0 0}
+.store-ui .kiosk-network-wrapper .network-settings>summary:hover {color:var(--text-primary);background:color-mix(in srgb,var(--action,var(--store-blue)) 8%,var(--bg-surface-elevated))}
+.store-ui .kiosk-network-wrapper .network-settings>*:not(summary) {padding:12px 18px}
+.store-ui .kiosk-network-wrapper .network-settings p {font-size:12px;line-height:1.45;color:var(--text-secondary);margin:0 0 10px}
+.store-ui .kiosk-network-wrapper .network-settings .network-actions {display:flex;gap:10px;margin:10px 0 4px}
 .store-ui .kiosk-network-wrapper .network-settings .network-actions button {min-height:38px;padding:8px 16px;border-radius:7px;font-size:13px;font-weight:600}
 .store-ui .kiosk-network-wrapper .network-settings textarea {min-height:64px;font-size:12px;font-family:monospace}
 .store-ui .kiosk-footer {max-width:850px;margin:20px auto 0;font-size:12px;color:var(--text-secondary)}
