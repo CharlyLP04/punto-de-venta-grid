@@ -14,13 +14,19 @@ const rootRelease = path.resolve('Grid POS.exe');
 if (fs.existsSync(src)) {
   console.log('Source binary size:', fs.statSync(src).size);
 
-  const desktopDir = path.dirname(desktop);
-  if (fs.existsSync(desktopDir)) {
-    try {
-      fs.copyFileSync(src, desktop);
-      console.log('Successfully updated desktop:', desktop);
-    } catch (e) {
-      console.warn('Could not copy to desktop:', e.message);
+  const targets = [
+    desktop,
+    path.join(os.homedir(), 'OneDrive', 'Desktop', 'Grid POS.exe'),
+  ];
+  for (const target of targets) {
+    const dir = path.dirname(target);
+    if (fs.existsSync(dir)) {
+      try {
+        fs.copyFileSync(src, target);
+        console.log('Successfully updated desktop:', target);
+      } catch (e) {
+        console.warn('Could not copy to target:', target, e.message);
+      }
     }
   }
 

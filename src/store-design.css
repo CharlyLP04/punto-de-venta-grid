@@ -1,0 +1,286 @@
+/* Grid: a practical counter, with the product name and the amount as landmarks.
+   This sheet owns the store shell and supersedes the earlier decorative skins. */
+html.store-ui {
+  --store-blue:#174e75; --store-blue-soft:#e4eef6; --store-green:#166344;
+  --store-warning:#86500b; --store-danger:#a32935; --store-radius:10px;
+  --bg-canvas:#f3f6f8; --bg-surface:#fff; --bg-surface-elevated:#edf2f5;
+  --bg-input:#fff; --text-primary:#203442; --text-secondary:#506575;
+  --border-subtle:#dbe3e9; --border-strong:#a5b6c3; --focus:#174e75;
+  --character:var(--store-blue); --character-soft:var(--store-blue-soft);
+  --character-ink:#fff; --action:var(--store-blue); --action-ink:#fff; --accent-gold:var(--store-blue);
+  --line:var(--border-subtle); --muted:var(--text-secondary);
+  font-family:'Segoe UI Variable','Segoe UI',system-ui,sans-serif;
+  color:var(--text-primary); background:var(--bg-canvas);
+}
+html.store-ui[data-theme=dark] {
+  --store-blue:#a4d5fa; --store-blue-soft:#233f53; --store-green:#9de0b8;
+  --store-warning:#f4cf8c; --store-danger:#ffa9b1;
+  --bg-canvas:#17232d; --bg-surface:#20313d; --bg-surface-elevated:#2a3d4b;
+  --bg-input:#192934; --text-primary:#f2f6f8; --text-secondary:#bacbd7;
+  --border-subtle:#3b5060; --border-strong:#718b9e; --focus:#a4d5fa;
+  --action-ink:#163246; --character-ink:#163246;
+}
+.store-ui body {background:var(--bg-canvas);color:var(--text-primary)}
+.store-ui :is(button,input,select,textarea){font:inherit}
+.store-ui button {touch-action:manipulation;transition:background-color 120ms ease,border-color 120ms ease}
+.store-ui :is(button,input,select,textarea,summary):focus-visible {outline:3px solid var(--focus);outline-offset:3px}
+.store-ui .shell {--action:var(--store-blue);--action-ink:#fff;--price-ink:var(--text-primary);background:var(--bg-canvas);color:var(--text-primary)}
+.store-ui[data-theme=dark] .shell {--action-ink:#163246;--price-ink:var(--text-primary)}
+.store-ui .shell[data-accent=green] {--action:#216342;--action-ink:#fff}
+.store-ui .shell[data-accent=blue] {--action:#174e75;--action-ink:#fff}
+.store-ui[data-theme=dark] .shell[data-accent=green] {--action:#9de0b8;--action-ink:#163b29}
+.store-ui[data-theme=dark] .shell[data-accent=blue] {--action:#a4d5fa;--action-ink:#163246}
+/* Navigation stays readable instead of making users remember icons. */
+.store-ui .shell .sidebar.workspace-sidebar {inset:0 auto 0 0;width:200px;padding:24px 12px 14px;border:0;border-right:1px solid var(--border-subtle);border-radius:0;background:var(--bg-surface);box-shadow:none;align-items:stretch}
+.store-ui .shell .workspace {margin-left:200px;height:100dvh;min-width:0;background:var(--bg-canvas)}
+.store-ui .shell .workspace-brand {display:flex;justify-content:flex-start;gap:12px;padding:0 10px 25px;color:var(--text-primary)}
+.store-ui .shell .workspace-brand>span {display:block;font-size:23px;font-weight:800;letter-spacing:-.7px}
+.store-ui .shell .workspace-brand small {font-size:12px;letter-spacing:0;font-weight:400;text-transform:none}
+.store-ui .shell .brand-mark {width:38px;height:38px;object-fit:contain;border-radius:8px}
+.store-ui .shell .nav-eyebrow {display:none}
+.store-ui .shell .workspace-sidebar nav {display:flex;flex-direction:column;gap:7px}
+.store-ui .shell .workspace-sidebar nav button {display:flex;flex-direction:row;justify-content:flex-start;gap:12px;min-height:62px;padding:10px 12px;border:1px solid transparent;border-radius:9px;text-align:left;background:transparent;color:var(--text-secondary);box-shadow:none;transform:none}
+.store-ui .shell .workspace-sidebar nav button.active {background:var(--store-blue-soft);color:var(--store-blue);border-color:transparent}
+.store-ui .shell .workspace-sidebar nav button::after {display:none}
+.store-ui .shell .workspace-sidebar .nav-icon {display:grid;place-items:center;width:24px;height:28px;padding:0;background:transparent;color:inherit;border-radius:0}
+.store-ui .shell .workspace-sidebar .nav-label {display:block;text-align:left;font-size:15px;font-weight:650}
+.store-ui .shell .workspace-sidebar .nav-label small {display:block;margin-top:3px;font-size:11px;font-weight:400;line-height:1.4;letter-spacing:0;color:var(--text-secondary)}
+.store-ui .shell .sidebar-local {display:block;margin-top:auto;padding:12px 8px;border:0;background:transparent;font-size:12px;color:var(--text-secondary)}
+.store-ui .shell .sidebar-local small {display:block;font-size:11px;margin-top:4px}
+.store-ui .shell .sidebar-account {display:flex;width:100%;min-height:54px;justify-content:flex-start;gap:10px;padding:10px;border:1px solid var(--border-subtle);border-radius:9px;background:var(--bg-surface-elevated);color:var(--text-primary)}
+.store-ui .shell .sidebar-account>span:nth-child(2) {display:block;text-align:left;min-width:0;overflow-wrap:anywhere}
+.store-ui .shell .sidebar-account>span:nth-child(2) small {display:block;font-size:11px;font-weight:400;color:var(--text-secondary)}
+.store-ui .shell .avatar {background:var(--store-blue-soft);color:var(--store-blue);box-shadow:none;border:0;border-radius:8px}
+.store-ui .shell .topbar {height:auto;min-height:68px;gap:12px;padding:12px 22px;background:var(--bg-surface);border-bottom:1px solid var(--border-subtle);backdrop-filter:none}
+.store-ui .shell .wordmark {margin-right:auto;min-width:100px}
+.store-ui .shell .wordmark>span {font-size:15px;font-weight:750;color:var(--text-primary);letter-spacing:0}
+.store-ui .shell .wordmark b {color:inherit}
+.store-ui .shell .wordmark small {font-size:12px;font-weight:400;letter-spacing:0;color:var(--text-secondary)}
+.store-ui .shell .offline-pill {order:1;padding:5px 8px;background:transparent;color:var(--text-secondary);font-size:11px;border:0}
+.store-ui .shell .topbar-stats {gap:14px;margin:0}
+.store-ui .shell .today-stat {gap:7px;font-size:12px}
+.store-ui .shell .today-stat .number-ticker {font-size:19px;color:var(--text-primary)}
+.store-ui .shell .today-coin {display:none}
+.store-ui .shell .restock-stat {gap:5px;color:var(--text-secondary);font-size:12px}
+.store-ui .shell .user-session {display:none} /* The labeled account action remains in navigation. */
+.store-ui .shell .shift-button {min-height:40px;border-radius:8px;padding:8px 12px;background:var(--bg-surface-elevated);border:1px solid var(--border-subtle);color:var(--text-primary)}
+.store-ui .shell .shift-button.shift-open {color:var(--store-green)}
+/* The counter: compact shelves on the left, a stable receipt on the right. */
+.store-ui .shell .checkout-layout {grid-template-columns:minmax(0,1fr) minmax(320px,350px);gap:22px;padding:20px 22px 12px;min-height:0}
+.store-ui .shell .catalog {min-width:0;min-height:0;gap:12px;background:transparent}
+.counter-heading {display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.counter-heading h1 {margin:0;font-size:25px;letter-spacing:-.6px;line-height:1.2}
+.counter-heading p {margin:5px 0 0;color:var(--text-secondary);font-size:13px}
+.counter-shortcuts {display:flex;gap:4px;flex-wrap:wrap}
+.counter-shortcuts button {display:flex;align-items:center;gap:5px;min-height:36px;padding:8px 10px;border:1px solid transparent;border-radius:7px;font-size:12px;background:transparent;color:var(--text-secondary)}
+.counter-shortcuts button[aria-pressed=true] {background:var(--bg-surface);border-color:var(--border-strong);color:var(--text-primary);font-weight:650}
+.store-ui .shell .cash-toolbar {display:flex;flex-wrap:wrap;gap:8px}
+.store-ui .shell .cash-toolbar .search {flex:1 1 100%;height:54px;min-height:54px;padding:0 14px;border:2px solid var(--store-blue);border-radius:10px;background:var(--bg-input);box-shadow:none}
+.store-ui .shell .search input {font-size:16px;min-width:0;color:var(--text-primary)}
+.store-ui :is(kbd,.kbd-badge) {color:var(--text-primary);background:var(--bg-surface-elevated);border:1px solid var(--border-strong);box-shadow:0 1px 0 var(--border-strong);font-weight:600}
+.store-ui .shell .cash-toolbar :is(.common-product-trigger,.cash-movement-trigger) {min-height:36px;padding:7px 11px;border:1px solid var(--border-strong);border-radius:7px;box-shadow:none;background:var(--bg-surface);color:var(--text-primary);font-size:12px;gap:6px;width:auto}
+.store-ui .shell .cash-movement-trigger {margin-left:auto}
+.store-ui .shell .master-filters {margin:0;gap:8px;background:transparent;border:0;box-shadow:none}
+.store-ui .shell .catalog-meta {margin:0;min-height:22px;font-size:12px;color:var(--text-secondary)}
+.store-ui .shell .catalog-meta b {background:transparent;padding:0 5px;font-size:12px}
+.store-ui .shell .product-grid {display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:10px;align-content:start;min-height:120px;padding:2px 3px 10px;overflow:auto;scrollbar-gutter:stable}
+.store-ui .shell .product-card {position:relative;display:grid;grid-template-columns:58px minmax(0,1fr);grid-template-rows:auto 1fr auto;column-gap:12px;row-gap:6px;min-height:138px;height:auto;padding:13px;text-align:left;align-content:start;border:1px solid var(--border-subtle);border-radius:10px;background:var(--bg-surface);box-shadow:0 1px 2px #142d3d08;color:var(--text-primary);transform:none;overflow:hidden}
+.store-ui .shell .product-card::before,.store-ui .shell .product-card::after,.store-ui .shell .card-spotlight {display:none}
+.store-ui .shell .product-card .product-face {grid-column:1;grid-row:1/3;width:58px;height:58px;margin:0;border-radius:8px;background:var(--bg-surface-elevated);overflow:hidden;transform:none}
+.store-ui .shell .product-face .product-visual {width:100%;height:100%;min-height:0;box-shadow:none;border-radius:8px;transform:none;background:var(--store-blue-soft);color:var(--store-blue);padding:4px}
+.store-ui .shell .product-face .product-visual::before,.store-ui .shell .product-face .product-visual::after {display:none}
+.store-ui .shell .product-face .brand-lettering {font-family:inherit;font-style:normal;letter-spacing:-.3px;font-size:11px;line-height:1.2;white-space:normal;overflow-wrap:anywhere;text-align:center;padding:0;box-shadow:none;background:none;transform:none;color:inherit}
+.store-ui .shell .product-face .brand-detail {display:none}
+.store-ui .shell .product-face svg {width:28px;height:28px;filter:none;transform:none}
+.store-ui .shell .product-face .add-mark {display:none} /* The entire card is the add action. */
+.store-ui .shell .product-card .product-category {grid-column:2;grid-row:1;margin:0;font-size:11px;color:var(--text-secondary);line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.store-ui .shell .product-category .category-size,.store-ui .shell .product-category>span:last-child {display:none}
+.store-ui .shell .product-card .product-name {grid-column:2;grid-row:2;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font-size:15px;font-weight:650;line-height:1.35;margin:0;min-height:0;color:var(--text-primary)}
+.store-ui .shell .product-card .product-footer {grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:8px;margin:5px 0 0;padding:9px 0 0;border-top:1px solid var(--border-subtle)}
+.store-ui .shell .product-card .product-footer .promo-price {font-size:22px;letter-spacing:-.6px;color:var(--text-primary);line-height:1.15;font-variant-numeric:tabular-nums}
+.store-ui .shell .promo-price del {font-size:11px;color:var(--text-secondary);letter-spacing:0}
+.store-ui .shell .promo-price em {font-size:10px;font-style:normal;color:var(--store-green);background:transparent}
+.store-ui .shell .stock-battery {display:none}
+.store-ui .shell .stock-badge {border:0;padding:4px 0;background:transparent;color:var(--text-secondary);font-size:11px;white-space:nowrap;border-radius:0}
+.store-ui .shell .stock-badge.stock-low {color:var(--store-warning)}
+.store-ui .shell .stock-badge.stock-unavailable {color:var(--store-danger)}
+.store-ui .shell .product-card[data-unavailable=true] {opacity:1;background:var(--bg-surface-elevated);border-style:dashed;cursor:not-allowed}
+.store-ui .shell .product-card[data-unavailable=true] .product-face {opacity:.55}
+.store-ui .shell[data-density=compact] .product-grid {grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:7px}
+.store-ui .shell[data-density=compact] .product-card {min-height:116px;padding:10px;grid-template-columns:44px minmax(0,1fr)}
+.store-ui .shell[data-density=compact] .product-face {width:44px;height:44px}
+.store-ui .shell[data-density=compact] .product-name {-webkit-line-clamp:2;font-size:14px}
+.store-ui .shell .goal-track {background:transparent;border:0;box-shadow:none;padding:3px 0;font-size:11px;min-height:22px}
+.store-ui .shell .ticket-panel {border:1px solid var(--border-subtle);border-top:4px solid var(--store-blue);border-radius:12px;background:var(--bg-surface);box-shadow:0 4px 16px #102c3b08;overflow:hidden}
+.store-ui .shell .ticket-tabs {background:var(--bg-surface-elevated);border-bottom:1px solid var(--border-subtle);padding:6px;gap:3px;border-radius:0}
+.store-ui .shell .ticket-tab-slider {display:none}
+.store-ui .shell .ticket-tabs button {min-width:0;border-radius:7px;padding:8px 3px;min-height:48px;background:transparent;border:1px solid transparent;box-shadow:none;color:var(--text-secondary);font-size:11px}
+.store-ui .shell .ticket-tabs button.selected {background:var(--bg-surface);border-color:var(--border-strong);color:var(--text-primary)}
+.store-ui .shell .ticket-tabs .ticket-summary {font-size:10px;line-height:1.2}
+.store-ui .shell .ticket-tabs kbd {display:none}
+.store-ui .shell .ticket-title {padding:18px 18px 12px;gap:8px;align-items:center}
+.store-ui .shell .ticket-title h2 {font-size:21px;letter-spacing:-.4px;margin:0 0 5px}
+.store-ui .shell .ticket-title>div>span {font-size:12px;color:var(--text-secondary)}
+.store-ui .shell .ticket-number {font-family:inherit;font-weight:600;font-size:11px;line-height:1.2;letter-spacing:0;white-space:nowrap;color:var(--text-secondary)}
+.store-ui .shell .ticket-lines {padding:0 16px;min-height:80px}
+.store-ui .shell .ticket-empty {padding:22px 5px;text-align:center;gap:9px}
+.store-ui .shell .basket-relief {width:52px;height:52px;border:0;border-radius:10px;background:var(--bg-surface-elevated);box-shadow:none;color:var(--store-blue)}
+.store-ui .shell .ticket-empty h3 {font-size:15px;margin:8px 0 0;color:var(--text-primary)}
+.store-ui .shell .ticket-empty p {font-size:13px;line-height:1.55;margin:0;color:var(--text-secondary)}
+.store-ui .shell .ticket-lines .line {padding:12px 0;border-bottom:1px solid var(--border-subtle);gap:10px}
+.store-ui .shell .line-detail>strong {font-size:14px;line-height:1.4}
+.store-ui .shell .line-detail>small {font-size:11px;color:var(--text-secondary)}
+.store-ui .shell .line>.product-visual {display:none}
+.store-ui .shell .stepper {gap:8px;margin-top:8px}
+.store-ui .shell .stepper button {width:32px;height:32px;min-height:32px;border:1px solid var(--border-strong);border-radius:7px;background:var(--bg-surface)}
+.store-ui .shell .ticket-bottom {padding:15px 18px;background:var(--bg-surface);border-top:1px solid var(--border-subtle)}
+.store-ui .shell .ticket-bottom>.subtotal {display:none} /* With no separate tax/discount amount this duplicated Total. */
+.store-ui .shell .ticket-bottom>small {font-size:10px;color:var(--text-secondary)}
+.store-ui .shell .total {margin:10px 0 16px;align-items:center;color:var(--text-primary)}
+.store-ui .shell .total>.number-ticker {font-size:36px;letter-spacing:-1px}
+.store-ui .shell .total>span:first-child {font-size:17px}
+.store-ui .shell .total small {font-size:10px;letter-spacing:0}
+.store-ui :is(.shell,.kiosk-console,.retail-dialog) :is(.arcade-button,.primary) {background:var(--action,var(--store-blue));color:var(--action-ink,#fff);border:1px solid transparent;border-radius:9px;box-shadow:none;transform:none;text-shadow:none}
+.store-ui .arcade-button::before,.store-ui .arcade-button::after {display:none}
+.store-ui .shell .charge {min-height:56px;font-size:17px}
+.store-ui .kbd-badge {box-shadow:none;border:1px solid currentColor;background:transparent;color:inherit;opacity:.75;border-radius:4px;font-size:10px}
+.store-ui .shell .fiar {margin-top:8px;min-height:42px;background:transparent;border:1px solid var(--border-strong);border-radius:8px;color:var(--text-primary);font-size:13px}
+.store-ui .shell :is(.ticket-footnote,.last-sale) {font-size:11px;justify-content:center;color:var(--text-secondary);margin:10px 0 0}
+/* Supporting workspaces share a calm hierarchy and visible actions. */
+.store-ui .shell .workspace-heading {display:block;padding:24px 24px 0;margin:0;background:transparent;border:0;outline:0}
+.store-ui .shell .workspace-heading h1 {font-size:28px;letter-spacing:-.7px;margin:0;color:var(--text-primary)}
+.workspace-description {margin:6px 0 18px;color:var(--text-secondary);font-size:14px}
+.store-ui .shell .workspace-tabs {display:flex;justify-content:flex-start;flex-wrap:wrap;gap:5px;padding:0 0 12px;border:0;border-bottom:1px solid var(--border-subtle);border-radius:0;background:transparent;box-shadow:none;width:100%;height:auto}
+.store-ui .shell .workspace-tabs button {display:flex;flex-direction:row;align-items:center;gap:7px;min-height:42px;padding:10px 13px;border:1px solid transparent;border-radius:7px;background:transparent;color:var(--text-secondary);box-shadow:none;font-size:13px}
+.store-ui .shell .workspace-tabs button.active {background:var(--store-blue-soft);color:var(--store-blue);border-color:transparent}
+.store-ui .shell :is(.panel,.customer,.supplier-card,.warehouse-grid>article) {border-radius:12px;background:var(--bg-surface);border:1px solid var(--border-subtle);box-shadow:none;color:var(--text-primary)}
+.store-ui .shell :is(.section-head h2,.panel h2) {font-size:21px;letter-spacing:-.4px}
+.store-ui :is(.shell,.kiosk-console,.retail-dialog) .eyebrow {letter-spacing:0;text-transform:none;font-size:12px;color:var(--text-secondary)}
+.store-ui .shell .inventory-metrics,.store-ui .shell .report-kpis {display:flex;flex-wrap:wrap;gap:0;background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:10px;overflow:hidden}
+.store-ui .shell :is(.inventory-metrics,.report-kpis)>:is(article,button,.metric-feature) {flex:1 1 160px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;min-height:100px;padding:16px 20px;background:transparent!important;color:var(--text-primary)!important;border:0!important;border-right:1px solid var(--border-subtle)!important;border-radius:0!important;box-shadow:none!important;gap:5px}
+.store-ui .shell :is(.inventory-metrics,.report-kpis) :is(.metric-icon-wrap,article>svg,button>svg) {display:none}
+.store-ui .shell :is(.inventory-metrics,.report-kpis) strong {font-size:25px;line-height:1.2;letter-spacing:-.5px}
+.store-ui .shell :is(.inventory-metrics,.report-kpis) :is(small,span) {font-size:12px;color:var(--text-secondary)!important}
+.store-ui .shell .inventory-actions button {min-height:38px;border-radius:7px;border:1px solid var(--border-strong);background:var(--bg-surface);color:var(--text-primary);box-shadow:none}
+.store-ui .shell .inventory-actions .action-restock {background:var(--store-blue-soft);color:var(--store-blue);border-color:transparent}
+.store-ui .shell table {font-size:14px}
+.store-ui .shell th {background:var(--bg-surface-elevated);color:var(--text-secondary);font-size:12px;text-transform:none;letter-spacing:0}
+.store-ui .shell :is(td,th) {padding:12px 14px;border-bottom:1px solid var(--border-subtle)}
+.store-ui .shell .record {border-bottom:1px solid var(--border-subtle);padding:14px 16px;border-radius:0}
+/* Access: short, predictable, no promotional hero or ornament. */
+.store-ui .kiosk-console.quick-login {min-height:100dvh;padding:28px 5vw;background:var(--bg-canvas);color:var(--text-primary);--action:var(--store-blue);--action-ink:#fff}
+.store-ui[data-theme=dark] .kiosk-console {--action-ink:#163246}
+.store-ui .kiosk-console::before,.store-ui .kiosk-console::after {display:none}
+.store-ui .kiosk-top {max-width:1000px;margin:0 auto;padding:0 0 25px;border-bottom:1px solid var(--border-subtle)}
+.store-ui .kiosk-wordmark {gap:12px}
+.store-ui .kiosk-wordmark>span {font-size:20px;font-weight:750;color:var(--text-primary);letter-spacing:0}
+.store-ui .kiosk-wordmark b {color:inherit}
+.store-ui .kiosk-wordmark small {font-size:12px;letter-spacing:0;color:var(--text-secondary);text-transform:none;font-weight:400}
+.store-ui .kiosk-body {display:block;max-width:850px;margin:32px auto 0;padding:0;width:100%}
+.store-ui .login-heading {padding:0;margin:0 0 22px;display:block}
+.store-ui .login-character {display:none}
+.store-ui .login-heading h1 {font-size:32px;letter-spacing:-.8px;margin:0;color:var(--text-primary)}
+.store-ui .login-heading p {font-size:15px;color:var(--text-secondary);margin-top:7px}
+.store-ui .login-console {display:grid;grid-template-columns:minmax(220px,.85fr) minmax(300px,1.15fr);background:var(--bg-surface);border:1px solid var(--border-subtle);border-top:4px solid var(--store-blue);border-radius:12px;box-shadow:0 12px 32px #102c3b08;overflow:hidden}
+.store-ui .login-console .profile-picker {padding:24px;background:var(--bg-surface-elevated);border-right:1px solid var(--border-subtle)}
+.store-ui .login-console .profile-picker .eyebrow,.store-ui .login-console .profile-picker .section-head svg {display:none}
+.store-ui .login-console .profile-picker h2 {font-size:17px;margin:0 0 12px}
+.store-ui .quick-login .profile-grid {display:flex;flex-direction:column;gap:8px;max-height:300px;overflow:auto}
+.store-ui .quick-login .profile-choice {padding:12px;min-height:64px;border:1px solid transparent;border-radius:8px;box-shadow:none;background:transparent;color:var(--text-primary);gap:12px}
+.store-ui .quick-login .profile-choice.selected {background:var(--bg-surface);border-color:var(--store-blue);box-shadow:inset 3px 0 var(--store-blue)}
+.store-ui .quick-login .profile-monogram {width:36px;height:36px;min-width:36px;border-radius:8px;background:var(--store-blue-soft);color:var(--store-blue);border:0}
+.store-ui .quick-login .kiosk-unlock {padding:30px;min-height:0;background:var(--bg-surface)}
+.store-ui .unlock-heading {margin-bottom:22px}
+.store-ui .unlock-heading h2 {font-size:24px;margin:5px 0;color:var(--text-primary)}
+.store-ui .lock-medallion {display:none}
+.store-ui .login-options {grid-column:1/-1;grid-row:2;padding:14px 24px;background:var(--bg-surface);border-top:1px solid var(--border-subtle)}
+.store-ui .login-options summary {font-size:13px;color:var(--text-secondary)}
+.store-ui .login-setup {grid-template-columns:1fr;max-width:560px;margin:auto}
+.store-ui .login-setup .kiosk-unlock {grid-column:1}
+.store-ui .kiosk-footer {max-width:850px;margin:20px auto 0;font-size:12px;color:var(--text-secondary)}
+.store-ui :is(.shell,.kiosk-console,.retail-dialog) :is(input:not([type=checkbox]):not([type=radio]),select,textarea) {border-radius:8px;border:1px solid var(--border-strong);background:var(--bg-input);color:var(--text-primary);box-shadow:none;min-height:44px}
+.store-ui :is(.shell,.kiosk-console,.retail-dialog) .field>span {font-size:13px;font-weight:600;color:var(--text-primary)}
+.store-ui :is(.shell,.kiosk-console,.retail-dialog) :is(input,textarea)::placeholder {color:var(--text-secondary);opacity:1}
+.store-ui .retail-dialog {border:1px solid var(--border-strong);border-radius:14px;background:var(--bg-surface);box-shadow:0 20px 70px #0004;max-height:calc(100dvh - 32px);color:var(--text-primary);animation:none;--action:var(--store-blue);--action-ink:#fff}
+.store-ui[data-theme=dark] .retail-dialog {--action-ink:#163246}
+.store-ui .retail-dialog::backdrop {background:#12293899;backdrop-filter:none}
+.store-ui .retail-dialog header {gap:12px;border-bottom:1px solid var(--border-subtle)}
+.store-ui .retail-dialog .dialog-emblem {background:var(--store-blue-soft);color:var(--store-blue);border-radius:9px}
+.store-ui .retail-dialog h2 {font-size:23px;letter-spacing:-.4px}
+.store-ui .retail-dialog .payment-total {border-radius:9px;background:var(--store-blue-soft)!important;color:var(--text-primary)!important;box-shadow:none}
+.store-ui .retail-dialog .payment-total :is(strong,span,small) {color:var(--text-primary)!important}
+.store-ui .retail-dialog .change {color:var(--store-green);font-size:16px;border-top:1px solid var(--border-subtle);padding-top:12px}
+.store-ui .retail-dialog .change strong {font-size:24px;font-variant-numeric:tabular-nums}
+.store-ui .retail-dialog .quick-cash button {border:1px solid var(--border-strong);border-radius:8px;background:var(--bg-surface-elevated);color:var(--text-primary);min-height:44px}
+.store-ui .shell :is(.product-card,.inventory-action,.workspace-tabs button):hover:not(:disabled) {border-color:var(--store-blue);transform:none;box-shadow:none}
+.store-ui .shell button:disabled,.store-ui .retail-dialog button:disabled {cursor:not-allowed}
+.store-ui :is(.arcade-button,.primary):disabled {opacity:.5;box-shadow:none}
+@media(min-width:1400px) {
+  .store-ui .shell .cash-toolbar .search {flex:1 1 260px}
+  .store-ui .shell .cash-toolbar :is(.common-product-trigger,.cash-movement-trigger) {min-height:48px}
+}
+@media(max-width:1180px) {
+  .store-ui .shell .sidebar.workspace-sidebar {width:158px;padding:18px 8px 10px}
+  .store-ui .shell .workspace {margin-left:158px}
+  .store-ui .shell .workspace-sidebar .nav-label {font-size:13px}
+  .store-ui .shell .workspace-sidebar .nav-label small {display:none}
+  .store-ui .shell .workspace-sidebar nav button {min-height:52px;padding:9px;gap:8px}
+  .store-ui .shell .topbar {gap:8px;padding:10px 16px}
+  .store-ui .shell .offline-pill,.store-ui .shell .topbar-stats .restock-stat {display:none}
+  .store-ui .shell .checkout-layout {grid-template-columns:minmax(0,1fr) 310px;gap:14px;padding:16px}
+  .store-ui .shell .product-grid {grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+  .counter-heading h1 {font-size:22px}
+  .counter-heading p {display:none}
+}
+@media(max-height:800px) and (min-width:901px) {
+  .store-ui .shell .catalog {gap:8px}
+  .store-ui .shell .topbar {min-height:56px;padding-block:8px}
+  .store-ui .shell .ticket-title {padding:12px 16px}
+  .store-ui .shell .ticket-bottom {padding:10px 16px}
+  .store-ui .shell .ticket-empty {padding:10px 4px}
+  .store-ui .shell .total {margin:8px 0}
+  .store-ui .shell .goal-track {display:none}
+}
+@media(max-width:900px) {
+  .store-ui .shell .sidebar.workspace-sidebar {position:static;width:100%;padding:8px;border-right:0;border-bottom:1px solid var(--border-subtle);flex-direction:row;align-items:center;gap:8px}
+  .store-ui .shell .workspace-brand,.store-ui .shell .sidebar-local,.store-ui .shell .sidebar-volume-dock {display:none}
+  .store-ui .shell .workspace-sidebar nav {flex:1;flex-direction:row;overflow:auto;gap:4px}
+  .store-ui .shell .workspace-sidebar nav button {flex-direction:column;gap:4px;min-width:70px;min-height:56px;padding:6px}
+  .store-ui .shell .workspace-sidebar nav button>svg {display:none}
+  .store-ui .shell .sidebar-account {width:48px;height:48px;padding:6px;min-height:48px}
+  .store-ui .shell .sidebar-account>span:nth-child(2),.store-ui .shell .sidebar-account>svg {display:none}
+  .store-ui .shell .workspace {margin:0;height:auto;min-height:calc(100dvh - 75px);overflow:visible}
+  .store-ui .shell .checkout-layout {grid-template-columns:minmax(0,1fr);padding:14px}
+  .store-ui .shell .product-grid {max-height:440px}
+  .store-ui .shell .ticket-panel {min-height:420px}
+  .store-ui .shell .ticket-lines {max-height:320px}
+  .store-ui .shell .topbar {flex-wrap:wrap}
+  .store-ui .shell .workspace-heading {padding:18px 14px 0}
+  .store-ui .login-console {grid-template-columns:1fr}
+  .store-ui .login-console .profile-picker {border:0;border-bottom:1px solid var(--border-subtle);padding:18px}
+  .store-ui .quick-login .profile-grid {max-height:180px}
+  .store-ui .login-options {grid-row:auto}
+  .store-ui .quick-login .kiosk-unlock {padding:24px}
+  .store-ui .kiosk-top .kiosk-status>span {display:none}
+}
+html.store-ui[data-input-mode=touch] :is(button,select,summary,input:not([type=checkbox]):not([type=radio]):not([type=hidden])) {min-height:48px}
+html.store-ui[data-input-mode=touch] :is(button,.stepper button,.search-clear) {min-width:48px;min-height:48px}
+html.store-ui[data-input-mode=touch] .shell .product-grid {grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+html.store-ui[data-input-mode=touch] .shell .product-card {min-height:148px}
+html.store-ui[data-input-mode=touch] .shell .product-name {font-size:16px}
+html.store-ui[data-input-mode=touch] .shell .stepper button {width:48px;height:48px;min-height:48px}
+@media(prefers-reduced-motion:reduce) {
+  .store-ui *, .store-ui *::before,.store-ui *::after {scroll-behavior:auto;transition:none!important;animation:none!important}
+}
+
+/* Touch targets take precedence over compact desktop sizing. */
+html.store-ui[data-input-mode=touch] :is(.shell,.kiosk-console,.retail-dialog) :is(button,select,summary,input:not([type=checkbox]):not([type=radio]):not([type=hidden])) {min-height:48px!important}
+html.store-ui[data-input-mode=touch] :is(.shell,.kiosk-console,.retail-dialog) button {min-width:48px}
+.store-ui .quick-login .kiosk-unlock {grid-column:2;grid-row:1}
+.store-ui .quick-login .profile-picker {grid-column:1;grid-row:1}
+.store-ui .quick-login .login-setup .kiosk-unlock {grid-column:1}
+@media(max-width:900px) {
+  .store-ui .quick-login .kiosk-unlock {grid-column:1;grid-row:2}
+  .store-ui .quick-login .login-options {grid-column:1;grid-row:3}
+  .store-ui .quick-login .login-setup .kiosk-unlock {grid-row:1}
+}

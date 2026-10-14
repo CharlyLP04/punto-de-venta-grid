@@ -67,7 +67,7 @@ try {
         if (!$Watch -or ($fingerprint -ne $attempted -and ($null -eq $attempted -or $fingerprint -eq $candidate))) {
             $attempted = $fingerprint
             $pendingPublish = $false
-            Write-Host 'Compilando Mario POS (sin pruebas)...'
+            Write-Host 'Compilando Grid POS (sin pruebas)...'
             & npm.cmd run tauri -- build --no-bundle
             $built = $LASTEXITCODE -eq 0
             if (!$built) {

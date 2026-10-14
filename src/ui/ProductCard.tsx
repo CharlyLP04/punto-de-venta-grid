@@ -1,7 +1,7 @@
 import { useEffect, useRef, type CSSProperties, type KeyboardEvent } from 'react';
 import { Plus } from 'lucide-react';
 import { money, quantity, type Product } from '../model';
-import { reducedMotion, springScale, springTransition } from './interaction';
+import { reducedMotion } from './interaction';
 import { categoryHue, customIconKey, iconKeyFor, parseBrandBadge, presentation, productIcons } from './productIcons';
 
 export const brandBadges = [
@@ -104,10 +104,8 @@ export default function ProductCard({ product, disabled, pulse, onAdd }: Props) 
   const ref = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     if (!pulse || reducedMotion()) return;
-    const animation = ref.current?.animate(springScale(), { duration: springTransition.duration });
-    const icon=ref.current?.querySelector('.add-mark');
-    const rotation=icon?.animate([{transform:'rotate(0) scale(1)'},{transform:'rotate(90deg) scale(1.18)'},{transform:'rotate(90deg) scale(1)'}],{duration:250});
-    return () => {animation?.cancel();rotation?.cancel();};
+    const animation = ref.current?.animate([{transform:'scale(1)'},{transform:'scale(.98)'},{transform:'scale(1)'}], { duration:160,easing:'ease-out' });
+    return () => animation?.cancel();
   }, [pulse]);
 
   const tone = product.unit === 'kg' ? 'green'
@@ -116,14 +114,14 @@ export default function ProductCard({ product, disabled, pulse, onAdd }: Props) 
     : /botanas|panadería/i.test(product.category) ? 'gold' : 'violet';
 
     const pres = presentation(product.name || product.code);
-    return <button ref={ref} className="product-card" data-tone={tone} disabled={disabled} type="button"
+    return <button ref={ref} className="product-card" data-tone={tone} disabled={disabled||product.stock<=0} type="button" data-unavailable={product.stock<=0}
     onKeyDown={moveFocus} onClick={() => onAdd(product)}
-    aria-label={`Agregar ${product.name}, ${money(product.promotion_price??product.price)} por ${product.unit}. Disponible: ${quantity(product.stock)} ${product.unit}`}>
+    aria-label={`${product.stock<=0?'Agotado:':'Agregar'} ${product.name}, ${money(product.promotion_price??product.price)} por ${product.unit}. Disponible: ${quantity(product.stock)} ${product.unit}`}>
     <span className="card-spotlight" aria-hidden="true"/>
     <span className="product-face"><ProductVisual product={product}/><span className="add-mark"><Plus size={15}/></span></span>
     <span className="product-category">{product.category}{pres && <span className="category-size"> · {pres}</span>} <span>· {product.unit === 'kg' ? 'por kilo' : 'por pieza'}</span></span>
     <strong className="product-name">{product.name || product.code}</strong>
-    <span className="product-footer"><b className="promo-price">{money(product.promotion_price??product.price)}{product.promotion_price!==null&&product.promotion_price<product.price&&<><del>{money(product.price)}</del><em>OFERTA</em></>}</b><StockBadge product={product}/></span>
+    <span className="product-footer"><b className="promo-price">{money(product.promotion_price??product.price)}{product.promotion_price!==null&&product.promotion_price<product.price&&<><del>{money(product.price)}</del><em>Oferta</em></>}</b><StockBadge product={product}/></span>
   </button>;
 }
 

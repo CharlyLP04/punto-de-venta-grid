@@ -2,10 +2,10 @@ import { createContext,useCallback,useContext,useLayoutEffect,useState,type Reac
 import { Moon,Sun } from 'lucide-react';
 type Theme='light'|'dark';
 const Context=createContext<{theme:Theme;toggle:()=>void;identify:(id:number|null)=>void}|null>(null);
-function read(key:string):Theme {try{const value=localStorage.getItem(key)??localStorage.getItem('grid_kiosk_theme');if(value==='dark'||value==='light')return value;}catch{/* A theme preference must never prevent login. */}return 'dark';}
+function read(key:string):Theme {try{const value=localStorage.getItem(key)??localStorage.getItem('grid_kiosk_theme');if(value==='dark'||value==='light')return value;}catch{/* A theme preference must never prevent login. */}return 'light';}
 export function ThemeProvider({children}:{children:ReactNode}){
   const [key,setKey]=useState('grid_kiosk_theme');const [theme,setTheme]=useState<Theme>(()=>read('grid_kiosk_theme'));
-  useLayoutEffect(()=>{document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme;document.querySelector('meta[name="theme-color"]')?.setAttribute('content',theme==='dark'?'#17191e':'#f3f7f0');},[theme]);
+  useLayoutEffect(()=>{document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme;document.querySelector('meta[name="theme-color"]')?.setAttribute('content',theme==='dark'?'#17232d':'#f3f6f8');},[theme]);
   const identify=useCallback((id:number|null)=>{const next=id===null?'grid_kiosk_theme':`grid_theme_user_${id}`;setKey(next);setTheme(read(next));},[]);
   function toggle(){const next=theme==='light'?'dark':'light';setTheme(next);try{localStorage.setItem(key,next);}catch{/* Use the in-memory preference when storage is unavailable. */}}
   return <Context.Provider value={{theme,toggle,identify}}>{children}</Context.Provider>;

@@ -7,6 +7,8 @@ use std::{io::Read, path::PathBuf, sync::Mutex, time::Duration};
 use tauri::{Manager, State};
 use uuid::Uuid;
 
+mod lifecycle;
+mod print_queue;
 mod security;
 mod migrations;
 mod business;
@@ -19,6 +21,7 @@ mod procurement;
 mod retail;
 mod catalog_import;
 mod network;
+mod network_transport;
 mod rpc;
 mod fiscal;
 #[cfg(test)] mod tests;
@@ -67,7 +70,7 @@ fn initialize(db: &mut Connection) -> Result<()> {
 }
 
 #[tauri::command]
-fn snapshot(store: State<Store>, session_token:String)->Result<Value> { snapshot_service(&store, session_token) }
+fn snapshot(store: State<Store>, session_token:String)->Result<Value> { let _operation=crate::lifecycle::enter()?; snapshot_service(&store, session_token) }
 pub(crate) fn snapshot_service(store:&Store, session_token:String)->Result<Value> {
     let db = store.db.lock().map_err(err)?;
     let actor=security::authorize(&store,&db,&session_token,"")?;
@@ -117,7 +120,7 @@ fn cash(db: &Connection, shift: i64) -> Result<i64> {
 }
 
 #[tauri::command]
-fn mutate(store: State<Store>, session_token:String, request_id:String, action: Action)->Result<Value> { mutate_service(&store, session_token, request_id, action) }
+fn mutate(store: State<Store>, session_token:String, request_id:String, action: Action)->Result<Value> { let _operation=crate::lifecycle::enter()?; mutate_service(&store, session_token, request_id, action) }
 pub(crate) fn mutate_service(store:&Store, session_token:String, request_id:String, action: Action)->Result<Value> {
     Uuid::parse_str(&request_id).map_err(err)?;
     let permission=match &action {
@@ -272,17 +275,17 @@ fn setting(db: &Connection, key: &str, fallback: &str) -> String {
 }
 
 #[tauri::command]
-fn backup(store: State<Store>, session_token:String) -> Result<String> {
+fn backup(store: State<Store>, session_token:String) -> Result<String> { let _operation=crate::lifecycle::enter()?;
     let db = store.db.lock().map_err(err)?;
     security::authorize(&store,&db,&session_token,"backup.create")?;
     Ok(backups::create(&db,&store.directory,"manual")?.to_string_lossy().into_owned())
 }
 
 #[tauri::command]
-fn serial_ports(store:State<Store>,session_token:String) -> Result<Vec<String>> { let db=store.db.lock().map_err(err)?;security::authorize(&store,&db,&session_token,"hardware.use")?; Ok(serialport::available_ports().map_err(err)?.into_iter().map(|p|p.port_name).collect()) }
+fn serial_ports(store:State<Store>,session_token:String) -> Result<Vec<String>> { let _operation=crate::lifecycle::enter()?; let db=store.db.lock().map_err(err)?;security::authorize(&store,&db,&session_token,"hardware.use")?; Ok(serialport::available_ports().map_err(err)?.into_iter().map(|p|p.port_name).collect()) }
 
 #[tauri::command]
-async fn scale_read(store: State<'_,Store>, session_token:String) -> Result<String> {
+async fn scale_read(store: State<'_,Store>, session_token:String) -> Result<String> { let _operation=crate::lifecycle::enter()?;
     let (port,baud) = { let db = store.db.lock().map_err(err)?;security::authorize(&store,&db,&session_token,"hardware.use")?; (setting(&db,"scale",""),setting(&db,"scale_baud","9600").parse::<u32>().unwrap_or(9600)) };
     if port.is_empty() { return Err("Configura el puerto de báscula".into()); }
     tauri::async_runtime::spawn_blocking(move || {
@@ -294,7 +297,7 @@ async fn scale_read(store: State<'_,Store>, session_token:String) -> Result<Stri
 }
 
 #[tauri::command]
-fn open_whatsapp(store:State<Store>,session_token:String,phone:String,message:String)->Result<()> {
+fn open_whatsapp(store:State<Store>,session_token:String,phone:String,message:String)->Result<()> { let _operation=crate::lifecycle::enter()?;
     let db=store.db.lock().map_err(err)?;
     let _actor=security::authorize(&store,&db,&session_token,"")?;
     if !(11..=15).contains(&phone.len())||phone.starts_with('0')||!phone.bytes().all(|b|b.is_ascii_digit())||message.len()>16000{return Err("Teléfono o mensaje inválido".into());}
@@ -314,9 +317,14 @@ fn main() {
         // Windows denies a second open while this process holds the handle.
         let mut instance_options=std::fs::OpenOptions::new();
         instance_options.read(true).write(true).create(true);
+        #[cfg(windows)]
+        {
+            use std::os::windows::fs::OpenOptionsExt;
+            instance_options.share_mode(0);
+        }
         let instance = match instance_options.open(directory.join(".grid-instance.lock")) {
             Ok(f) => f,
-            Err(_) => {
+            Err(error) if cfg!(windows) && error.raw_os_error()==Some(32) => {
                 #[cfg(windows)]
                 unsafe {
                     extern "system" {
@@ -333,12 +341,15 @@ fn main() {
                 }
                 std::process::exit(0);
             }
+            Err(error) => return Err(error.into()),
         };
         let mut db = Connection::open(directory.join("grid.sqlite"))?;
         db.busy_timeout(Duration::from_secs(5))?;
         let integrity:String=db.query_row("PRAGMA integrity_check",[],|r|r.get(0))?;
         if integrity!="ok"{return Err(std::io::Error::other("La base de datos requiere recuperación desde un respaldo").into());}
         initialize(&mut db).map_err(std::io::Error::other)?;
+        // Interrupted jobs require an operator decision, never automatic replay.
+        db.execute("UPDATE sales SET print_status='uncertain' WHERE print_status='sending'", [])?;
 
         db.execute_batch("CREATE INDEX IF NOT EXISTS idx_sales_created ON sales(created);
           CREATE INDEX IF NOT EXISTS idx_sales_user_created ON sales(user_id,created);
@@ -348,14 +359,45 @@ fn main() {
           CREATE TRIGGER IF NOT EXISTS audit_no_delete BEFORE DELETE ON audit BEGIN SELECT RAISE(ABORT,'La bitácora no se elimina'); END;")?;
         app.manage(Store { _instance:instance, db:Mutex::new(db), directory, sessions:Mutex::new(std::collections::HashMap::new()), grants:Mutex::new(std::collections::HashMap::new()) });
         let handle=app.handle().clone();
-        std::thread::spawn(move || loop {
-            { let store=handle.state::<Store>(); let _=backups::automatic(&store); }
-            std::thread::sleep(Duration::from_secs(60));
+        std::thread::spawn(move || {
+            loop {
+                if !lifecycle::closing() { let store=handle.state::<Store>(); let _=backups::automatic(&store); }
+                for _ in 0..60 {
+                    std::thread::sleep(Duration::from_secs(1));
+                }
+            }
         });
         Ok(())
-    }).on_window_event(|_window, event| {
-        if let tauri::WindowEvent::CloseRequested { .. } | tauri::WindowEvent::Destroyed = event {
-            std::process::exit(0);
+    }).on_window_event(|window, event| {
+        if window.label()!="main" { return; }
+        if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+            api.prevent_close();
+            if !lifecycle::begin_shutdown() { return; }
+            let _ = window.set_title("Grid POS · Cerrando operaciones…");
+            let handle=window.app_handle().clone();
+            std::thread::spawn(move || {
+                if !lifecycle::wait_for_operations(Duration::from_secs(60)) {
+                    if let Some(window)=handle.get_webview_window("main") {
+                        let _=window.set_title("Grid POS · Hay una operación pendiente. Intenta cerrar de nuevo.");
+                    }
+                    lifecycle::cancel_shutdown();
+                    return;
+                }
+                let store=handle.state::<Store>();
+                match store.db.lock() {
+                    Ok(db) => {
+                        if db.execute("UPDATE sales SET print_status='uncertain' WHERE print_status='sending'", []).is_err() {
+                            lifecycle::cancel_shutdown();
+                            if let Some(window)=handle.get_webview_window("main") {
+                                let _=window.set_title("Grid POS · No se pudo completar el cierre. Intenta de nuevo.");
+                            }
+                            return;
+                        }
+                    }
+                    Err(_) => { lifecycle::cancel_shutdown(); return; }
+                }
+                handle.exit(0);
+            });
         }
     }).invoke_handler(tauri::generate_handler![network::connection_call,network::connection_save,network::connection_status,network::network_start,network::network_pair,network::network_registers,catalog_import::catalog_preview,catalog_import::catalog_apply,open_whatsapp,security::approve_operation,procurement::procurement_list,procurement::procurement_save,history::sale_history,advanced::advanced_save,advanced::advanced_list,advanced::filtered_report,backups::backup_retention,backups::export_backup,backups::backup_center,backups::backup_schedule,backups::restore_backup,snapshot,mutate,business::checkout,business::operate,business::management,security::auth_status,security::bootstrap_owner,security::login,security::logout,security::users_list,security::user_save,backup,serial_ports,receipts::print_sale,receipts::print_repayment,receipts::resolve_print,scale_read])
       .run(tauri::generate_context!()).expect("No se pudo iniciar Grid POS");

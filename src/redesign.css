@@ -236,7 +236,7 @@ svg { vertical-align: middle; }
 .charge::after { content: ''; position: absolute; inset: 0; border: 1px solid transparent; border-radius: inherit; pointer-events: none; background: linear-gradient(110deg,transparent 35%,#fff9 50%,transparent 65%) border-box; mask: linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0); mask-composite: exclude; background-size: 250% 100%; animation: edge-shimmer 6500ms ease-in-out 3; }
 .charge:disabled::after { animation: none; opacity: 0; }
 @keyframes edge-shimmer { 0%,60% { background-position: 160% 0; opacity: 0; } 65% { opacity: 1; } 90%,100% { background-position: -70% 0; opacity: 0; } }
-kbd,.kbd-badge { display: inline-block; min-width: 24px; padding: 3px 6px; border: 1px solid #d6d3c3; border-radius: 5px; background: linear-gradient(#fffdf7,#f2f0e4); color: #72745e; box-shadow: 0 2px 0 #d8d5c6, inset 0 1px 0 #fff; font: 10px 'Segoe UI',sans-serif; font-weight: 600; line-height: 1.15; text-align: center; white-space: nowrap; }
+kbd,.kbd-badge { display: inline-block; min-width: 24px; padding: 3px 6px; border: 1px solid #d6d3c3; border-radius: 5px; background: linear-gradient(#fffdf7,#f2f0e4); color: #17384e; box-shadow: 0 2px 0 #d8d5c6, inset 0 1px 0 #fff; font: 10px 'Segoe UI',sans-serif; font-weight: 600; line-height: 1.15; text-align: center; white-space: nowrap; }
 .arcade-button .kbd-badge { background: #ffffff28; border-color: #5f4a2729; box-shadow: 0 2px 0 #5f4a2725,inset 0 1px 0 #fff4; color: inherit; }
 .fiar { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 17px 0 11px; background: transparent; color: #6c755a; font-size: 11px; }
 .fiar:hover { color: #3a4b2d; }
@@ -665,8 +665,8 @@ pre { white-space: pre-wrap; overflow-wrap: anywhere; padding: 15px; background:
 }
 
 .sidebar-account > span:nth-of-type(2) small {
-  font-size: 8.5px;
-  color: #7c7e6c;
+  font-size: 10px;
+  color: var(--text-secondary, #506575);
   font-weight: 400;
 }
 

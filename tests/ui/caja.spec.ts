@@ -127,6 +127,7 @@ test('importación: errores bloquean la confirmación',async({page})=>{
 test('CFDI: revisión y credenciales de prueba antes del envío',async({page})=>{
  await login(page);
  await page.getByRole('navigation',{name:'Áreas principales'}).getByRole('button',{name:'Ventas',exact:true}).click();
+ await page.locator('button[data-section="CFDI"]').click();
  await page.getByLabel('Venta pagada').selectOption('sale-test');
  await page.getByLabel('RFC del receptor').fill('URE180429TM6');
  await page.getByLabel('Razón social exacta').fill('UNIVERSIDAD ROBOTICA ESPAÑOLA');

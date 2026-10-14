@@ -2,7 +2,7 @@ use crate::{err,security,Result,Store};
 use rusqlite::{params,Connection};
 use serde::{Deserialize,Serialize};
 use serde_json::{json,Value};
-use std::{cell::Cell,io::Read,sync::{Mutex,OnceLock},time::Duration};
+use std::{cell::Cell,sync::{Mutex,OnceLock},time::Duration};
 use tauri::{Manager,State};
 thread_local! {static REGISTER:Cell<i64>=const {Cell::new(1)};}
 pub fn register()->i64{REGISTER.with(Cell::get)}
@@ -39,6 +39,7 @@ pub fn process(store:&Store,key:&str,command:&str,args:Value)->Result<Value>{
 }
 #[tauri::command]
 pub fn network_start(app:tauri::AppHandle,store:State<Store>,session_token:String,address:String)->Result<Value>{
+    let _operation=crate::lifecycle::enter()?;
     {let db=store.db.lock().map_err(err)?;security::authorize(&store,&db,&session_token,"settings.manage")?;}
     let ip:std::net::Ipv4Addr=address.parse().map_err(|_|"Escribe la dirección IPv4 de esta computadora")?;
     if !(ip.is_private()||ip.is_loopback()){return Err("Solo se permite una dirección de red local".into());}
@@ -50,22 +51,13 @@ pub fn network_start(app:tauri::AppHandle,store:State<Store>,session_token:Strin
         std::fs::write(&cert_path,cert.cert.pem()).map_err(err)?;std::fs::write(&key_path,cert.key_pair.serialize_pem()).map_err(err)?;std::fs::write(host_path,&address).map_err(err)?;
     }
     let certificate=std::fs::read_to_string(cert_path).map_err(err)?;
-    let server=tiny_http::Server::https(format!("{}:47831",address),tiny_http::SslConfig{certificate:certificate.as_bytes().to_vec(),private_key:std::fs::read(key_path).map_err(err)?}).map_err(err)?;
+    crate::network_transport::start(app,&address,certificate.as_bytes(),&std::fs::read(key_path).map_err(err)?)?;
     let url=format!("https://{}:47831",address);*current=Some((url.clone(),certificate));
-    // A bounded pool keeps a slow fiscal request from blocking the cash registers.
-    let (sender,receiver)=std::sync::mpsc::sync_channel::<tiny_http::Request>(8);
-    let receiver=std::sync::Arc::new(Mutex::new(receiver));
-    for _ in 0..4 {let receiver=receiver.clone();let handle=app.clone();std::thread::spawn(move||loop{
-        let request={match receiver.lock(){Ok(lock)=>lock.recv(),Err(_)=>return}};
-        match request{Ok(request)=>serve_request(&handle,request),Err(_)=>return}
-    });}
-    std::thread::spawn(move||for request in server.incoming_requests(){
-        if let Err(std::sync::mpsc::TrySendError::Full(request))=sender.try_send(request){let _=request.respond(tiny_http::Response::from_string("Servidor ocupado; intenta de nuevo").with_status_code(503));}
-    });
     Ok(json!({"url":url}))
 }
 #[tauri::command]
 pub fn network_pair(store:State<Store>,session_token:String,name:String)->Result<Value>{
+    let _operation=crate::lifecycle::enter()?;
     if name.trim().is_empty()||name.len()>60{return Err("Escribe un nombre de caja de hasta 60 caracteres".into());}
     let (url,certificate)=running().lock().map_err(err)?.clone().ok_or("Inicia el servidor primero")?;
     let db=store.db.lock().map_err(err)?;let actor=security::authorize(&store,&db,&session_token,"settings.manage")?;
@@ -77,6 +69,7 @@ pub fn network_pair(store:State<Store>,session_token:String,name:String)->Result
 }
 #[tauri::command]
 pub fn network_registers(store:State<Store>,session_token:String,id:Option<i64>,enabled:Option<bool>)->Result<Value>{
+    let _operation=crate::lifecycle::enter()?;
     let db=store.db.lock().map_err(err)?;let actor=security::authorize(&store,&db,&session_token,"settings.manage")?;
     if let Some(id)=id{
         if id<=1{return Err("La caja principal no se puede desactivar".into());}
@@ -94,6 +87,7 @@ pub fn connection_status(store:State<Store>)->Result<Value>{
 }
 #[tauri::command]
 pub fn connection_save(store:State<Store>,pairing:Option<Pairing>)->Result<()>{
+    let _operation=crate::lifecycle::enter()?;
     // Connection changes are allowed only when logged out, before any credentials are entered.
     if !store.sessions.lock().map_err(err)?.is_empty(){return Err("Cierra sesión antes de cambiar de conexión".into());}
     let path=store.directory.join("connection.json");
@@ -108,6 +102,7 @@ pub fn connection_save(store:State<Store>,pairing:Option<Pairing>)->Result<()>{
 }
 #[tauri::command]
 pub async fn connection_call(app:tauri::AppHandle,command:String,args:Value)->Result<Value>{
+    let _operation=crate::lifecycle::enter()?;
     tauri::async_runtime::spawn_blocking(move||{
         let store=app.state::<Store>();
         let path=store.directory.join("connection.json");
@@ -119,17 +114,3 @@ pub async fn connection_call(app:tauri::AppHandle,command:String,args:Value)->Re
     }).await.map_err(err)?
 }
 
-fn serve_request(app:&tauri::AppHandle,mut request:tiny_http::Request){
-        let response=(||->Result<Value>{
-            if request.method()!=&tiny_http::Method::Post||request.url()!="/rpc"{return Err("Ruta no disponible".into());}
-            let key=request.headers().iter().find(|h|h.field.equiv("Authorization")).map(|h|h.value.as_str().trim_start_matches("Bearer ").to_owned()).ok_or("Caja no vinculada")?;
-            let store=app.state::<Store>();
-            {let db=store.db.lock().map_err(err)?;db.query_row("SELECT id FROM registers WHERE token=? AND enabled=1",[&key],|r|r.get::<_,i64>(0)).map_err(|_|"Caja no vinculada")?;}
-            let mut body=String::new();request.as_reader().take(48*1024*1024+1).read_to_string(&mut body).map_err(err)?;
-            if body.len()>48*1024*1024{return Err("Solicitud demasiado grande".into());}
-            let input:Value=serde_json::from_str(&body).map_err(err)?;
-            process(&store,&key,input["command"].as_str().ok_or("Comando inválido")?,input["args"].clone())
-        })();
-        let body=match response{Ok(value)=>json!({"ok":value}),Err(error)=>json!({"error":error})};
-        let _=request.respond(tiny_http::Response::from_string(body.to_string()).with_header(tiny_http::Header::from_bytes("Content-Type","application/json").unwrap()));
-}

@@ -8,6 +8,7 @@ static MAINTENANCE: std::sync::Mutex<()> = std::sync::Mutex::new(());
 
 #[tauri::command]
 pub fn backup_retention(store:State<Store>,session_token:String,keep:i64)->Result<()> {
+    let _operation=crate::lifecycle::enter()?;
     if ![0,7,30,90].contains(&keep){return Err("Retención inválida".into());}
     let db=store.db.lock().map_err(err)?;
     let actor=security::authorize(&store,&db,&session_token,"backup.create")?;
@@ -37,6 +38,7 @@ fn retain_automatic(directory:&Path,keep:usize)->Result<()> {
 
 #[tauri::command]
 pub fn export_backup(store:State<Store>,session_token:String,name:String,destination:String)->Result<String>{
+    let _operation=crate::lifecycle::enter()?;
     let _maintenance=MAINTENANCE.lock().map_err(err)?;
     let actor={let db=store.db.lock().map_err(err)?;security::authorize(&store,&db,&session_token,"backup.create")?};
     if name.contains(['/', '\\', ':'])||(!name.starts_with("grid-")&&!name.starts_with("mario-"))||!name.ends_with(".sqlite"){return Err("Selecciona un respaldo válido".into());}
@@ -63,6 +65,7 @@ pub fn create(db:&Connection,directory:&Path,kind:&str)->Result<PathBuf>{
     std::fs::rename(&pending,&target).map_err(err)?;Ok(target)
 }
 pub fn automatic(store:&Store)->Result<()> {
+    let _operation=crate::lifecycle::enter()?;
     let _maintenance=MAINTENANCE.lock().map_err(err)?;
     let db=store.db.lock().map_err(err)?;
     let owners:i64=db.query_row("SELECT count(*) FROM users WHERE role='owner' AND enabled=1",[],|r|r.get(0)).map_err(err)?;
@@ -87,6 +90,7 @@ pub fn automatic(store:&Store)->Result<()> {
 }
 #[tauri::command]
 pub fn backup_center(store:State<Store>,session_token:String)->Result<Value>{
+    let _operation=crate::lifecycle::enter()?;
     let db=store.db.lock().map_err(err)?;security::authorize(&store,&db,&session_token,"backup.create")?;
     let root=store.directory.join("respaldos");let mut files=Vec::new();
     if root.exists(){for entry in std::fs::read_dir(&root).map_err(err)? {
@@ -100,6 +104,7 @@ pub fn backup_center(store:State<Store>,session_token:String)->Result<Value>{
 }
 #[tauri::command]
 pub fn backup_schedule(store:State<Store>,session_token:String,hours:i64)->Result<()> {
+    let _operation=crate::lifecycle::enter()?;
     if ![0,1,6,12,24,168].contains(&hours){return Err("Frecuencia inválida".into());}
     let db=store.db.lock().map_err(err)?;let actor=security::authorize(&store,&db,&session_token,"backup.create")?;
     db.execute("UPDATE settings SET value=? WHERE key='backup_hours'",[hours.to_string()]).map_err(err)?;
@@ -107,6 +112,7 @@ pub fn backup_schedule(store:State<Store>,session_token:String,hours:i64)->Resul
 }
 #[tauri::command]
 pub fn restore_backup(store:State<Store>,session_token:String,name:String,confirmation:String)->Result<()> {
+    let _operation=crate::lifecycle::enter()?;
     let _maintenance=MAINTENANCE.lock().map_err(err)?;
     let mut db=store.db.lock().map_err(err)?;
     let actor=security::authorize(&store,&db,&session_token,"backup.create")?;

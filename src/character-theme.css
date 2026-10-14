@@ -532,3 +532,28 @@ html[data-theme] .quick-login.character-login .arcade-primary{background:var(--c
 .network-settings textarea{width:100%;max-width:100%;font-family:monospace}
 .fiscal-panel td small{display:block;overflow-wrap:anywhere}
 .catalog-import,.network-settings{margin-block:16px;padding:20px}
+
+/* Shared interaction guarantees, after the theme geometry rules. */
+:root { --change-ink: #235534; }
+:root[data-theme=dark] { --change-ink: #c5edce; }
+.retail-dialog .change { color: var(--change-ink); font-variant-numeric: tabular-nums; }
+html[data-input-mode=touch] .theme-toggle {
+  height:48px!important; min-height:48px!important; max-height:48px!important;
+}
+html[data-input-mode=touch] .quick-mute {
+  width:48px!important; height:48px!important; min-width:48px!important; min-height:48px!important;
+}
+form > kbd,
+.kbd-badge,
+kbd {
+  color: #17384e !important;
+  background: #edf2f5 !important;
+  border-color: #a5b6c3 !important;
+}
+html[data-theme=dark] form > kbd,
+html[data-theme=dark] .kbd-badge,
+html[data-theme=dark] kbd {
+  color: #f2f6f8 !important;
+  background: #2a3d4b !important;
+  border-color: #718b9e !important;
+}
