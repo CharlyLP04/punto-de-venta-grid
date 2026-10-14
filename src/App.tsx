@@ -73,7 +73,7 @@ export default function App() {
   const {data,refresh}=useSnapshot();
   const modalReturnFocus=useRef<HTMLElement|null>(null);
   const [connection,setConnection]=useState<{remote:boolean;name:string;serving:boolean}>();
-  useEffect(()=>{let live=true;let loading=false;const poll=async()=>{if(loading||document.visibilityState!=='visible')return;loading=true;try{const state=await invoke<{remote:boolean;name:string;serving:boolean}>('connection_status');if(live)setConnection(state);if(live&&(state.remote||state.serving))await refresh();}catch{/* Explicit operations report connection errors. */}finally{loading=false;}};void poll();const timer=setInterval(()=>void poll(),5000);return()=>{live=false;clearInterval(timer);};},[refresh]);
+  useEffect(()=>{let live=true;let loading=false;const poll=async()=>{if(loading||document.visibilityState!=='visible')return;loading=true;try{const state=await invoke<{remote:boolean;name:string;serving:boolean}>('connection_status');if(live)setConnection(previous=>previous?.remote===state.remote&&previous?.name===state.name&&previous?.serving===state.serving?previous:state);if(live&&(state.remote||state.serving))await refresh();}catch{/* Explicit operations report connection errors. */}finally{loading=false;}};void poll();const timer=setInterval(()=>void poll(),5000);return()=>{live=false;clearInterval(timer);};},[refresh]);
   const [page,setPage]=useState<Page>(()=>firstPage(can));
   const [ticket,setTicket]=useState(1);
   const [query,setQuery]=useState('');
@@ -90,7 +90,7 @@ export default function App() {
   const [addPulse,setAddPulse]=useState({id:0,token:0});
   const [chargePulse,setChargePulse]=useState(0);
   const input=useRef<HTMLInputElement>(null);
-  useEffect(()=>{if(!addPulse.token||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;const animation=input.current?.closest('form')?.animate([{boxShadow:'0 0 0 4px #55b47755'},{boxShadow:'0 0 0 0 transparent'}],{duration:300,easing:'cubic-bezier(0.16,1,0.3,1)'});return()=>animation?.cancel();},[addPulse.token]);
+  useEffect(()=>{if(!addPulse.token||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;const animation=input.current?.closest('form')?.animate([{opacity:.72},{opacity:1}],{duration:300,easing:'cubic-bezier(0.16,1,0.3,1)'});return()=>animation?.cancel();},[addPulse.token]);
   const chain=useRef<Promise<void>>(Promise.resolve());
   const pending=useRef(0);
   const paymentId=useRef<string|undefined>(undefined);
@@ -110,9 +110,9 @@ export default function App() {
   }
   const products=useMemo(()=>new Map([...(data?.products??[]),...(data?.common_products??[])].map(p=>[p.id,p])),[data?.products,data?.common_products]);
   const codes=useMemo(()=>{const result=new Map(data?.products.map(p=>[p.code,p]));for(const alias of data?.aliases??[]){const product=products.get(alias.product);if(product)result.set(alias.code,product);}return result;},[data?.products,data?.aliases,products]);
-  const lines=(data?.lines??[]).filter(l=>l.ticket===ticket);
-  const total=ticketTotal(products,lines);
-  const settings=Object.fromEntries((data?.settings??[]).map(s=>[s.key,s.value]));
+  const lines=useMemo(()=>(data?.lines??[]).filter(l=>l.ticket===ticket),[data?.lines,ticket]);
+  const total=useMemo(()=>ticketTotal(products,lines),[products,lines]);
+  const settings=useMemo(()=>Object.fromEntries((data?.settings??[]).map(s=>[s.key,s.value])),[data?.settings]);
   useEffect(()=>{
     if(settings.idle_minutes) {
       window.dispatchEvent(new CustomEvent('grid-idle-policy',{detail:Number(settings.idle_minutes)}));

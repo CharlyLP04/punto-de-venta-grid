@@ -1,4 +1,4 @@
-import { useEffect, useRef, type CSSProperties, type KeyboardEvent } from 'react';
+import { memo, useEffect, useRef, type CSSProperties, type KeyboardEvent } from 'react';
 import { Plus } from 'lucide-react';
 import { money, quantity, type Product } from '../model';
 import { reducedMotion } from './interaction';
@@ -36,7 +36,7 @@ export const brandBadges = [
   { match: /\b(?:del valle)\b/i, label: 'Del Valle', tone: 'valle', detail: 'Jugos' },
 ];
 
-export function ProductVisual({ product, compact = false }: { product: Product; compact?: boolean }) {
+export const ProductVisual = memo(function ProductVisual({ product, compact = false }: { product: Product; compact?: boolean }) {
   const explicitBrand = parseBrandBadge(product.icon);
   if (explicitBrand) {
     return (
@@ -73,7 +73,7 @@ export function ProductVisual({ product, compact = false }: { product: Product; 
       <Icon strokeWidth={1.6}/>
     </span>
   );
-}
+});
 
 export function StockBadge({ product }: { product: Product }) {
   const low = product.stock <= product.minimum;
@@ -90,7 +90,7 @@ function moveFocus(event: KeyboardEvent<HTMLButtonElement>) {
   if (!['ArrowRight', 'ArrowLeft', 'ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) return;
   const grid = event.currentTarget.parentElement;
   if (!grid) return;
-  const cards = Array.from(grid.querySelectorAll<HTMLButtonElement>('.product-card'));
+  const cards = Array.from(grid.querySelectorAll<HTMLButtonElement>('.sale-product-card'));
   const index = cards.indexOf(event.currentTarget);
   const columns = getComputedStyle(grid).gridTemplateColumns.split(' ').length;
   const step = event.key === 'ArrowDown' ? columns : event.key === 'ArrowUp' ? -columns : event.key === 'ArrowLeft' ? -1 : 1;
@@ -114,14 +114,14 @@ export default function ProductCard({ product, disabled, pulse, onAdd }: Props) 
     : /botanas|panadería/i.test(product.category) ? 'gold' : 'violet';
 
     const pres = presentation(product.name || product.code);
-    return <button ref={ref} className="product-card" data-tone={tone} disabled={disabled||product.stock<=0} type="button" data-unavailable={product.stock<=0}
+    return <button ref={ref} className="product-card sale-product-card" data-tone={tone} disabled={disabled||product.stock<=0} type="button" data-unavailable={product.stock<=0}
     onKeyDown={moveFocus} onClick={() => onAdd(product)}
     aria-label={`${product.stock<=0?'Agotado:':'Agregar'} ${product.name}, ${money(product.promotion_price??product.price)} por ${product.unit}. Disponible: ${quantity(product.stock)} ${product.unit}`}>
     <span className="card-spotlight" aria-hidden="true"/>
-    <span className="product-face"><ProductVisual product={product}/><span className="add-mark"><Plus size={15}/></span></span>
-    <span className="product-category">{product.category}{pres && <span className="category-size"> · {pres}</span>} <span>· {product.unit === 'kg' ? 'por kilo' : 'por pieza'}</span></span>
-    <strong className="product-name">{product.name || product.code}</strong>
-    <span className="product-footer"><b className="promo-price">{money(product.promotion_price??product.price)}{product.promotion_price!==null&&product.promotion_price<product.price&&<><del>{money(product.price)}</del><em>Oferta</em></>}</b><StockBadge product={product}/></span>
+    <span className="product-face sale-product-face"><ProductVisual product={product}/><span className="add-mark"><Plus size={15}/></span></span>
+    <span className="product-category sale-product-category">{product.category}{pres && <span className="category-size"> · {pres}</span>} <span>· {product.unit === 'kg' ? 'por kilo' : 'por pieza'}</span></span>
+    <strong className="product-name sale-product-name" title={product.name || product.code}>{product.name || product.code}</strong>
+    <span className="product-footer sale-product-footer"><b className="promo-price">{money(product.promotion_price??product.price)}{product.promotion_price!==null&&product.promotion_price<product.price&&<><del>{money(product.price)}</del><em>Oferta</em></>}</b><StockBadge product={product}/></span>
   </button>;
 }
 
