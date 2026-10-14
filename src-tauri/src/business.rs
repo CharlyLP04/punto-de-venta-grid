@@ -265,7 +265,7 @@ pub(crate) fn operate_service(store:&Store, session_token:String,request_id:Stri
             result=json!({"cash":refund_cash,"card":card,"credit":credit});
         },
         Operation::Customize{store_name,address,phone,footer,accent,density,idle_minutes,daily_goal}=>{
-            if store_name.trim().is_empty()||store_name.len()>80||address.len()>180||phone.len()>30||footer.len()>160||!["classic","gold","green","blue","rose"].contains(&accent.as_str())||!["comfortable","compact"].contains(&density.as_str())||!(1..=120).contains(&idle_minutes)||daily_goal<0||daily_goal>100_000_000{return Err("Personalización fuera de rango".into());}
+            if store_name.trim().is_empty()||store_name.len()>80||address.len()>180||phone.len()>30||footer.len()>160||!["classic","gold","green","blue","rose","emerald","slate"].contains(&accent.as_str())||!["comfortable","compact"].contains(&density.as_str())||!(1..=120).contains(&idle_minutes)||daily_goal<0||daily_goal>100_000_000{return Err("Personalización fuera de rango".into());}
             // ESC/POS control bytes must never originate from editable receipt strings.
             if [&store_name,&address,&phone,&footer].iter().any(|s|s.chars().any(|c|c.is_control())){return Err("No se permiten caracteres de control en el ticket".into());}
             for (key,value) in [("store_name",store_name),("store_address",address),("store_phone",phone),("receipt_footer",footer),("accent",accent),("density",density),("idle_minutes",idle_minutes.to_string()),("daily_goal",daily_goal.to_string())]{tx.execute("INSERT INTO settings(key,value) VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value",params![key,value]).map_err(err)?;}

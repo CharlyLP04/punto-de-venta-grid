@@ -24,12 +24,30 @@ html.store-ui[data-theme=dark] {
 .store-ui :is(button,input,select,textarea){font:inherit}
 .store-ui button {touch-action:manipulation;transition:background-color 120ms ease,border-color 120ms ease}
 .store-ui :is(button,input,select,textarea,summary):focus-visible {outline:3px solid var(--focus);outline-offset:3px}
-.store-ui .shell {--action:var(--store-blue);--action-ink:#fff;--price-ink:var(--text-primary);background:var(--bg-canvas);color:var(--text-primary)}
+.store-ui .shell {--action:var(--store-blue);--action-ink:#fff;--action-soft:var(--store-blue-soft);--price-ink:var(--text-primary);background:var(--bg-canvas);color:var(--text-primary)}
 .store-ui[data-theme=dark] .shell {--action-ink:#163246;--price-ink:var(--text-primary)}
-.store-ui .shell[data-accent=green] {--action:#216342;--action-ink:#fff}
-.store-ui .shell[data-accent=blue] {--action:#174e75;--action-ink:#fff}
-.store-ui[data-theme=dark] .shell[data-accent=green] {--action:#9de0b8;--action-ink:#163b29}
-.store-ui[data-theme=dark] .shell[data-accent=blue] {--action:#a4d5fa;--action-ink:#163246}
+
+/* Store accent themes - Light Mode */
+.store-ui .shell[data-accent=classic] {--action:#174e75;--action-ink:#fff;--action-soft:#e4eef6;--focus:#174e75}
+.store-ui .shell[data-accent=emerald] {--action:#059669;--action-ink:#fff;--action-soft:#d1fae5;--focus:#059669}
+.store-ui .shell[data-accent=slate] {--action:#334155;--action-ink:#fff;--action-soft:#e2e8f0;--focus:#475569}
+.store-ui .shell[data-accent=green] {--action:#15803d;--action-ink:#fff;--action-soft:#dcfce7;--focus:#16a34a}
+.store-ui .shell[data-accent=blue] {--action:#2563eb;--action-ink:#fff;--action-soft:#dbeafe;--focus:#2563eb}
+.store-ui .shell[data-accent=rose] {--action:#e11d48;--action-ink:#fff;--action-soft:#ffe4e6;--focus:#f43f5e}
+.store-ui .shell[data-accent=gold] {--action:#d97706;--action-ink:#fff;--action-soft:#fef3c7;--focus:#d97706}
+
+/* Store accent themes - Dark Mode */
+.store-ui[data-theme=dark] .shell[data-accent=classic] {--action:#a4d5fa;--action-ink:#163246;--action-soft:#233f53;--focus:#a4d5fa}
+.store-ui[data-theme=dark] .shell[data-accent=emerald] {--action:#34d399;--action-ink:#064e3b;--action-soft:#064e3b33;--focus:#34d399}
+.store-ui[data-theme=dark] .shell[data-accent=slate] {--action:#94a3b8;--action-ink:#0f172a;--action-soft:#1e293b;--focus:#94a3b8}
+.store-ui[data-theme=dark] .shell[data-accent=green] {--action:#4ade80;--action-ink:#052e16;--action-soft:#052e1633;--focus:#4ade80}
+.store-ui[data-theme=dark] .shell[data-accent=blue] {--action:#60a5fa;--action-ink:#172554;--action-soft:#17255433;--focus:#93c5fd}
+.store-ui[data-theme=dark] .shell[data-accent=rose] {--action:#fb7185;--action-ink:#4c0519;--action-soft:#4c051933;--focus:#fda4af}
+.store-ui[data-theme=dark] .shell[data-accent=gold] {--action:#fbbf24;--action-ink:#451a03;--action-soft:#451a0333;--focus:#fcd34d}
+
+/* Active sidebar item adopts current accent cleanly */
+.store-ui .shell .workspace-sidebar nav button.active {background:var(--action-soft);color:var(--action);border-color:transparent}
+.store-ui .shell .workspace-sidebar nav button.active .nav-icon {background:var(--action);color:var(--action-ink);border-radius:6px}
 /* Navigation stays readable instead of making users remember icons. */
 .store-ui .shell .sidebar.workspace-sidebar {inset:0 auto 0 0;width:200px;padding:24px 12px 14px;border:0;border-right:1px solid var(--border-subtle);border-radius:0;background:var(--bg-surface);box-shadow:none;align-items:stretch}
 .store-ui .shell .workspace {margin-left:200px;height:100dvh;min-width:0;background:var(--bg-canvas)}
@@ -75,41 +93,57 @@ html.store-ui[data-theme=dark] {
 .counter-shortcuts button {display:flex;align-items:center;gap:5px;min-height:36px;padding:8px 10px;border:1px solid transparent;border-radius:7px;font-size:12px;background:transparent;color:var(--text-secondary)}
 .counter-shortcuts button[aria-pressed=true] {background:var(--bg-surface);border-color:var(--border-strong);color:var(--text-primary);font-weight:650}
 .store-ui .shell .cash-toolbar {display:flex;flex-wrap:wrap;gap:8px}
-.store-ui .shell .cash-toolbar .search {flex:1 1 100%;height:54px;min-height:54px;padding:0 14px;border:2px solid var(--store-blue);border-radius:10px;background:var(--bg-input);box-shadow:none}
+.store-ui .shell .cash-toolbar .search {flex:1 1 100%;height:54px;min-height:54px;padding:0 14px;border:2px solid var(--action,var(--store-blue));border-radius:10px;background:var(--bg-input);box-shadow:none}
 .store-ui .shell .search input {font-size:16px;min-width:0;color:var(--text-primary)}
 .store-ui :is(kbd,.kbd-badge) {color:var(--text-primary);background:var(--bg-surface-elevated);border:1px solid var(--border-strong);box-shadow:0 1px 0 var(--border-strong);font-weight:600}
 .store-ui .shell .cash-toolbar :is(.common-product-trigger,.cash-movement-trigger) {min-height:36px;padding:7px 11px;border:1px solid var(--border-strong);border-radius:7px;box-shadow:none;background:var(--bg-surface);color:var(--text-primary);font-size:12px;gap:6px;width:auto}
 .store-ui .shell .cash-movement-trigger {margin-left:auto}
 .store-ui .shell .master-filters {margin:0;gap:8px;background:transparent;border:0;box-shadow:none}
+.store-ui .shell .master-filters>header {display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:4px}
+.store-ui .shell .master-filters .filter-trigger {display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:7px 14px;border-radius:8px;border:1px solid var(--border-strong);background:var(--bg-surface);color:var(--text-primary);font-size:12px;font-weight:600}
+.store-ui .shell .master-filters .filter-trigger b {display:inline-block;padding:1px 6px;border-radius:999px;background:var(--action);color:var(--action-ink);font-size:11px}
+.store-ui .shell .master-filters .light {min-height:36px;padding:7px 12px;font-size:12px;border:1px solid var(--border-subtle);border-radius:8px;background:transparent;color:var(--text-secondary)}
+
+/* Category pills - comfortable, clear, easy to tap in a retail counter */
+.store-ui .shell .quick-categories {display:flex;gap:8px;overflow-x:auto;white-space:nowrap;padding:4px 2px 8px;scrollbar-width:thin}
+.store-ui .shell .quick-categories button {display:inline-flex;align-items:center;gap:6px;padding:8px 14px;font-size:13px;font-weight:600;border-radius:999px;background:var(--bg-surface);color:var(--text-primary);border:1px solid var(--border-strong);box-shadow:0 1px 2px rgba(0,0,0,0.03);cursor:pointer;flex-shrink:0;transition:all 120ms ease}
+.store-ui .shell .quick-categories button b {display:inline-block;padding:1px 7px;border-radius:999px;font-size:11px;font-weight:700;background:var(--bg-surface-elevated);color:var(--text-secondary);border:1px solid var(--border-subtle)}
+.store-ui .shell .quick-categories button:hover:not(:disabled) {border-color:var(--action);color:var(--action)}
+.store-ui .shell .quick-categories button[aria-pressed=true] {background:var(--action)!important;color:var(--action-ink)!important;border-color:var(--action)!important;box-shadow:0 2px 6px color-mix(in srgb,var(--action) 35%,transparent)}
+.store-ui .shell .quick-categories button[aria-pressed=true] b {background:color-mix(in srgb,var(--action-ink) 25%,transparent)!important;color:var(--action-ink)!important;border-color:transparent!important}
+
+.store-ui .shell .master-sort {display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--text-secondary);margin:4px 0}
+.store-ui .shell .master-sort select {min-height:32px;height:32px;padding:3px 10px;font-size:12px;border-radius:7px;background:var(--bg-surface);border:1px solid var(--border-strong);color:var(--text-primary)}
+.store-ui .shell .master-chips {display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 6px}
+.store-ui .shell .master-chips button {min-height:28px;padding:3px 10px;font-size:11px;border-radius:999px;background:var(--bg-surface-elevated);border:1px solid var(--border-strong);color:var(--text-primary)}
+
 .store-ui .shell .catalog-meta {margin:0;min-height:22px;font-size:12px;color:var(--text-secondary)}
 .store-ui .shell .catalog-meta b {background:transparent;padding:0 5px;font-size:12px}
-.store-ui .shell .product-grid {display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:10px;align-content:start;min-height:120px;padding:2px 3px 10px;overflow:auto;scrollbar-gutter:stable}
-.store-ui .shell .product-card {position:relative;display:grid;grid-template-columns:58px minmax(0,1fr);grid-template-rows:auto 1fr auto;column-gap:12px;row-gap:6px;min-height:138px;height:auto;padding:13px;text-align:left;align-content:start;border:1px solid var(--border-subtle);border-radius:10px;background:var(--bg-surface);box-shadow:0 1px 2px #142d3d08;color:var(--text-primary);transform:none;overflow:hidden}
+
+/* Retail Abarrotes Product Cards - snug, no dead voids, grocery shelf style */
+.store-ui .shell .product-grid {display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:9px;align-content:start;min-height:120px;padding:2px 3px 10px;overflow:auto;scrollbar-gutter:stable}
+.store-ui .shell .product-card {position:relative;display:flex;flex-direction:column;justify-content:space-between;min-height:114px;height:auto;padding:10px 12px;text-align:left;border:1px solid var(--border-subtle);border-radius:10px;background:var(--bg-surface);box-shadow:0 1px 3px rgba(0,0,0,0.03);color:var(--text-primary);transform:none;overflow:hidden;cursor:pointer;transition:border-color 120ms ease,box-shadow 120ms ease}
 .store-ui .shell .product-card::before,.store-ui .shell .product-card::after,.store-ui .shell .card-spotlight {display:none}
-.store-ui .shell .product-card .product-face {grid-column:1;grid-row:1/3;width:58px;height:58px;margin:0;border-radius:8px;background:var(--bg-surface-elevated);overflow:hidden;transform:none}
-.store-ui .shell .product-face .product-visual {width:100%;height:100%;min-height:0;box-shadow:none;border-radius:8px;transform:none;background:var(--store-blue-soft);color:var(--store-blue);padding:4px}
-.store-ui .shell .product-face .product-visual::before,.store-ui .shell .product-face .product-visual::after {display:none}
-.store-ui .shell .product-face .brand-lettering {font-family:inherit;font-style:normal;letter-spacing:-.3px;font-size:11px;line-height:1.2;white-space:normal;overflow-wrap:anywhere;text-align:center;padding:0;box-shadow:none;background:none;transform:none;color:inherit}
-.store-ui .shell .product-face .brand-detail {display:none}
-.store-ui .shell .product-face svg {width:28px;height:28px;filter:none;transform:none}
-.store-ui .shell .product-face .add-mark {display:none} /* The entire card is the add action. */
-.store-ui .shell .product-card .product-category {grid-column:2;grid-row:1;margin:0;font-size:11px;color:var(--text-secondary);line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.store-ui .shell .product-card .product-face {display:none} /* Clean, no awkward square voids: name and price take center stage */
+.store-ui .shell .product-card .product-category {display:block;margin:0 0 3px;font-size:11px;font-weight:500;color:var(--text-secondary);line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-transform:uppercase;letter-spacing:.3px}
 .store-ui .shell .product-category .category-size,.store-ui .shell .product-category>span:last-child {display:none}
-.store-ui .shell .product-card .product-name {grid-column:2;grid-row:2;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font-size:15px;font-weight:650;line-height:1.35;margin:0;min-height:0;color:var(--text-primary)}
-.store-ui .shell .product-card .product-footer {grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:8px;margin:5px 0 0;padding:9px 0 0;border-top:1px solid var(--border-subtle)}
-.store-ui .shell .product-card .product-footer .promo-price {font-size:22px;letter-spacing:-.6px;color:var(--text-primary);line-height:1.15;font-variant-numeric:tabular-nums}
-.store-ui .shell .promo-price del {font-size:11px;color:var(--text-secondary);letter-spacing:0}
-.store-ui .shell .promo-price em {font-size:10px;font-style:normal;color:var(--store-green);background:transparent}
+.store-ui .shell .product-card .product-name {display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:14.5px;font-weight:700;line-height:1.25;margin:0 0 auto;min-height:0;color:var(--text-primary)}
+.store-ui .shell .product-card .product-footer {display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:8px 0 0;padding:6px 0 0;border-top:1px dashed var(--border-subtle)}
+.store-ui .shell .product-card .product-footer .promo-price {font-size:20px;font-weight:800;letter-spacing:-.4px;color:var(--text-primary);line-height:1.1;font-variant-numeric:tabular-nums}
+.store-ui .shell .promo-price del {font-size:11px;color:var(--text-secondary);letter-spacing:0;margin-left:5px}
+.store-ui .shell .promo-price em {font-size:10px;font-style:normal;color:var(--store-green);background:transparent;margin-left:4px}
 .store-ui .shell .stock-battery {display:none}
-.store-ui .shell .stock-badge {border:0;padding:4px 0;background:transparent;color:var(--text-secondary);font-size:11px;white-space:nowrap;border-radius:0}
-.store-ui .shell .stock-badge.stock-low {color:var(--store-warning)}
-.store-ui .shell .stock-badge.stock-unavailable {color:var(--store-danger)}
-.store-ui .shell .product-card[data-unavailable=true] {opacity:1;background:var(--bg-surface-elevated);border-style:dashed;cursor:not-allowed}
-.store-ui .shell .product-card[data-unavailable=true] .product-face {opacity:.55}
-.store-ui .shell[data-density=compact] .product-grid {grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:7px}
-.store-ui .shell[data-density=compact] .product-card {min-height:116px;padding:10px;grid-template-columns:44px minmax(0,1fr)}
-.store-ui .shell[data-density=compact] .product-face {width:44px;height:44px}
-.store-ui .shell[data-density=compact] .product-name {-webkit-line-clamp:2;font-size:14px}
+.store-ui .shell .stock-badge {display:inline-flex;align-items:center;padding:2px 7px;background:var(--bg-surface-elevated);color:var(--text-secondary);border:1px solid var(--border-subtle);font-size:11px;font-weight:600;white-space:nowrap;border-radius:999px}
+.store-ui .shell .stock-badge.stock-low {color:var(--store-warning);background:color-mix(in srgb,var(--store-warning) 14%,var(--bg-surface));border-color:color-mix(in srgb,var(--store-warning) 30%,transparent)}
+.store-ui .shell .stock-badge.stock-unavailable {color:var(--store-danger);background:color-mix(in srgb,var(--store-danger) 14%,var(--bg-surface));border-color:color-mix(in srgb,var(--store-danger) 30%,transparent)}
+.store-ui .shell .product-card[data-unavailable=true] {opacity:.7;background:var(--bg-surface-elevated);border-style:dashed;cursor:not-allowed}
+
+/* Compact Density */
+.store-ui .shell[data-density=compact] .product-grid {grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:7px}
+.store-ui .shell[data-density=compact] .product-card {min-height:94px;padding:8px 10px}
+.store-ui .shell[data-density=compact] .product-card .product-name {-webkit-line-clamp:2;font-size:13px}
+.store-ui .shell[data-density=compact] .product-card .product-footer {margin-top:5px;padding-top:4px}
+.store-ui .shell[data-density=compact] .product-card .product-footer .promo-price {font-size:17px}
 .store-ui .shell .goal-track {background:transparent;border:0;box-shadow:none;padding:3px 0;font-size:11px;min-height:22px}
 .store-ui .shell .ticket-panel {border:1px solid var(--border-subtle);border-top:4px solid var(--store-blue);border-radius:12px;background:var(--bg-surface);box-shadow:0 4px 16px #102c3b08;overflow:hidden}
 .store-ui .shell .ticket-tabs {background:var(--bg-surface-elevated);border-bottom:1px solid var(--border-subtle);padding:6px;gap:3px;border-radius:0}
@@ -186,10 +220,16 @@ html.store-ui[data-theme=dark] {
 .store-ui .login-console .profile-picker .eyebrow,.store-ui .login-console .profile-picker .section-head svg {display:none}
 .store-ui .login-console .profile-picker h2 {font-size:17px;margin:0 0 12px}
 .store-ui .quick-login .profile-grid {display:flex;flex-direction:column;gap:8px;max-height:300px;overflow:auto}
-.store-ui .quick-login .profile-choice {padding:12px;min-height:64px;border:1px solid transparent;border-radius:8px;box-shadow:none;background:transparent;color:var(--text-primary);gap:12px}
-.store-ui .quick-login .profile-choice.selected {background:var(--bg-surface);border-color:var(--store-blue);box-shadow:inset 3px 0 var(--store-blue)}
-.store-ui .quick-login .profile-monogram {width:36px;height:36px;min-width:36px;border-radius:8px;background:var(--store-blue-soft);color:var(--store-blue);border:0}
+.store-ui .quick-login .profile-choice {display:flex;align-items:center;padding:12px 14px;min-height:60px;border:1px solid var(--border-subtle)!important;border-radius:10px;box-shadow:none!important;background:var(--bg-surface)!important;color:var(--text-primary)!important;gap:12px;cursor:pointer;transition:all 120ms ease}
+.store-ui .quick-login .profile-choice:hover:not(:disabled) {border-color:var(--border-strong)!important;background:var(--bg-surface-elevated)!important}
+.store-ui .quick-login .profile-choice.selected {background:color-mix(in srgb,var(--action,var(--store-blue)) 10%,var(--bg-surface))!important;border-color:var(--action,var(--store-blue))!important;box-shadow:inset 3px 0 var(--action,var(--store-blue)),0 2px 6px rgba(0,0,0,0.04)!important;color:var(--text-primary)!important}
+.store-ui .quick-login .profile-choice.selected small {color:var(--text-secondary)!important}
+.store-ui .quick-login .profile-monogram {width:38px;height:38px;min-width:38px;border-radius:9px;background:color-mix(in srgb,var(--action,var(--store-blue)) 14%,var(--bg-surface-elevated));color:var(--action,var(--store-blue));font-weight:700;font-size:14px;display:grid;place-items:center;border:0}
+.store-ui .quick-login .profile-choice.selected .profile-monogram {background:var(--action,var(--store-blue));color:var(--action-ink,#fff)}
 .store-ui .quick-login .kiosk-unlock {padding:30px;min-height:0;background:var(--bg-surface)}
+.store-ui .quick-login .kiosk-submit {min-height:48px;width:100%;display:inline-flex;align-items:center;justify-content:center;gap:10px;font-size:15px;font-weight:700;border-radius:9px;background:var(--action,var(--store-blue))!important;color:var(--action-ink,#fff)!important;border:0!important;box-shadow:0 2px 6px rgba(0,0,0,0.12)!important;cursor:pointer;transition:opacity 120ms ease,transform 100ms ease}
+.store-ui .quick-login .kiosk-submit:hover:not(:disabled) {opacity:.92}
+.store-ui .quick-login .kiosk-submit:active:not(:disabled) {transform:translateY(1px)}
 .store-ui .unlock-heading {margin-bottom:22px}
 .store-ui .unlock-heading h2 {font-size:24px;margin:5px 0;color:var(--text-primary)}
 .store-ui .lock-medallion {display:none}
@@ -197,6 +237,18 @@ html.store-ui[data-theme=dark] {
 .store-ui .login-options summary {font-size:13px;color:var(--text-secondary)}
 .store-ui .login-setup {grid-template-columns:1fr;max-width:560px;margin:auto}
 .store-ui .login-setup .kiosk-unlock {grid-column:1}
+
+/* Multicaja wrapper and drawer on login */
+.store-ui .kiosk-network-wrapper {max-width:850px;margin:14px auto 0;width:100%}
+.store-ui .kiosk-network-wrapper .network-settings {border:1px solid var(--border-subtle);border-radius:10px;background:var(--bg-surface);box-shadow:0 1px 3px rgba(0,0,0,0.03);padding:0;overflow:hidden;max-width:620px;margin:0 auto}
+.store-ui .kiosk-network-wrapper .network-settings>summary {display:flex;align-items:center;gap:8px;padding:9px 15px;font-size:12.5px;font-weight:600;color:var(--text-secondary);background:var(--bg-surface-elevated);cursor:pointer;user-select:none;transition:color 120ms ease}
+.store-ui .kiosk-network-wrapper .network-settings>summary:hover {color:var(--text-primary)}
+.store-ui .kiosk-network-wrapper .network-settings[open]>summary {border-bottom:1px solid var(--border-subtle)}
+.store-ui .kiosk-network-wrapper .network-settings>*:not(summary) {padding:0 16px}
+.store-ui .kiosk-network-wrapper .network-settings p {font-size:12px;line-height:1.45;color:var(--text-secondary);margin:12px 0 8px}
+.store-ui .kiosk-network-wrapper .network-settings .network-actions {display:flex;gap:10px;margin:10px 0 16px}
+.store-ui .kiosk-network-wrapper .network-settings .network-actions button {min-height:38px;padding:8px 16px;border-radius:7px;font-size:13px;font-weight:600}
+.store-ui .kiosk-network-wrapper .network-settings textarea {min-height:64px;font-size:12px;font-family:monospace}
 .store-ui .kiosk-footer {max-width:850px;margin:20px auto 0;font-size:12px;color:var(--text-secondary)}
 .store-ui :is(.shell,.kiosk-console,.retail-dialog) :is(input:not([type=checkbox]):not([type=radio]),select,textarea) {border-radius:8px;border:1px solid var(--border-strong);background:var(--bg-input);color:var(--text-primary);box-shadow:none;min-height:44px}
 .store-ui :is(.shell,.kiosk-console,.retail-dialog) .field>span {font-size:13px;font-weight:600;color:var(--text-primary)}
@@ -220,11 +272,11 @@ html.store-ui[data-theme=dark] {
   .store-ui .shell .cash-toolbar :is(.common-product-trigger,.cash-movement-trigger) {min-height:48px}
 }
 @media(max-width:1180px) {
-  .store-ui .shell .sidebar.workspace-sidebar {width:158px;padding:18px 8px 10px}
-  .store-ui .shell .workspace {margin-left:158px}
-  .store-ui .shell .workspace-sidebar .nav-label {font-size:13px}
+  .store-ui .shell .sidebar.workspace-sidebar {width:168px;padding:18px 8px 10px}
+  .store-ui .shell .workspace {margin-left:168px}
+  .store-ui .shell .workspace-sidebar .nav-label {font-size:12.5px;letter-spacing:-.2px}
   .store-ui .shell .workspace-sidebar .nav-label small {display:none}
-  .store-ui .shell .workspace-sidebar nav button {min-height:52px;padding:9px;gap:8px}
+  .store-ui .shell .workspace-sidebar nav button {min-height:50px;padding:8px 8px;gap:7px}
   .store-ui .shell .topbar {gap:8px;padding:10px 16px}
   .store-ui .shell .offline-pill,.store-ui .shell .topbar-stats .restock-stat {display:none}
   .store-ui .shell .checkout-layout {grid-template-columns:minmax(0,1fr) 310px;gap:14px;padding:16px}

@@ -147,3 +147,24 @@ test('CFDI: revisión y credenciales de prueba antes del envío',async({page})=>
  await send.click();
  await expect(page.getByRole('status').filter({hasText:'Facturama confirmó el comprobante de prueba.'})).toBeVisible();
 });
+
+test('pantalla de acceso limpia: monograma de iniciales, sin elementos arcade y multicaja no invasiva',async({page})=>{
+ await page.addInitScript(()=>{
+  const w=window as any;
+  w.isTauri=true;
+  w.__TAURI_INTERNALS__={invoke:async(command:string,args:any)=>{
+   if(command==='connection_call'){command=args.command;args=args.args;}
+   if(command==='connection_status')return {remote:false,name:'Caja principal'};
+   if(command==='auth_status')return {setup:false,profiles:[{id:1,username:'charly',name:'Charlydev',role:'owner',permissions:[]}]};
+   return [];
+  }};
+ });
+ await page.goto('/');
+ const choice=page.getByRole('button',{name:/Charlydev/});
+ await expect(choice).toBeVisible();
+ await expect(choice.locator('.profile-monogram')).toHaveText('CH');
+ await expect(page.getByRole('button',{name:'Entrar',exact:false})).toBeVisible();
+ const multicaja=page.locator('.kiosk-network-wrapper .network-settings');
+ await expect(multicaja).toBeVisible();
+ await expect(multicaja).not.toHaveAttribute('open');
+});

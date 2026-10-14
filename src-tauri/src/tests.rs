@@ -214,3 +214,37 @@ fn migration_from_v5_preserves_stock_and_marks_unknown_costs() {
     assert_eq!(db.query_row("SELECT stock,cost_known FROM products WHERE code='LEGACY'",[],|r|Ok((r.get::<_,i64>(0)?,r.get::<_,i64>(1)?))).unwrap(),(870,0));
     assert!(db.is_autocommit());
 }
+
+#[test]
+fn customization_accepts_all_accents_and_validates_limits() {
+    let db=database();let actor=cashier(&db);
+    let path=std::env::temp_dir().join(format!("grid-test-cust-{}",Uuid::new_v4()));
+    let store=Store{_instance:std::fs::File::create(&path).unwrap(),db:Mutex::new(db),directory:std::env::temp_dir(),sessions:Mutex::new(std::collections::HashMap::from([("token-admin".into(),(actor.id,std::time::Instant::now(),1))])),grants:Mutex::new(Default::default())};
+    for accent in ["classic","gold","green","blue","rose","emerald","slate"] {
+        let op = business::Operation::Customize {
+            store_name: "Mi Tiendita".into(),
+            address: "Calle 1".into(),
+            phone: "5512345678".into(),
+            footer: "Gracias".into(),
+            accent: accent.into(),
+            density: "comfortable".into(),
+            idle_minutes: 15,
+            daily_goal: 500000,
+        };
+        assert!(business::operate_service(&store, "token-admin".into(), Uuid::new_v4().to_string(), op, None).is_ok());
+        let db = store.db.lock().unwrap();
+        let saved: String = db.query_row("SELECT value FROM settings WHERE key='accent'",[],|r|r.get(0)).unwrap();
+        assert_eq!(saved, accent);
+    }
+    let invalid = business::Operation::Customize {
+        store_name: "Tienda".into(),
+        address: "".into(),
+        phone: "".into(),
+        footer: "".into(),
+        accent: "invalid_neon".into(),
+        density: "comfortable".into(),
+        idle_minutes: 15,
+        daily_goal: 100,
+    };
+    assert!(business::operate_service(&store, "token-admin".into(), Uuid::new_v4().to_string(), invalid, None).is_err());
+}
