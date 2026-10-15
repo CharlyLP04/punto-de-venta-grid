@@ -123,7 +123,7 @@ export default function ProductCard({ product, disabled, pulse, onAdd }: Props) 
     : /lácteos/i.test(product.category) ? 'blue'
     : /botanas|panadería/i.test(product.category) ? 'gold' : 'violet';
 
-    return <button ref={ref} className="sale-product-card" data-tone={tone} disabled={disabled||product.stock<=0} type="button" data-unavailable={product.stock<=0}
+    return <button ref={ref} className="product-card sale-product-card" data-tone={tone} disabled={disabled||product.stock<=0} type="button" data-unavailable={product.stock<=0}
     onKeyDown={moveFocus} onClick={() => onAdd(product)}
     aria-label={`${product.stock<=0?'Agotado:':'Agregar'} ${product.name}, ${money(product.promotion_price??product.price)} por ${product.unit}. Disponible: ${quantity(product.stock)} ${product.unit}`}>
     
