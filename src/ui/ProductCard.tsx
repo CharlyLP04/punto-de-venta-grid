@@ -38,7 +38,7 @@ export const brandBadges = [
 
 export const ProductVisual = memo(function ProductVisual({ product, compact = false }: { product: Product; compact?: boolean }) {
   const [failedLogo,setFailedLogo]=useState('');
-  const namedBrand=productBrandName(product.name);
+  const namedBrand=productBrandName(product.name, product.category);
   const configuredBrand=parseBrandBadge(product.icon);
   // A brand present in the product name takes precedence over an old icon assignment.
   const logo=brandLogo(namedBrand??configuredBrand?.label??'');

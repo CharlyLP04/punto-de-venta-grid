@@ -1,0 +1,5 @@
+<svg viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+  <path d="M10 30 C10 12, 28 8, 60 8 C92 8, 110 12, 110 30 C110 48, 92 52, 60 52 C28 52, 10 48, 10 30 Z" fill="#003E93"/>
+  <path d="M60 7 C55 2, 45 4, 45 7 C52 7, 56 6, 60 7 Z" fill="#39B54A"/>
+  <text x="60" y="38" font-family="'Arial Black', Impact, sans-serif" font-size="21" font-weight="900" fill="#FFFFFF" text-anchor="middle" letter-spacing="1">JUMEX</text>
+</svg>

@@ -1,0 +1,7 @@
+<svg viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+  <rect width="120" height="60" rx="8" fill="#F0FAFA"/>
+  <path d="M60 10 C50 25, 42 32, 42 38 C42 48, 50 52, 60 52 C70 52, 78 48, 78 38 C78 32, 70 25, 60 10 Z" fill="#EE7623" opacity="0.15"/>
+  <path d="M25 42 Q60 28 95 42 Q60 54 25 42 Z" fill="#EE7623" opacity="0.8"/>
+  <text x="60" y="32" font-family="'Century Gothic', sans-serif" font-size="14.5" font-weight="900" fill="#005A70" text-anchor="middle" letter-spacing="1">BONAFONT</text>
+  <text x="60" y="44" font-family="sans-serif" font-size="6.5" font-weight="700" fill="#FFFFFF" text-anchor="middle" letter-spacing="0.5">EL AGUA LIGERA</text>
+</svg>
