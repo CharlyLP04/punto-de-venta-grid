@@ -253,7 +253,7 @@ export default function App() {
       {page!=='Caja'&&<WorkspaceHeader page={page} onChange={setPage} can={can} counts={{Surtido:lowStock,Lotes:data.expiry_alerts[0]?.count??0}}/>}
       <PendingCenter data={data} onOpen={setPage}/>{!modal&&<ToastMessages error={error} notice={notice} clearError={()=>setError('')} clearNotice={()=>setNotice('')}/>}      {page==='Caja'&&<div className="checkout-layout">
         <section className="catalog" aria-label="Productos">
-          <div className="counter-heading"><div><h1>Nueva venta</h1><p>Busca, agrega y cobra.</p></div><div className="counter-shortcuts" role="group" aria-label="Ver productos">
+          <div className="counter-heading"><div><h1>Nueva venta</h1><p>{openShift?'Busca o escanea para agregar a la cuenta.':'Abre tu turno para comenzar a vender.'}</p></div><div className="counter-shortcuts" role="group" aria-label="Ver productos">
             <button type="button" aria-pressed={!catalogFilters.favorites&&!catalogFilters.frequent} onClick={()=>setCatalogFilters(f=>({...f,favorites:false,frequent:false}))}>Catálogo</button>
             <button type="button" aria-pressed={catalogFilters.frequent} onClick={()=>setCatalogFilters(f=>({...f,favorites:false,frequent:!f.frequent}))}>Venta frecuente</button>
             <button type="button" aria-pressed={catalogFilters.favorites} onClick={()=>setCatalogFilters(f=>({...f,frequent:false,favorites:!f.favorites}))}><Star size={15} aria-hidden="true"/>Favoritos</button>

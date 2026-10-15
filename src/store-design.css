@@ -35,7 +35,7 @@ html.store-ui[data-theme=dark] {
 .store-ui .shell[data-accent=green] {--action:#15803d;--action-ink:#fff;--action-soft:#dcfce7;--focus:#16a34a}
 .store-ui .shell[data-accent=blue] {--action:#2563eb;--action-ink:#fff;--action-soft:#dbeafe;--focus:#2563eb}
 .store-ui .shell[data-accent=rose] {--action:#e11d48;--action-ink:#fff;--action-soft:#ffe4e6;--focus:#f43f5e}
-.store-ui .shell[data-accent=gold] {--action:#d97706;--action-ink:#fff;--action-soft:#fef3c7;--focus:#d97706}
+.store-ui .shell[data-accent=gold] {--action:#d97706;--action-ink:#1F1500;--action-soft:#fef3c7;--focus:#92400e}
 
 /* Store accent themes - Dark Mode */
 .store-ui[data-theme=dark] .shell[data-accent=classic] {--action:#a4d5fa;--action-ink:#163246;--action-soft:#233f53;--focus:#a4d5fa}
@@ -492,3 +492,102 @@ html.store-ui[data-theme=light] {color-scheme:light}
  .store-ui *, .store-ui *::before,.store-ui *::after {animation:none!important;transition:none!important;scroll-behavior:auto!important}
  .store-ui .shell .sale-product-card:active {transform:none!important}
 }
+
+/* Store workspaces: one hierarchy from the shelf to the receipt. */
+.store-ui body {font-family:'Segoe UI',system-ui,sans-serif;line-height:1.45}
+.store-ui .shell .topbar {min-height:60px;padding-block:8px}
+.store-ui .shell .checkout-layout {padding-top:14px;gap:18px}
+.store-ui .shell .counter-heading h1 {font-size:24px;font-weight:700;letter-spacing:-.6px}
+.store-ui .shell .counter-heading p {font-size:13px;margin-top:3px}
+.store-ui .shell .catalog {gap:10px}
+.store-ui .shell .counter-filters {display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 12px;align-items:center;padding:0}
+.store-ui .shell .counter-filters>header {grid-column:1;display:flex;gap:8px;margin:0;min-width:0;flex-wrap:wrap}
+.store-ui .shell .counter-filters>header>span {font-size:12px;margin-right:auto}
+.store-ui .shell .counter-filters>.master-sort {grid-column:2;grid-row:1;margin:0;gap:6px;font-size:12px}
+.store-ui .shell .counter-filters>.master-sort select {width:160px;min-height:36px;height:auto;font-size:12px}
+.store-ui .shell .quick-categories {flex-wrap:wrap;overflow:visible;white-space:normal;gap:6px;padding:0;max-height:156px;overflow-y:auto;scrollbar-width:thin!important}
+.store-ui .shell .counter-filters>.quick-categories {grid-column:1/-1;grid-row:2}
+.store-ui .shell .quick-categories button {min-height:34px;padding:6px 10px;border-radius:8px;font-size:12px;box-shadow:none;transition:background-color 120ms,border-color 120ms}
+.store-ui .shell .quick-categories .categories-expand {border-style:dashed;color:var(--text-secondary)}
+.store-ui .shell .counter-filters>.master-chips {grid-column:1/-1;margin:0}
+.store-ui .shell .master-chips:empty {display:none}
+.store-ui .shell .counter-filters>.filter-dialog {grid-column:1/-1}
+.store-ui .shell .sale-product-card {display:grid;grid-template-columns:44px minmax(0,1fr);grid-template-rows:auto 1fr auto;gap:5px 10px;min-height:124px;padding:12px;border-radius:12px;align-content:start}
+.store-ui .shell .sale-product-card .sale-product-face {grid-column:1;grid-row:1/3;width:44px;height:44px;margin:0}
+.store-ui .shell .sale-product-card .product-visual {padding:4px;width:100%;height:100%;border-radius:9px}
+.store-ui .shell .sale-product-card .brand-lettering {font-size:10px;overflow-wrap:anywhere}
+.store-ui .shell .sale-product-card .add-mark {display:none}
+.store-ui .shell .sale-product-card .sale-product-category {grid-column:2;grid-row:1;font-size:11px;white-space:nowrap;text-overflow:ellipsis}
+.store-ui .shell .sale-product-card .sale-product-category>span {display:none}
+.store-ui .shell .sale-product-card .sale-product-name {grid-column:2;grid-row:2;font-size:14px;line-height:1.35;min-height:2.7em;margin:0}
+.store-ui .shell .sale-product-card .sale-product-footer {grid-column:1/-1;grid-row:3;margin:0;padding-top:8px}
+.store-ui .shell .sale-product-card .promo-price {font-size:21px;display:flex;flex-wrap:wrap;align-items:baseline;gap:3px}
+.store-ui .shell[data-density=compact] .sale-product-card {min-height:112px;padding:9px}
+.store-ui .shell[data-density=compact] .sale-product-card .sale-product-face {height:38px;width:38px}
+.store-ui .shell .ticket-panel {border-top:3px solid var(--action);border-radius:12px}
+.store-ui .shell .ticket-tabs .ticket-summary {background:transparent}
+.store-ui .shell .ticket-title {padding:16px 18px 10px}
+.store-ui .shell .ticket-title h2 {font-size:20px}
+.store-ui .shell .ticket-empty {gap:8px;padding:16px 4px}
+.store-ui .shell .ticket-empty h3 {margin:4px 0;font-size:15px}
+.store-ui .shell .ticket-empty p {max-width:250px;margin:auto;font-size:13px}
+.store-ui .shell .charge {min-height:54px;border-radius:9px}
+.store-ui .shell .charge:disabled {opacity:1;background:var(--bg-surface-elevated);color:var(--text-secondary);border:1px solid var(--border-subtle)}
+.store-ui .shell .shift-button:not(.shift-open) {background:var(--action);color:var(--action-ink);font-weight:700;border-color:transparent}
+.store-ui .shell .workspace-heading {padding-top:20px}
+.store-ui .shell .workspace-heading h1 {font-size:26px}
+.store-ui .shell .workspace-description {font-size:13px;margin-bottom:12px}
+.store-ui .shell .workspace-tabs button {border-radius:8px;min-height:40px}
+.store-ui .shell .panel {padding:20px}
+.store-ui .shell .section-head {align-items:center;margin-bottom:16px}
+.store-ui .shell .section-head h2 {font-size:20px;line-height:1.3}
+.store-ui .shell .section-head p {font-size:13px;color:var(--text-secondary);max-width:65ch;line-height:1.5}
+.store-ui .shell .inventory-table-scroll {border:1px solid var(--border-subtle);border-radius:10px;overflow:auto;max-height:65dvh;scrollbar-gutter:stable}
+.store-ui .shell .inventory-table-scroll th {position:sticky;top:0;z-index:1;background:var(--bg-surface-elevated)}
+.store-ui .shell table td {font-variant-numeric:tabular-nums}
+.store-ui .shell tbody tr:hover {background:var(--bg-surface-elevated)}
+.store-ui .shell .inventory-product strong {font-size:14px;line-height:1.4}
+.store-ui .shell .inventory-actions button {min-height:40px;font-size:12px;font-weight:600}
+.store-ui .shell :is(.calm-empty,.empty-state) {padding:24px;color:var(--text-secondary);border:1px dashed var(--border-strong);border-radius:10px;background:var(--bg-surface);font-size:14px;line-height:1.6}
+.store-ui .shell .settings-section {padding:22px;border:1px solid var(--border-subtle);border-radius:12px;background:var(--bg-surface)}
+.store-ui .shell .settings-section>header {align-items:flex-start;gap:12px;margin-bottom:18px}
+.store-ui .shell .settings-section h2 {font-size:20px}
+.store-ui .shell .settings-section p {font-size:13px;color:var(--text-secondary);line-height:1.5}
+.store-ui .shell .settings-save {position:sticky;bottom:0;background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:10px;padding:14px;z-index:2;box-shadow:0 -4px 16px #00000008}
+.store-ui .shell .report-kpis strong {font-variant-numeric:tabular-nums;font-size:26px}
+.store-ui .shell :is(.customer,.account-row,.record) {overflow-wrap:anywhere}
+.store-ui .filter-dialog {max-width:760px;width:calc(100vw - 32px);max-height:calc(100dvh - 32px);overscroll-behavior:contain;border-radius:14px}
+.store-ui .filter-dialog .category-pills {max-height:220px;overflow:auto}
+.store-ui .store-login .login-console {box-shadow:0 14px 40px #091b2b12;border-top:3px solid var(--store-blue)}
+.store-ui .store-login .login-heading h1 {font-size:30px}
+.store-ui .store-login .profile-choice {transition:background-color 120ms,border-color 120ms}
+.store-ui .store-login .profile-choice:hover {background:var(--bg-surface)}
+.store-ui .store-login .kiosk-submit {min-height:50px;font-size:15px;font-weight:700}
+@media(max-width:1180px) {
+ .store-ui .shell .counter-filters {grid-template-columns:minmax(0,1fr)}
+ .store-ui .shell .counter-filters>.master-sort {grid-column:1;grid-row:3;justify-self:end}
+}
+html.store-ui[data-input-mode=touch] .shell .sale-product-card {min-height:138px;padding:12px}
+html.store-ui[data-input-mode=touch] .shell .sale-product-card .sale-product-name {font-size:15px}
+@media(prefers-reduced-motion:no-preference) {
+ .store-ui .shell tbody tr {transition:background-color 120ms}
+}
+
+/* Guided supplier reception and budget planning. */
+.store-ui .supply-budget {border:1px solid var(--border-strong);border-radius:10px;padding:14px;margin:16px 0;background:var(--bg-surface-elevated)}
+.store-ui .supply-budget>summary {font-weight:700;cursor:pointer;min-height:36px}
+.store-ui .supply-budget p,.store-ui .delivery-flow p {font-size:13px;line-height:1.6;color:var(--text-secondary);max-width:80ch;margin:10px 0}
+.store-ui .supply-totals {display:flex;flex-wrap:wrap;align-items:center;gap:16px;padding:14px 0;font-variant-numeric:tabular-nums}
+.store-ui .delivery-flow {border-top:3px solid var(--action);scroll-margin-top:20px}
+.store-ui .delivery-lines {display:grid;gap:12px;margin:16px 0;max-height:60dvh;overflow:auto;padding:3px}
+.store-ui .delivery-line {padding:16px;border:1px solid var(--border-subtle);border-radius:10px;background:var(--bg-surface)}
+.store-ui .delivery-line>header {display:flex;gap:12px;justify-content:space-between;flex-wrap:wrap;margin-bottom:12px}
+.store-ui .delivery-line>header>span {font-size:12px;color:var(--text-secondary)}
+.store-ui .price-review {border-radius:8px;background:var(--bg-surface-elevated);padding:12px;margin:10px 0}
+.store-ui .price-review.cost-increased {border-left:3px solid var(--store-warning)}
+.store-ui .delivery-history {padding:12px;border-left:3px solid var(--border-strong);margin:12px 0;background:var(--bg-surface-elevated)}
+.store-ui .delivery-history small {display:block;color:var(--text-secondary);margin-top:4px}
+.store-ui .delivery-history h3 {font-size:14px;margin:12px 0 6px}
+.store-ui .delivery-flow fieldset {border:0;padding:0;min-width:0}
+.store-ui .delivery-flow .order-summary {position:sticky;bottom:0;background:var(--bg-surface);padding:14px 0;border-top:1px solid var(--border-subtle);gap:12px;flex-wrap:wrap}
+@media(max-width:700px){.store-ui .delivery-line .form-pair {grid-template-columns:1fr}}

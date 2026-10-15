@@ -38,7 +38,7 @@ html[data-theme] .shell .goal-track>span{color:var(--text-secondary)}
 /* Grid POS Theme system: palettes adapt seamlessly between light and dark modes. */
 html[data-theme=light] .shell[data-accent=emerald]{--character:#059669;--character-ink:#fff;--character-soft:#ecfdf5;--focus:#10b981}
 html[data-theme=light] .shell[data-accent=slate]{--character:#0f172a;--character-ink:#fff;--character-soft:#f1f5f9;--focus:#00e676}
-html[data-theme=light] .shell[data-accent=gold]{--character:#C88A00;--character-ink:#fff;--character-soft:#FFF8E1;--focus:#FDB813}
+html[data-theme=light] .shell[data-accent=gold]{--character:#C88A00;--character-ink:#1F1500;--character-soft:#FFF8E1;--focus:#78350f}
 html[data-theme=light] .shell[data-accent=green]{--character:#2d7a3c;--character-ink:#fff;--character-soft:#e3f0e1}
 html[data-theme=light] .shell[data-accent=blue]{--character:#1f66a6;--character-ink:#fff;--character-soft:#e0ecf8}
 html[data-theme=light] .shell[data-accent=rose]{--character:#c0463b;--character-ink:#fff;--character-soft:#fae5e2}
