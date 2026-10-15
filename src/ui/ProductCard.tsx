@@ -1,4 +1,5 @@
-import { memo, useEffect, useRef, type CSSProperties, type KeyboardEvent } from 'react';
+import {brandLogo,productBrandName} from './brandAssets';
+import { memo, useEffect, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react';
 import { money, quantity, type Product } from '../model';
 import { reducedMotion } from './interaction';
 import { categoryHue, customIconKey, iconKeyFor, parseBrandBadge, presentation, productIcons } from './productIcons';
@@ -36,7 +37,17 @@ export const brandBadges = [
 ];
 
 export const ProductVisual = memo(function ProductVisual({ product, compact = false }: { product: Product; compact?: boolean }) {
-  const explicitBrand = parseBrandBadge(product.icon);
+  const [failedLogo,setFailedLogo]=useState('');
+  const namedBrand=productBrandName(product.name);
+  const configuredBrand=parseBrandBadge(product.icon);
+  // A brand present in the product name takes precedence over an old icon assignment.
+  const logo=brandLogo(namedBrand??configuredBrand?.label??'');
+  if(logo&&failedLogo!==logo){
+    return <span className={`product-visual product-brand-logo ${compact?'compact':''}`} aria-hidden="true">
+      <img src={logo} alt="" width={64} height={44} decoding="async" draggable={false} onError={()=>setFailedLogo(logo)}/>
+    </span>;
+  }
+  const explicitBrand = !namedBrand||namedBrand===configuredBrand?.label?configuredBrand:null;
   if (explicitBrand) {
     return (
       <span className={`product-visual brand-badge brand-${explicitBrand.tone} ${compact ? 'compact' : ''}`} aria-hidden="true">

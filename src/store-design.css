@@ -30,7 +30,7 @@ html.store-ui[data-theme=dark] {
 
 /* Store accent themes - Light Mode */
 .store-ui .shell[data-accent=classic] {--action:#174e75;--action-ink:#fff;--action-soft:#e4eef6;--focus:#174e75}
-.store-ui .shell[data-accent=emerald] {--action:#059669;--action-ink:#fff;--action-soft:#d1fae5;--focus:#059669}
+.store-ui .shell[data-accent=emerald] {--action:#047857;--action-ink:#fff;--action-soft:#d1fae5;--focus:#047857}
 .store-ui .shell[data-accent=slate] {--action:#334155;--action-ink:#fff;--action-soft:#e2e8f0;--focus:#475569}
 .store-ui .shell[data-accent=green] {--action:#15803d;--action-ink:#fff;--action-soft:#dcfce7;--focus:#16a34a}
 .store-ui .shell[data-accent=blue] {--action:#2563eb;--action-ink:#fff;--action-soft:#dbeafe;--focus:#2563eb}
@@ -639,3 +639,123 @@ html.store-ui[data-input-mode=touch] .shell .sale-product-card {height:auto;min-
 /* Brand artwork keeps its original aspect ratio, including tall seals. */
 .store-ui .supplier-brand-picker .supplier-brand-symbol {width:88px;height:52px;padding:4px;box-sizing:border-box}
 .store-ui .supplier-brand-picker .supplier-brand-symbol img {width:100%;height:100%;max-width:80px;max-height:44px;object-fit:contain}
+
+/* Local brand artwork has a dedicated, non-overlapping slot in checkout. */
+.store-ui .product-visual.product-brand-logo {display:flex;align-items:center;justify-content:center;box-sizing:border-box;overflow:hidden;background:#fff;color:#172a35;transform:none;border-radius:8px;padding:5px;box-shadow:none}
+.store-ui .product-visual.product-brand-logo::before,.store-ui .product-visual.product-brand-logo::after {display:none}
+.store-ui .product-visual.product-brand-logo img {display:block;position:static;width:100%;height:100%;max-width:100%;max-height:100%;min-width:0;object-fit:contain;object-position:center;transform:none;filter:none;pointer-events:none}
+.store-ui .shell .sale-product-card {grid-template-columns:64px minmax(0,1fr)}
+.store-ui .shell .sale-product-card .sale-product-face,
+.store-ui .shell[data-density=compact] .sale-product-card .sale-product-face {width:64px;height:48px;align-self:start}
+.store-ui .shell .sale-product-card .product-visual.product-brand-logo {background:#fff;padding:5px;width:100%;height:100%;border:1px solid #e4e8eb}
+html.store-ui[data-input-mode=touch] .shell .sale-product-card .sale-product-face {height:52px}
+
+/* The same local product artwork in inventory, purchase search and ticket rows. */
+.store-ui .shell .inventory-product,
+.store-ui .shell .order-product {display:grid;grid-template-columns:64px minmax(0,1fr);align-items:center;gap:12px;min-width:0}
+.store-ui .shell .inventory-product>.product-visual,
+.store-ui .shell .order-product>.product-visual {position:static;box-sizing:border-box;width:64px;height:48px;min-width:64px;max-width:64px;flex:none;margin:0;padding:5px;overflow:hidden;transform:none}
+.store-ui .shell .inventory-product>span:not(.product-visual),
+.store-ui .shell .order-product>div {min-width:0;overflow-wrap:anywhere}
+.store-ui .shell .inventory-product :is(strong,h3,small) {white-space:normal;overflow-wrap:anywhere}
+.store-ui .shell .order-search-results>button {display:grid;grid-template-columns:64px minmax(0,1fr) 24px;align-items:center;gap:12px;min-width:0;text-align:left}
+.store-ui .shell .order-search-results .order-result-art {width:64px;height:48px;min-width:0;overflow:hidden;border-radius:8px}
+.store-ui .shell .order-result-art .product-visual {width:64px!important;height:48px!important;min-width:0;max-width:64px;box-sizing:border-box;padding:5px;margin:0;transform:none}
+.store-ui .shell .order-result-copy {display:flex;flex-direction:column;min-width:0;gap:4px;overflow-wrap:anywhere;white-space:normal}
+.store-ui .shell .order-result-add {position:static;display:grid;place-items:center;width:24px;height:24px;transform:none;flex:none}
+.store-ui .shell .ticket-lines .line>.product-visual {width:48px;height:40px;min-width:48px;max-width:48px;flex:none;box-sizing:border-box;margin:0;padding:4px;overflow:hidden;transform:none}
+.store-ui .shell :is(.inventory-product,.order-product,.order-result-art,.ticket-lines) .product-brand-logo {background:#fff;border:1px solid #e4e8eb;border-radius:8px}
+.store-ui .shell :is(.inventory-product,.order-product,.order-result-art,.ticket-lines) .product-brand-logo img {display:block;position:static;width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;transform:none;filter:none}
+@media(max-width:600px) {
+ .store-ui .shell .order-search-results {grid-template-columns:minmax(0,1fr)}
+ .store-ui .shell .warehouse-grid {grid-template-columns:minmax(0,1fr)}
+}
+
+/* Cross-theme layout: text may wrap, artwork never shrinks into its neighbour. */
+.store-ui :is(.shell,.retail-dialog,.store-login) :is(fieldset,.field,.form-pair>*,.section-head>*,.settings-section,.supplier-card,.warehouse-grid>article) {min-width:0;box-sizing:border-box}
+.store-ui :is(.shell,.retail-dialog,.store-login) :is(input,select,textarea) {max-width:100%;box-sizing:border-box;color:var(--text-primary);background-color:var(--bg-input)}
+.store-ui :is(.shell,.retail-dialog,.store-login) select option {color:var(--text-primary);background:var(--bg-input)}
+.store-ui :is(.shell,.retail-dialog,.store-login) :is(input,textarea)::placeholder {color:var(--text-secondary);opacity:1}
+.store-ui .shell :is(.section-head,.supplier-actions,.form-actions,.workspace-tabs,.topbar) {flex-wrap:wrap;row-gap:10px}
+.store-ui .shell :is(.wordmark,.nav-label,.supplier-card header>div,.settings-section>header>div) {min-width:0;overflow-wrap:anywhere}
+.store-ui .shell :is(.nav-icon,.brand-mark,.supplier-brand-symbol,.product-visual) {flex-shrink:0}
+.store-ui .shell :is(.section-head,.supplier-actions,.form-actions,.workspace-tabs) button {height:auto;white-space:normal;overflow-wrap:break-word;line-height:1.4}
+.store-ui .shell .supplier-card header {display:flex;align-items:center;gap:12px;min-width:0}
+.store-ui .shell .supplier-card h3 {overflow-wrap:anywhere}
+.store-ui .shell .product-grid {grid-template-columns:repeat(auto-fill,minmax(min(210px,100%),1fr))}
+.store-ui .shell[data-density=compact] .product-grid {grid-template-columns:repeat(auto-fill,minmax(min(185px,100%),1fr))}
+.store-ui .shell .sale-product-card:disabled {opacity:1;color:var(--text-secondary);background:var(--bg-surface)}
+.store-ui .shell .sale-product-card .sale-product-name {color:var(--text-primary)}
+.store-ui .shell .sale-product-card .sale-product-footer {height:auto;min-height:36px}
+.store-ui .shell .ticket-lines .line {display:grid;grid-template-columns:48px minmax(0,1fr);align-items:start;gap:10px}
+.store-ui .shell .ticket-lines .line>.line-detail {grid-column:2;min-width:0}
+.store-ui .shell .ticket-lines .line>.line-end {grid-column:2;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;min-width:0}
+.store-ui .shell .ticket-tabs {overflow-x:auto;grid-template-columns:repeat(5,minmax(56px,1fr))}
+.store-ui .shell .ticket-tabs button {white-space:normal;overflow-wrap:anywhere}
+.store-ui .shell .stepper {display:flex;flex-wrap:wrap;align-items:center;gap:8px;width:fit-content;max-width:100%}
+/* Logos retain original colors on a neutral backing in either theme. */
+html.store-ui[data-theme] :is(.product-brand-logo,.supplier-brand-symbol) {background:#fff;color:#203e35;border:1px solid #d4dce2;filter:none;mix-blend-mode:normal}
+html.store-ui[data-theme] :is(.product-brand-logo,.supplier-brand-symbol) img {object-fit:contain;filter:none;mix-blend-mode:normal;opacity:1}
+html.store-ui[data-input-mode=touch] .shell .product-grid {grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:12px}
+html.store-ui[data-input-mode=touch] :is(.shell,.retail-dialog,.store-login) :is(.theme-toggle,.quick-mute,.search-clear) {min-height:48px!important;min-width:48px!important;flex-shrink:0}
+html.store-ui[data-input-mode=touch] .shell .ticket-tabs {grid-template-columns:repeat(5,minmax(64px,1fr));gap:6px}
+html.store-ui[data-input-mode=touch] .shell .workspace-tabs {gap:8px}
+html.store-ui[data-input-mode=touch] :is(.shell,.retail-dialog,.store-login) :is(.check-row,.input-mode-picker label) {min-height:48px;align-items:center;gap:12px}
+html.store-ui[data-input-mode=touch] .shell .inventory-actions {display:flex;flex-wrap:wrap;gap:8px}
+html.store-ui[data-input-mode=touch] .shell .supplier-brand-picker .supplier-suggestions {gap:12px}
+@media(max-width:1100px) {
+ html.store-ui .shell .checkout-layout {grid-template-columns:minmax(0,1fr)}
+ html.store-ui .shell .checkout-layout .ticket-panel {min-width:0;height:auto;max-height:none}
+ html.store-ui .shell .checkout-layout .product-grid {flex:none;max-height:55dvh}
+ .store-ui .shell .topbar .wordmark {flex:1 1 180px}
+ .store-ui .shell :is(.form-pair,.settings-grid,.admin-grid) {grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr))}
+}
+@media(max-width:600px) {
+ .store-ui .shell .topbar {padding:12px;gap:10px}
+ .store-ui :is(.retail-dialog,.filter-dialog) {max-width:calc(100vw - 24px);max-height:calc(100dvh - 24px);box-sizing:border-box;overflow:auto}
+ .store-ui .shell :is(.form-actions,.supplier-actions)>button {flex:1 1 140px}
+}
+
+/* Payment and form dialogs: a single scroll area, with actions in document flow. */
+.store-ui .retail-dialog {
+ box-sizing:border-box;width:min(640px,calc(100vw - 24px));max-width:calc(100vw - 24px);
+ max-height:calc(100dvh - 24px);height:auto;overflow:auto;overscroll-behavior:contain;
+ padding:20px;scroll-padding-block:20px;scrollbar-gutter:stable;
+}
+.store-ui .retail-dialog>header {display:grid;grid-template-columns:44px minmax(0,1fr) 48px;align-items:center;gap:12px;margin:0 0 20px;padding:0 0 16px}
+.store-ui .retail-dialog>header .dialog-emblem {width:44px;height:44px;min-width:0;display:grid;place-items:center}
+.store-ui .retail-dialog>header .icon-button {position:static;align-self:start;width:48px;height:48px;padding:10px;display:grid;place-items:center;flex:none}
+.store-ui .retail-dialog>form {display:flex;flex-direction:column;gap:16px;min-width:0;max-width:100%;padding:0 0 max(4px,env(safe-area-inset-bottom));margin:0}
+.store-ui .retail-dialog>form>* {flex-shrink:0;min-width:0;box-sizing:border-box}
+.store-ui .retail-dialog .field {display:flex;flex-direction:column;gap:7px;min-width:0;margin:0;height:auto}
+.store-ui .retail-dialog :is(.field>span,legend,p,small,.alert) {white-space:normal;overflow-wrap:anywhere;line-height:1.5}
+.store-ui .retail-dialog :is(input:not([type=checkbox]):not([type=radio]):not([type=hidden]),select,textarea) {box-sizing:border-box;width:100%;min-width:0;max-width:100%;padding:12px;height:auto;line-height:1.4}
+.store-ui .retail-dialog textarea {min-height:96px;resize:vertical}
+.store-ui .retail-dialog :is(.form-pair,.payment-splits) {display:grid;grid-template-columns:repeat(auto-fit,minmax(min(190px,100%),1fr));gap:16px;margin:0;padding:12px}
+.store-ui .retail-dialog .quick-cash {display:grid;grid-template-columns:repeat(auto-fit,minmax(min(96px,100%),1fr));gap:10px}
+.store-ui .retail-dialog :is(.quick-cash button,.bulk-presets button,.modal-submit) {height:auto;min-height:48px;padding:12px;white-space:normal;line-height:1.4;overflow-wrap:break-word}
+.store-ui .retail-dialog .modal-submit {position:static;inset:auto;display:flex;align-items:center;justify-content:center;gap:12px;width:100%;max-width:100%;margin:8px 0 0;box-sizing:border-box;overflow:visible}
+.store-ui .retail-dialog .modal-submit .arcade-label {flex:1 1 auto;min-width:0;white-space:normal;text-align:center;overflow-wrap:anywhere}
+.store-ui .retail-dialog .modal-submit .kbd-badge {position:static;flex:none;margin:0}
+.store-ui .retail-dialog .payment-total {display:flex;flex-direction:column;align-items:flex-start;gap:8px;min-width:0;padding:16px;margin:0}
+.store-ui .retail-dialog .payment-total .number-ticker,
+.store-ui .retail-dialog .payment-total .number-ticker * {color:var(--text-primary)!important}
+.store-ui .retail-dialog .payment-total .number-ticker {font-size:clamp(24px,5vw,38px);max-width:100%;font-variant-numeric:tabular-nums}
+.store-ui .retail-dialog .change {display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px;margin:0}
+.store-ui .retail-dialog .check-row {display:flex;align-items:flex-start;gap:12px;height:auto;line-height:1.5;white-space:normal}
+.store-ui .retail-dialog .check-row input {flex:none;margin-top:3px}
+.store-ui .retail-dialog .movement-direction {display:grid;grid-template-columns:repeat(auto-fit,minmax(min(180px,100%),1fr));gap:12px;padding:12px}
+.store-ui .retail-dialog .movement-direction label {display:flex;align-items:center;gap:10px;min-height:48px;white-space:normal;line-height:1.4}
+.store-ui .retail-dialog .movement-direction input {flex:none}
+.store-ui .retail-dialog button:disabled {opacity:1;background:var(--bg-surface-elevated);color:var(--text-secondary);border:1px solid var(--border-strong);box-shadow:none}
+html.store-ui[data-input-mode=touch] .retail-dialog :is(button,input:not([type=hidden]),select,textarea) {font-size:16px}
+html.store-ui[data-input-mode=touch] .retail-dialog .modal-submit {min-height:56px!important}
+html.store-ui[data-input-mode=touch] .retail-dialog .modal-submit .kbd-badge {display:none}
+html.store-ui[data-input-mode=touch] .retail-dialog .quick-cash {gap:12px}
+@media(max-width:480px) {
+ .store-ui .retail-dialog {padding:14px}
+ .store-ui .retail-dialog>header {grid-template-columns:minmax(0,1fr) 48px;gap:10px}
+ .store-ui .retail-dialog>header .dialog-emblem {display:none}
+ .store-ui .retail-dialog :is(.form-pair,.payment-splits,.movement-direction) {grid-template-columns:minmax(0,1fr)}
+ .store-ui .retail-dialog h2 {font-size:20px}
+}
