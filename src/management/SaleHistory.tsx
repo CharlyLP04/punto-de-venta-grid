@@ -264,7 +264,7 @@ export default function SaleHistory({products,onPrint,onRefund,revision}:{revisi
                     </div>
 
                     {items.length > 0 ? (
-                      <div className="receipt-table">
+                      <div className="receipt-table" tabIndex={0} role="region" aria-label="Productos del ticket; desplaza horizontalmente para ver todas las columnas">
                         <div className="receipt-thead">
                           <span className="th-name">Producto</span>
                           <span className="th-qty">Cantidad</span>

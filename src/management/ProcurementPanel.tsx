@@ -2,7 +2,7 @@ import {SupplierBrandIcon as SupplierIcon,SupplierBrandPicker} from '../ui/Suppl
 import {BudgetPlanner,ReceiveDelivery,type SupplyOrder,type SupplyBody} from './SupplyFlows';
 import {openWhatsApp} from './whatsapp';
 import ToastMessages from '../ui/ToastMessages';
-import {Truck,Package,Phone,Plus,Minus,Trash2,Copy,Package} from 'lucide-react';
+import {Truck,Package,Phone,Plus,Minus,Trash2,Copy} from 'lucide-react';
 import {ProductVisual} from '../ui/ProductCard';
 import {useEffect,useMemo,useRef,useState,type FormEvent} from 'react';
 import {invoke} from '../api';

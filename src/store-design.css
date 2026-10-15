@@ -759,3 +759,85 @@ html.store-ui[data-input-mode=touch] .retail-dialog .quick-cash {gap:12px}
  .store-ui .retail-dialog :is(.form-pair,.payment-splits,.movement-direction) {grid-template-columns:minmax(0,1fr)}
  .store-ui .retail-dialog h2 {font-size:20px}
 }
+
+/* Sales, reports and administration: content determines row height. */
+.store-ui .shell :is(.sales-history,.report-explorer,.admin-grid,.store-settings,.backup-center-hub,.audit-trail) {min-width:0;max-width:100%;box-sizing:border-box}
+.store-ui .shell :is(.report-filter-grid,.analytics-grid,.store-settings,.admin-grid)>* {min-width:0}
+.store-ui .shell :is(.report-filter-grid,.analytics-grid,.admin-grid) {grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:16px}
+.store-ui .shell :is(.range-presets,.report-options,.record-actions,.backup-badges,.backup-meta-row,.receipt-meta-chips,.color-options,.density-options) {display:flex;flex-wrap:wrap;align-items:center;gap:10px;min-width:0;height:auto}
+.store-ui .shell :is(.sales-history,.report-explorer,.admin-grid,.store-settings,.backup-center-hub,.audit-trail) button {height:auto;max-width:100%;white-space:normal;overflow-wrap:break-word;line-height:1.4;flex-shrink:0}
+.store-ui .shell :is(.sales-history,.report-explorer,.admin-grid,.store-settings,.backup-center-hub,.audit-trail) :is(p,small,h2,h3,label,summary) {overflow-wrap:anywhere;white-space:normal}
+.store-ui .shell :is(.sales-history,.report-explorer,.admin-grid,.store-settings,.backup-center-hub,.audit-trail) :is(input,select,textarea) {min-width:0;width:100%;box-sizing:border-box}
+.store-ui .shell :is(.sales-history,.report-explorer,.admin-grid,.store-settings,.backup-center-hub,.audit-trail) input:is([type=checkbox],[type=radio]) {width:auto;flex:none}
+.store-ui .shell .record-main-row {display:flex;align-items:center;flex-wrap:wrap;gap:12px;height:auto;min-width:0}
+.store-ui .shell :is(.record-folio-line,.receipt-banner,.receipt-summary-strip,.receipt-grand-total,.report-period,.search-submit-bar) {display:flex;flex-wrap:wrap;align-items:center;gap:12px;height:auto;min-width:0}
+.store-ui .shell :is(.record-meta-col,.record-sub,.record-folio,.backup-file-info,.file-name,.directory-code) {min-width:0;white-space:normal;overflow-wrap:anywhere}
+.store-ui .shell .record-meta-col {flex:1 1 180px}
+.store-ui .shell .record-actions {justify-content:flex-start}
+.store-ui .shell .ticket-preview-drawer {min-width:0;max-width:100%;height:auto;overflow:visible}
+.store-ui .shell .ticket-preview-card {min-width:0;max-width:100%;box-sizing:border-box}
+.store-ui .shell .receipt-table {min-width:0;max-width:100%;overflow-x:auto;padding-bottom:6px;overscroll-behavior-x:contain}
+.store-ui .shell :is(.receipt-thead,.receipt-tr) {display:grid;grid-template-columns:minmax(160px,1fr) 80px 110px 120px;gap:12px;min-width:520px;height:auto;align-items:start}
+.store-ui .shell :is(.td-name,.th-name) {white-space:normal;overflow-wrap:anywhere;min-width:0}
+.store-ui .shell :is(.td-price,.td-qty,.td-subtotal,.record-total) {font-variant-numeric:tabular-nums;white-space:nowrap}
+.store-ui .shell .report-kpis {display:grid;grid-template-columns:repeat(auto-fit,minmax(min(210px,100%),1fr));gap:12px}
+.store-ui .shell .report-kpis>* {min-width:0;height:auto}
+.store-ui .shell .report-kpis strong {font-size:clamp(20px,2.4vw,28px);overflow-wrap:anywhere}
+.store-ui .shell .top-product {display:grid;grid-template-columns:32px minmax(0,1fr) auto;gap:12px;align-items:start;height:auto}
+.store-ui .shell .top-product>span {min-width:0;overflow-wrap:anywhere}
+.store-ui .shell .top-product progress,.store-ui .shell .payment-bar progress {width:100%;max-width:100%}
+.store-ui .shell .payment-bar>span {display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px}
+.store-ui .shell .sales-chart {display:block;width:100%;height:auto;max-width:100%}
+.store-ui .shell .sales-chart text {fill:var(--text-secondary)}
+.store-ui .shell :is(.receipt-thead,.receipt-summary-strip,.cut-preview) {background:var(--bg-surface-elevated);color:var(--text-primary)}
+.store-ui .shell :is(.record-sub,.history-subtitle,.file-date,.file-size,.report-explanation) {color:var(--text-secondary)}
+.store-ui .shell .backup-record-card {display:flex;flex-wrap:wrap;align-items:center;gap:14px;height:auto}
+.store-ui .shell .backup-file-info {flex:1 1 220px}
+.store-ui .shell .audit-event>summary {display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;padding-block:12px;height:auto}
+.store-ui .shell .audit-event>summary>* {min-width:0;overflow-wrap:anywhere}
+.store-ui .shell .settings-save {position:static;display:flex;flex-wrap:wrap;gap:12px;margin-top:16px;height:auto}
+html.store-ui[data-input-mode=touch] .shell :is(.sales-history,.report-explorer,.admin-grid,.store-settings,.backup-center-hub,.audit-trail) button {min-height:48px;padding:12px;line-height:1.4}
+html.store-ui[data-input-mode=touch] .shell :is(.receipt-tr,.receipt-thead) {padding-block:12px}
+@media(max-width:760px) {
+ .store-ui .shell .store-settings {grid-template-columns:minmax(0,1fr)}
+ .store-ui .shell .settings-preview {position:static;min-width:0;max-width:100%}
+ .store-ui .shell .top-product {grid-template-columns:28px minmax(0,1fr)}
+ .store-ui .shell .top-product>strong {grid-column:2}
+ .store-ui .shell .record-actions {width:100%}
+ .store-ui .shell .record-actions button {flex:1 1 150px}
+ .store-ui .shell .search-submit-bar>* {flex:1 1 180px;min-width:0}
+}
+
+/* Customer accounts: long names, balances and repayment actions keep separate space. */
+.store-ui .shell .customer-workspace {min-width:0;max-width:100%;box-sizing:border-box}
+.store-ui .shell .customer-workspace>.section-head {display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.store-ui .shell .customer-workspace>.section-head>div {min-width:0;flex:1 1 220px}
+.store-ui .shell .customer-workspace .customer-grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(min(290px,100%),1fr));align-items:start;gap:16px}
+.store-ui .shell .customer-workspace .customer {display:flex;flex-direction:column;align-items:stretch;gap:10px;min-width:0;max-width:100%;height:auto;max-height:none;padding:18px;box-sizing:border-box;overflow:visible}
+.store-ui .shell .customer-workspace .customer>.avatar {align-self:flex-start;flex:none}
+.store-ui .shell .customer-workspace .customer :is(h3,small,p,strong,summary) {min-width:0;max-width:100%;white-space:normal;overflow-wrap:anywhere;height:auto;line-height:1.5;margin:0}
+.store-ui .shell .customer-workspace .customer>h3 {font-size:18px;color:var(--text-primary)}
+.store-ui .shell .customer-workspace .customer>strong {font-size:26px;font-variant-numeric:tabular-nums;color:var(--text-primary)}
+.store-ui .shell .customer-workspace .customer small {color:var(--text-secondary);font-size:13px}
+.store-ui .shell .customer-workspace button {position:static;box-sizing:border-box;height:auto;min-height:44px;max-width:100%;padding:10px 14px;white-space:normal;overflow-wrap:break-word;line-height:1.4;flex-shrink:0}
+.store-ui .shell .customer-workspace .customer>button {width:100%;text-align:center}
+.store-ui .shell .customer-workspace .credit-meter {display:flex;flex-direction:column;gap:8px;width:100%;min-width:0;margin:4px 0;padding:10px;box-sizing:border-box;background:var(--bg-surface-elevated);border-radius:8px;color:var(--text-primary)}
+.store-ui .shell .customer-workspace .credit-meter progress {display:block;width:100%;max-width:100%;height:10px;accent-color:var(--store-green)}
+.store-ui .shell .customer-workspace .credit-meter.warning progress {accent-color:var(--store-warning)}
+.store-ui .shell .customer-workspace .credit-meter.danger progress {accent-color:var(--store-danger)}
+.store-ui .shell .customer-workspace .customer details {width:100%;min-width:0;border-top:1px solid var(--border-subtle);padding-top:8px;margin-top:4px}
+.store-ui .shell .customer-workspace .customer summary {padding:10px 4px;min-height:44px;box-sizing:border-box;color:var(--text-primary);cursor:pointer}
+.store-ui .shell .customer-workspace .customer details p {padding:12px 0;border-bottom:1px solid var(--border-subtle);font-variant-numeric:tabular-nums}
+.store-ui .shell .customer-workspace .customer details small {display:block;margin-top:4px}
+.store-ui .shell .customer-workspace>.record {display:flex;align-items:center;flex-wrap:wrap;gap:12px;min-width:0;height:auto;padding:14px 0;border-bottom:1px solid var(--border-subtle)}
+.store-ui .shell .customer-workspace>.record>span {flex:1 1 220px;min-width:0;overflow-wrap:anywhere}
+.store-ui .shell .customer-workspace>.record small {display:block;margin-top:6px;white-space:normal;line-height:1.5;color:var(--text-secondary)}
+.store-ui .shell .customer-workspace button:disabled {opacity:1;color:var(--text-secondary);background:var(--bg-surface-elevated);border:1px solid var(--border-subtle)}
+.store-ui :is(.dialog-customer,.dialog-credit,.dialog-repay) .field {min-width:0;max-width:100%}
+.store-ui :is(.dialog-customer,.dialog-credit,.dialog-repay) .field>small {color:var(--text-secondary);line-height:1.5;white-space:normal}
+html.store-ui[data-input-mode=touch] .shell .customer-workspace :is(button,summary) {min-height:48px;padding:12px;font-size:16px}
+html.store-ui[data-input-mode=touch] .shell .customer-workspace .customer {gap:12px}
+@media(max-width:600px) {
+ .store-ui .shell .customer-workspace .customer-grid {grid-template-columns:minmax(0,1fr)}
+ .store-ui .shell .customer-workspace>.section-head>button,.store-ui .shell .customer-workspace>.record>button {width:100%}
+}
