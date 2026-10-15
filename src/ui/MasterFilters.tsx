@@ -10,16 +10,38 @@ export type CatalogFilters = {
 export const emptyFilters = ():CatalogFilters => ({categories:[],products:[],stock:'all',unit:'all',min:'',max:'',favorites:false,frequent:false,sort:'name'});
 export const normalize = (text:string) => text.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('es-MX');
 const collator=new Intl.Collator('es-MX');
-function matchesSearch(product:Product,words:string[],extra:Map<number,string[]>){
+// Weak keys release removed products; field checks also cover in-place edits.
+const searchText=new WeakMap<Product,{source:string;text:string}>();
+function productSearchText(product:Product){
+ const source=`${product.name} ${product.code} ${product.category}`;
+ const cached=searchText.get(product);
+ if(cached?.source===source)return cached.text;
+ const text=normalize(source);
+ searchText.set(product,{source,text});
+ return text;
+}
+type Alias={product:number;code:string};
+// Snapshot arrays are replaced on refresh; weak keys do not retain old catalogs.
+const aliasIndexes=new WeakMap<Alias[],Map<number,string>>();
+function aliasIndex(aliases:Alias[]){
+ const cached=aliasIndexes.get(aliases);
+ if(cached)return cached;
+ const parts=new Map<number,string[]>();
+ for(const alias of aliases){const code=normalize(alias.code);const values=parts.get(alias.product);if(values)values.push(code);else parts.set(alias.product,[code]);}
+ const index=new Map(Array.from(parts,([id,values])=>[id,values.join(' ')]));
+ aliasIndexes.set(aliases,index);
+ return index;
+}
+const noAliases=new Map<number,string>();
+function matchesSearch(product:Product,words:string[],extra:Map<number,string>){
   if(!words.length)return true;
-  const haystack=normalize(`${product.name} ${product.code} ${product.category} ${(extra.get(product.id)??[]).join(' ')}`);
+  const haystack=`${productSearchText(product)} ${extra.get(product.id)??''}`;
   return words.every(word=>haystack.includes(word));
 }
 export function filterCatalog(products:Product[], filters:CatalogFilters, search:string, aliases:{product:number;code:string}[], frequency:Map<number,number>) {
-  const extra=new Map<number,string[]>();
-  for(const alias of aliases){const list=extra.get(alias.product);if(list)list.push(alias.code);else extra.set(alias.product,[alias.code]);}
-  const selectedCategories=new Set(filters.categories),selectedProducts=new Set(filters.products);
   const words=normalize(search).trim().split(/\s+/).filter(Boolean);
+  const extra=words.length?aliasIndex(aliases):noAliases;
+  const selectedCategories=new Set(filters.categories),selectedProducts=new Set(filters.products);
   const min=filters.min===''?0:Math.round(Number(filters.min)*100);
   const max=filters.max===''?Infinity:Math.round(Number(filters.max)*100);
   return products.filter(p=>
@@ -45,7 +67,8 @@ export default function MasterFilters({products,value,onChange,search,onSearch,c
   useEffect(()=>setOptionPage(0),[productSearch,products]);
   const categories=useMemo(()=>[...new Set(products.map(p=>p.category))].sort((a,b)=>a.localeCompare(b,'es-MX')),[products]);
   const counts=useMemo(()=>{const result=new Map<string,number>();for(const p of products)result.set(p.category,(result.get(p.category)??0)+1);return result;},[products]);
-  const options=useMemo(()=>{const needle=normalize(productSearch);return open?products.filter(p=>normalize(`${p.name} ${p.code}`).includes(needle)):[];},[products,productSearch,open]);
+  const optionIndex=useMemo(()=>open?products.map(product=>({product,text:normalize(`${product.name} ${product.code}`)})):[],[products,open]);
+  const options=useMemo(()=>{const needle=normalize(productSearch);return optionIndex.filter(entry=>entry.text.includes(needle)).map(entry=>entry.product);},[optionIndex,productSearch]);
   function patch(change:Partial<CatalogFilters>){onChange({...value,...change});}
   const active=value.categories.length+value.products.length+Number(value.stock!=='all')+Number(value.unit!=='all')+Number(value.min!=='')+Number(value.max!=='')+Number(value.favorites)+Number(value.frequent)+Number(!!search);
   return <section className={`master-filters ${compact?'counter-filters':'workspace-filters'}`} aria-label="Filtros maestros de productos">

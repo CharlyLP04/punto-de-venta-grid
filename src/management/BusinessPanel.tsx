@@ -38,7 +38,7 @@ export default function BusinessPanel({section,data,onRefresh,filteredProductIds
   const orders=inventory?.orders.filter(p=>!filteredProductIds||filteredProductIds.has(p.id));
   const selected=data.products.find(p=>p.id===product);
   const productOptions=data.products.map(p=><option key={p.id} value={p.id}>{p.name} · {p.unit}</option>);
-  return <section className="business-panel">
+  return <section className={`business-panel ${section==='inventory'?'restock-workspace':''}`}>
     {error&&<div className="alert error" role="alert">{error}</div>}{notice&&<div className="alert success">{notice}</div>}
     {section==='inventory'&&<>
       <article className="panel"><h2>Pedido sugerido</h2><p className="muted">Los filtros maestros se aplican a este pedido sugerido. Los formularios y compras recientes conservan todos sus productos. Diferencia entre el stock actual y el objetivo configurado; no se envían pedidos automáticamente.</p>{orders?.map(p=><div className="record" key={p.id}><span>{p.name}<small>Disponible: {quantity(p.stock)}</small></span><strong>Pedir {quantity(p.suggested)}</strong></div>)}{orders?.length===0&&<p>No hay productos por surtir que coincidan con los filtros.</p>}</article>

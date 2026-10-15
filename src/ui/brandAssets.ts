@@ -8,12 +8,16 @@ export const supplierBrands=[
 ];
 
 const logoByKey=new Map(Object.entries(logos).map(([path,url])=>[path.replace(/^.*\//,'').replace(/\.[^.]+$/,''),url]));
+// Prepare immutable brand metadata once, instead of sorting and normalizing per card.
+const brandByName=new Map(supplierBrands.map(brand=>[normalize(brand[0]),brand]));
+const brandMatchers=[...supplierBrands].sort((a,b)=>b[0].length-a[0].length)
+ .map(brand=>({name:brand[0],needle:` ${normalize(brand[0])} `}));
 export function brandLogo(name:string){
- const brand=supplierBrands.find(b=>normalize(b[0])===normalize(name));
+ const brand=brandByName.get(normalize(name));
  return brand?.[2]?logoByKey.get(brand[2]):undefined;
 }
 /** Match whole brand names, never category or manufacturer guesses. */
 export function productBrandName(name:string){
  const words=` ${normalize(name)} `;
- return [...supplierBrands].sort((a,b)=>b[0].length-a[0].length).find(b=>words.includes(` ${normalize(b[0])} `))?.[0];
+ return brandMatchers.find(brand=>words.includes(brand.needle))?.name;
 }

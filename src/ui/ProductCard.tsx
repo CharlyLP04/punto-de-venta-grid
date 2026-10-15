@@ -123,16 +123,23 @@ export default function ProductCard({ product, disabled, pulse, onAdd }: Props) 
     : /lácteos/i.test(product.category) ? 'blue'
     : /botanas|panadería/i.test(product.category) ? 'gold' : 'violet';
 
-    const pres = presentation(product.name || product.code);
     return <button ref={ref} className="sale-product-card" data-tone={tone} disabled={disabled||product.stock<=0} type="button" data-unavailable={product.stock<=0}
     onKeyDown={moveFocus} onClick={() => onAdd(product)}
     aria-label={`${product.stock<=0?'Agotado:':'Agregar'} ${product.name}, ${money(product.promotion_price??product.price)} por ${product.unit}. Disponible: ${quantity(product.stock)} ${product.unit}`}>
     
-    <span className="product-face sale-product-face"><ProductVisual product={product} compact/></span>
-    <span className="product-category sale-product-category">{product.category}{pres && <span className="category-size"> · {pres}</span>} <span>· {product.unit === 'kg' ? 'por kilo' : 'por pieza'}</span></span>
-    <strong className="product-name sale-product-name" title={product.name || product.code}>{product.name || product.code}</strong>
-    <span className="product-footer sale-product-footer"><b className="promo-price">{money(product.promotion_price??product.price)}{product.promotion_price!==null&&product.promotion_price<product.price&&<><del>{money(product.price)}</del><em>Oferta</em></>}</b><StockBadge product={product}/></span>
+    <ProductCardContent product={product}/>
   </button>;
 }
 
 
+
+// Keep the costly visual subtree stable when only callbacks or pulse state change.
+const ProductCardContent = memo(function ProductCardContent({product}:{product:Product}) {
+ const pres=presentation(product.name || product.code);
+ return <>
+    <span className="product-face sale-product-face"><ProductVisual product={product} compact/></span>
+    <span className="product-category sale-product-category">{product.category}{pres && <span className="category-size"> · {pres}</span>} <span>· {product.unit === 'kg' ? 'por kilo' : 'por pieza'}</span></span>
+    <strong className="product-name sale-product-name" title={product.name || product.code}>{product.name || product.code}</strong>
+    <span className="product-footer sale-product-footer"><b className="promo-price">{money(product.promotion_price??product.price)}{product.promotion_price!==null&&product.promotion_price<product.price&&<><del>{money(product.price)}</del><em>Oferta</em></>}</b><StockBadge product={product}/></span>
+ </>;
+});

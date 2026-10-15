@@ -1,4 +1,4 @@
-import {useEffect,useRef,useState,type FormEvent} from 'react';
+import {useEffect,useMemo,useRef,useState,type FormEvent} from 'react';
 import {Eye,EyeOff,ReceiptText,Search,RotateCcw,Printer,X,ShoppingBag} from 'lucide-react';
 import {invoke} from '../api';
 import {useSession} from '../security/Session';
@@ -36,6 +36,7 @@ export default function SaleHistory({products,onPrint,onRefund,revision}:{revisi
   const [busy,setBusy]=useState(false);
   const [error,setError]=useState('');
   const [expandedSale,setExpandedSale]=useState<string|null>(null);
+  const productOptions=useMemo(()=>products.map(p=><option key={p.id} value={p.id}>{p.name}</option>),[products]);
   const generation=useRef(0);
   const searchForm=useRef<HTMLFormElement>(null);
 
@@ -124,7 +125,7 @@ export default function SaleHistory({products,onPrint,onRefund,revision}:{revisi
                 <span>Producto vendido</span>
                 <select name="product">
                   <option value="">Todos</option>
-                  {products.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}
+                  {productOptions}
                 </select>
               </label>
               {can('reports.view')&&<label className="field">
