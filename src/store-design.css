@@ -591,3 +591,51 @@ html.store-ui[data-input-mode=touch] .shell .sale-product-card .sale-product-nam
 .store-ui .delivery-flow fieldset {border:0;padding:0;min-width:0}
 .store-ui .delivery-flow .order-summary {position:sticky;bottom:0;background:var(--bg-surface);padding:14px 0;border-top:1px solid var(--border-subtle);gap:12px;flex-wrap:wrap}
 @media(max-width:700px){.store-ui .delivery-line .form-pair {grid-template-columns:1fr}}
+
+/* Checkout cards own their layout; legacy .product-card artwork rules must not apply. */
+.store-ui .shell .product-grid {align-items:start;align-content:start;grid-auto-rows:max-content}
+.store-ui .shell .sale-product-card {
+ position:relative;box-sizing:border-box;display:grid;grid-template-columns:44px minmax(0,1fr);
+ grid-template-rows:auto auto auto;align-self:start;align-content:start;text-align:left;
+ width:100%;height:auto;min-height:0;max-height:none;overflow:hidden;
+ border:1px solid var(--border-subtle);background:var(--bg-surface);color:var(--text-primary);
+ box-shadow:none;gap:6px 10px;padding:12px;border-radius:12px;
+}
+.store-ui .shell[data-density=compact] .sale-product-card {height:auto;min-height:0;padding:10px}
+html.store-ui[data-input-mode=touch] .shell .sale-product-card {height:auto;min-height:144px;padding:14px}
+.store-ui .shell .sale-product-card .sale-product-face {position:static;grid-area:1/1/3/2;display:block;width:44px;height:44px;overflow:hidden}
+.store-ui .shell .sale-product-card .product-visual {position:static;display:flex;width:100%;height:100%;padding:4px;transform:none}
+.store-ui .shell .sale-product-card .brand-lettering {white-space:nowrap;overflow-wrap:normal;font-size:12px;line-height:1;letter-spacing:.02em}
+.store-ui .shell .sale-product-card .sale-product-category {min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.store-ui .shell .sale-product-card .sale-product-name {min-width:0;min-height:2.7em;display:block;overflow:visible;overflow-wrap:break-word;white-space:normal}
+.store-ui .shell .sale-product-card .sale-product-footer {display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:6px;min-width:0}
+.store-ui .shell .sale-product-card .stock-badge {flex:none;max-width:100%}
+.store-ui .shell .sale-product-card:disabled {opacity:.65}
+/* Reserve real space around disclosure controls, including their keyboard outline. */
+.store-ui .shell .workspace>.pending-center,
+.store-ui .shell:not(.checkout-shell) .workspace>.pending-center {
+ position:relative;inset:auto;display:block;flex:0 0 auto;clear:both;
+ margin:12px 22px 18px;padding:0;max-width:calc(100% - 44px);isolation:isolate;
+}
+.store-ui .shell .pending-center[open] .pending-grid {display:grid;gap:10px;margin-top:12px;padding:4px;max-height:260px;overflow:auto}
+.store-ui .shell .pending-center>summary {margin:0;vertical-align:middle}
+.store-ui .shell .ticket-empty {display:flex;flex-direction:column;justify-content:center;gap:12px}
+.store-ui .shell .ticket-empty p {margin:0 auto}
+.store-ui .shell .brand-mark,.store-ui .store-login .brand-mark {color:var(--action);filter:none;flex-shrink:0;background:transparent}
+@media(max-width:600px) {
+ .store-ui .shell .workspace>.pending-center,.store-ui .shell:not(.checkout-shell) .workspace>.pending-center {margin:12px 14px 18px;max-width:calc(100% - 28px)}
+}
+
+.store-ui .supplier-brand-picker {display:grid;gap:12px;margin:16px 0 24px}
+.store-ui .supplier-brand-picker .supplier-suggestions {display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin:0;max-height:320px;overflow:auto;padding:3px}
+.store-ui .supplier-brand-picker .supplier-suggestions button {display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:90px;padding:12px;border:1px solid var(--border-strong);border-radius:10px;background:var(--bg-surface);color:var(--text-primary);font-size:13px}
+.store-ui .supplier-brand-picker .supplier-suggestions button:hover {border-color:var(--action);background:var(--bg-surface-elevated)}
+.store-ui .supplier-brand-symbol {display:inline-flex;align-items:center;justify-content:center;width:68px;height:40px;flex:none;border-radius:7px;background:#fff;color:#203e35;font:700 16px/1 'Segoe UI',sans-serif;letter-spacing:.04em;overflow:hidden}
+.store-ui .supplier-brand-symbol img {display:block;max-width:60px;max-height:32px;object-fit:contain}
+.store-ui .supplier-card .supplier-avatar {width:76px;flex:none}
+.store-ui .supplier-brand-picker>small {color:var(--text-secondary);font-size:12px}
+.store-ui .supplier-brand-picker>.light {justify-self:start}
+
+/* Brand artwork keeps its original aspect ratio, including tall seals. */
+.store-ui .supplier-brand-picker .supplier-brand-symbol {width:88px;height:52px;padding:4px;box-sizing:border-box}
+.store-ui .supplier-brand-picker .supplier-brand-symbol img {width:100%;height:100%;max-width:80px;max-height:44px;object-fit:contain}
