@@ -7,17 +7,30 @@ export type PurchaseDraft={product:number;quantity:string;cost:string};
 type Save=(action:Record<string,unknown>)=>Promise<boolean>;
 const amount=(value:string)=>{try{return decimal(value);}catch{return 0;}};
 
+const supplyCollator=new Intl.Collator('es-MX');
 export function BudgetPlanner({data,orders,supplier,busy,onApply}:{data:Snapshot;orders:SupplyOrder[];supplier:number;busy:boolean;onApply:(rows:PurchaseDraft[],budget:number)=>void}){
  const [budget,setBudget]=useState('');const [wholeCatalog,setWholeCatalog]=useState(false);const [message,setMessage]=useState('');
  const known=useMemo(()=>new Set(orders.filter(o=>o.supplier===supplier).flatMap(o=>(JSON.parse(o.body) as SupplyBody).lines.map(l=>l.product))),[orders,supplier]);
- const plan=useMemo(()=>{
-  let remaining=amount(budget);const rows:PurchaseDraft[]=[];let skipped=0;
+ const candidates=useMemo(()=>{
   const frequency=new Map(data.frequencies.map(f=>[f.product,f.count]));
-  const candidates=data.products.filter(p=>(wholeCatalog||known.has(p.id))&&p.stock<=p.minimum&&p.target>p.stock).sort((a,b)=>Number(b.stock<=0)-Number(a.stock<=0)||(frequency.get(b.id)??0)-(frequency.get(a.id)??0)||a.name.localeCompare(b.name,'es-MX'));
-  for(const p of candidates){
-   if(p.cost<=0||p.cost_known===0){skipped++;continue;}
-   const step=p.unit==='pieza'?1000:100; // Weight estimates use manageable 100 g increments.
-   const wanted=Math.min(1_000_000,Math.ceil((p.target-p.stock)/step)*step);
+  return data.products.filter(p=>(wholeCatalog||known.has(p.id))&&p.stock<=p.minimum&&p.target>p.stock).sort((a,b)=>Number(b.stock<=0)-Number(a.stock<=0)||(frequency.get(b.id)??0)-(frequency.get(a.id)??0)||supplyCollator.compare(a.name,b.name));
+ },[wholeCatalog,known,data.products,data.frequencies]);
+ // Prepare quantities once per catalog/supplier change, not for each budget keystroke.
+ const prepared=useMemo(()=>{
+  let skipped=0;
+  const rows: {product:Snapshot['products'][number];step:number;wanted:number}[]=[];
+  for(const product of candidates){
+   if(product.cost<=0||product.cost_known===0){skipped++;continue;}
+   const step=product.unit==='pieza'?1000:100;
+   rows.push({product,step,wanted:Math.min(1_000_000,Math.ceil((product.target-product.stock)/step)*step)});
+  }
+  return {rows,skipped};
+ },[candidates]);
+ const plan=useMemo(()=>{
+  let remaining=amount(budget);const rows:PurchaseDraft[]=[];const skipped=prepared.skipped;
+
+  for(const {product:p,step,wanted} of prepared.rows){
+   if(rows.length>=200)break;
    let qty=Math.min(wanted,Math.floor(remaining*1000/p.cost/step)*step);
    while(qty>0&&Math.round(qty*p.cost/1000)>remaining)qty-=step;
    if(qty<=0||rows.length>=200)continue;
@@ -25,7 +38,7 @@ export function BudgetPlanner({data,orders,supplier,busy,onApply}:{data:Snapshot
    rows.push({product:p.id,quantity:String(qty/1000),cost:(p.cost/100).toFixed(2)});
   }
   return {rows,spent:amount(budget)-remaining,remaining,skipped,candidates:candidates.length};
- },[budget,wholeCatalog,known,data.products,data.frequencies]);
+ },[budget,candidates,prepared]);
  return <details className="supply-budget"><summary>Surtir con un presupuesto</summary><p>Primero agotados, después productos con ventas recientes. Usa tus mínimos y objetivos; es una estimación, no un pronóstico.</p><div className="form-pair"><label className="field">¿Cuánto puedes gastar? ($)<input type="number" min="0.01" max="1000000" step="0.01" value={budget} disabled={busy} onChange={e=>{setBudget(e.target.value);setMessage('');}}/></label><label className="check-row"><input type="checkbox" checked={wholeCatalog} disabled={busy} onChange={e=>setWholeCatalog(e.target.checked)}/>Incluir todo el catálogo; yo confirmaré qué vende este proveedor</label></div><p>Sin esta opción solo se usan productos de sus pedidos recientes. Los costos son estimados y se revisan al recibir. No se descuentan otros pedidos pendientes.</p><div className="supply-totals"><span>{plan.rows.length} productos</span><strong>Propuesta {money(plan.spent)}</strong><span>Quedan {money(plan.remaining)}</span></div>{plan.skipped>0&&<p role="status">{plan.skipped} productos necesitan un costo confirmado antes de sugerirlos.</p>}{amount(budget)>0&&!plan.rows.length&&<p>No hay productos que se puedan incluir. Revisa el proveedor, los objetivos de inventario o el presupuesto.</p>}<button type="button" className="light" disabled={busy||!supplier||!plan.rows.length} onClick={()=>{onApply(plan.rows,amount(budget));setMessage('Propuesta colocada en el pedido. Ajusta cantidades y confirma el proveedor antes de guardar.');}}>Usar propuesta en el pedido</button>{message&&<p role="status">{message}</p>}</details>;
 }
 

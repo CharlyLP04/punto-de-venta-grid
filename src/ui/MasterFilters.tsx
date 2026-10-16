@@ -74,10 +74,12 @@ export default function MasterFilters({products,value,onChange,search,onSearch,c
   if(compact){
     return <section className="master-filters counter-filters" aria-label="Filtros rápidos de caja">
       <div className="counter-filter-bar">
+        <details className="category-disclosure"><summary>Categorías <b>{value.categories.length?`${value.categories.length} seleccionadas`:"Todas"}</b></summary>
         <div className="quick-categories" aria-label="Categorías rápidas">
           <button type="button" aria-pressed={!value.categories.length} onClick={()=>patch({categories:[]})}>Todas</button>
           {categories.map(category=><button type="button" key={category} aria-pressed={value.categories.includes(category)} onClick={()=>patch({categories:value.categories.includes(category)?value.categories.filter(c=>c!==category):[...value.categories,category]})}>{category} <b>{counts.get(category)??0}</b></button>)}
         </div>
+        </details>
         <button type="button" className={`filter-trigger ${active>0?'has-active':''}`} onClick={()=>setOpen(true)}>Filtros {active>0&&<b>{active}</b>}</button>
         {active>0&&<button type="button" className="light" onClick={()=>{onChange(emptyFilters());onSearch('');}}>Limpiar</button>}
       </div>
@@ -151,12 +153,12 @@ export default function MasterFilters({products,value,onChange,search,onSearch,c
       </div>
     </div>
 
-    <div className="quick-categories-scroll-wrapper">
+    <details className="category-disclosure"><summary>Categorías <b>{value.categories.length?`${value.categories.length} seleccionadas`:"Todas"}</b></summary>
       <div className="quick-categories" aria-label="Categorías rápidas">
         <button type="button" aria-pressed={!value.categories.length} onClick={()=>patch({categories:[]})}>Todas <b>{products.length}</b></button>
         {categories.map(category=><button type="button" key={category} aria-pressed={value.categories.includes(category)} onClick={()=>patch({categories:value.categories.includes(category)?value.categories.filter(c=>c!==category):[...value.categories,category]})}>{category} <b>{counts.get(category)??0}</b></button>)}
       </div>
-    </div>
+    </details>
 
     {active>0&&<div className="master-chips">
       {search&&<button type="button" onClick={()=>onSearch('')}>Búsqueda: "{search}" ×</button>}

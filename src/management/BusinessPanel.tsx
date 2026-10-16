@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import StoreSettings from './StoreSettings';
 import AuditTrail from './AuditTrail';
 import { invoke } from '../api';
@@ -18,7 +18,7 @@ export default function BusinessPanel({section,data,onRefresh,filteredProductIds
   const [product,setProduct]=useState(data.products[0]?.id??0);const [rows,setRows]=useState([{product:data.products[0]?.id??0,quantity:'1',cost:'0',lot:'',expires:''}]);
   const inFlight=useRef(false);
   const request=useRef<{body:string;id:string}|undefined>(undefined);
-  const settings=Object.fromEntries(data.settings.map(s=>[s.key,s.value]));
+  const settings=useMemo(()=>Object.fromEntries(data.settings.map(s=>[s.key,s.value])),[data.settings]);
   async function load(){try{if(section==='inventory')setInventory(await invoke('management',{section}));if(section==='reports')setReports(await invoke('management',{section}));if(section==='audit')setAudit(await invoke('management',{section}));}catch(e){setError(String(e));}}
   useEffect(()=>{void load();},[section]);
   async function submit(e:FormEvent<HTMLFormElement>){
@@ -35,9 +35,10 @@ export default function BusinessPanel({section,data,onRefresh,filteredProductIds
       await invoke('operate',{requestId:request.current.id,operation,approval:null});setNotice('Operación guardada con auditoría.');await onRefresh();await load();request.current=undefined;
     }catch(e){setError(String(e));}finally{inFlight.current=false;setBusy(false);}
   }
-  const orders=inventory?.orders.filter(p=>!filteredProductIds||filteredProductIds.has(p.id));
-  const selected=data.products.find(p=>p.id===product);
-  const productOptions=data.products.map(p=><option key={p.id} value={p.id}>{p.name} · {p.unit}</option>);
+  const orders=useMemo(()=>inventory?.orders.filter(p=>!filteredProductIds||filteredProductIds.has(p.id)),[inventory?.orders,filteredProductIds]);
+  const productIndex=useMemo(()=>new Map(data.products.map(p=>[p.id,p])),[data.products]);
+  const selected=productIndex.get(product);
+  const productOptions=useMemo(()=>data.products.map(p=><option key={p.id} value={p.id}>{p.name} · {p.unit}</option>),[data.products]);
   return <section className={`business-panel ${section==='inventory'?'restock-workspace':''}`}>
     {error&&<div className="alert error" role="alert">{error}</div>}{notice&&<div className="alert success">{notice}</div>}
     {section==='inventory'&&<>
@@ -48,7 +49,7 @@ export default function BusinessPanel({section,data,onRefresh,filteredProductIds
         {(mode==='purchase'||mode==='combo')&&<><div className="purchase-rows">{rows.map((row,index)=><div className="purchase-row" key={index}><select aria-label={`Producto ${index+1}`} value={row.product} onChange={e=>setRows(list=>list.map((v,i)=>i===index?{...v,product:Number(e.target.value)}:v))}>{productOptions}</select><input aria-label={`Cantidad ${index+1}`} type="number" min="0.001" step="0.001" required value={row.quantity} onChange={e=>setRows(list=>list.map((v,i)=>i===index?{...v,quantity:e.target.value}:v))}/>{mode==='purchase'&&<input aria-label={`Costo unitario ${index+1}`} type="number" min="0" step="0.01" required value={row.cost} onChange={e=>setRows(list=>list.map((v,i)=>i===index?{...v,cost:e.target.value}:v))}/>}{mode==='purchase'&&<div className="purchase-lot"><label>Lote (opcional)<input maxLength={80} value={row.lot} required={!!row.expires} onChange={e=>setRows(list=>list.map((v,i)=>i===index?{...v,lot:e.target.value}:v))}/></label><label>Caducidad<input type="date" value={row.expires} required={!!row.lot} onChange={e=>setRows(list=>list.map((v,i)=>i===index?{...v,expires:e.target.value}:v))}/></label></div>}<button type="button" className="light" disabled={rows.length===1} onClick={()=>setRows(list=>list.filter((_,i)=>i!==index))}>Quitar</button></div>)}</div><button type="button" className="light" onClick={()=>setRows(list=>[...list,{product:data.products[0]?.id??0,quantity:'1',cost:'0',lot:'',expires:''}])}>Agregar línea</button>{mode==='purchase'?<label className="check-row"><input type="checkbox" name="pay_cash" disabled={!can('cash.move')}/>Pagar desde el cajón del turno activo</label>:<p>El combo debe ser un producto por pieza con stock propio cero. Sus componentes se descuentan al cobrar.</p>}</>}
         {mode==='rules'&&<div key={product}><div className="form-pair"><label className="field"><span>Stock mínimo ({selected?.unit})</span><input name="minimum" type="number" min="0" step="0.001" defaultValue={(selected?.minimum??0)/1000} required/></label><label className="field"><span>Stock objetivo ({selected?.unit})</span><input name="target" type="number" min="0" step="0.001" defaultValue={(selected?.target??0)/1000} required/></label></div><div className="form-pair"><label className="field"><span>Mayoreo desde (0 desactiva)</span><input name="wholesale_quantity" type="number" min="0" step="0.001" defaultValue={(selected?.wholesale_quantity??0)/1000} required/></label><label className="field"><span>Precio por unidad en mayoreo</span><input name="wholesale_price" type="number" min="0" step="0.01" defaultValue={(selected?.wholesale_price??0)/100} required/></label></div><label className="check-row"><input name="favorite" type="checkbox" defaultChecked={!!selected?.favorite}/>Acceso favorito Alt+1 a Alt+9 (orden alfabético)</label></div>}
         {mode==='alias'&&<><label className="field"><span>Código adicional</span><input name="code" required maxLength={64}/></label><p>{inventory?.aliases.filter(a=>a.product===product).map(a=>a.code).join(' · ')}</p></>}
-        {mode==='combo'&&<p className="muted">Composición actual: {inventory?.combos.filter(c=>c.combo===product).map(c=>`${quantity(c.quantity)} ${data.products.find(p=>p.id===c.product)?.name}`).join(' + ')||'Sin componentes'}</p>}
+        {mode==='combo'&&<p className="muted">Composición actual: {inventory?.combos.filter(c=>c.combo===product).map(c=>`${quantity(c.quantity)} ${productIndex.get(c.product)?.name}`).join(' + ')||'Sin componentes'}</p>}
         {mode==='loss'&&<><label className="field"><span>Cantidad ({selected?.unit})</span><input name="quantity" type="number" min="0.001" step="0.001" required/></label><label className="field"><span>Motivo o fecha de caducidad</span><input name="reason" required maxLength={200}/></label></>}
         <div className="form-actions"><button className="primary" disabled={busy||(mode==='purchase'&&!can('costs.view'))}>{busy?'Guardando…':'Guardar operación'}</button></div>
       </form>}

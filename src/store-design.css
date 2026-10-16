@@ -1417,3 +1417,42 @@ html.store-ui[data-input-mode=touch] .filter-dialog :is(.master-options label,.f
 @media(prefers-reduced-motion:reduce) {
  .store-ui :is(button,summary):active {transform:none!important}
 }
+
+/* Compact shelves and progressive category disclosure. */
+.store-ui .shell .counter-filter-bar {display:flex;align-items:flex-start;flex-wrap:wrap;gap:10px;height:auto}
+.store-ui .shell .category-disclosure {min-width:0;max-width:100%;flex:1 1 240px;border:1px solid var(--border-subtle);border-radius:8px;background:var(--bg-surface)}
+.store-ui .shell .category-disclosure>summary {cursor:pointer;min-height:44px;padding:12px;box-sizing:border-box;color:var(--text-primary);line-height:1.4;overflow-wrap:anywhere}
+.store-ui .shell .category-disclosure>summary b {font-size:12px;font-weight:500;color:var(--text-secondary);margin-left:8px}
+.store-ui .shell .category-disclosure .quick-categories {display:flex;flex-wrap:wrap;gap:8px;padding:10px;max-height:220px;overflow-y:auto;width:auto;min-width:0}
+.store-ui .shell .category-disclosure .quick-categories button {height:auto;white-space:normal;min-height:40px;max-width:100%}
+.store-ui .shell .product-grid {grid-auto-rows:max-content;align-content:start;align-items:start}
+.store-ui .shell .product-grid>.sale-product-card {height:auto!important;min-height:0!important;max-height:none;aspect-ratio:auto;align-self:start;grid-template-rows:auto auto auto;align-content:start;padding:12px;gap:6px 10px}
+.store-ui .shell .product-grid>.sale-product-card .sale-product-footer {grid-column:1/-1;margin-top:6px;padding-top:10px;align-self:start}
+.store-ui .shell .product-grid>.sale-product-card .sale-product-name {min-height:2.7em;line-height:1.35}
+html.store-ui[data-input-mode=touch] .shell .category-disclosure :is(summary,button) {min-height:48px}
+/* Login: one quiet access card, clear team selection, focused credential area. */
+.store-ui .quick-login.store-login {background:var(--bg-canvas);padding:20px clamp(16px,4vw,64px);height:auto;min-height:100dvh}
+.store-ui .quick-login .kiosk-body {width:100%;max-width:860px;margin:auto;flex:1;padding:28px 0;display:flex;flex-direction:column;justify-content:center}
+.store-ui .quick-login .login-heading {margin:0 0 24px;gap:14px}
+.store-ui .quick-login .login-character {display:none}
+.store-ui .quick-login .login-heading h1 {font-size:clamp(26px,3vw,36px);letter-spacing:-.7px;line-height:1.15;margin:0 0 10px}
+.store-ui .quick-login .login-heading p {color:var(--text-secondary);margin:0;line-height:1.5}
+.store-ui .quick-login .login-console {grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);border:1px solid var(--border-subtle);border-radius:16px;box-shadow:0 12px 36px #0000000d;overflow:hidden}
+.store-ui .quick-login .login-console .profile-picker {padding:24px;background:var(--bg-surface-elevated);border:0;border-right:1px solid var(--border-subtle)}
+.store-ui .quick-login .profile-picker .eyebrow {display:none}
+.store-ui .quick-login .profile-picker h2 {font-size:17px;margin:0}
+.store-ui .quick-login .login-console .profile-grid {max-height:300px;padding:4px;gap:8px}
+.store-ui .quick-login .profile-choice {min-height:64px!important;padding:12px!important;border-radius:10px!important}
+.store-ui .quick-login .profile-choice.selected {background:var(--store-blue-soft)!important;border-color:var(--store-blue)!important}
+.store-ui .quick-login .login-console .kiosk-unlock {min-height:0;padding:30px;gap:18px;justify-content:center}
+.store-ui .quick-login .unlock-heading h2 {font-size:24px;line-height:1.25;overflow-wrap:anywhere}
+.store-ui .quick-login .unlock-heading .eyebrow,.store-ui .quick-login .lock-medallion {display:none}
+.store-ui .quick-login .login-options {padding:12px 20px;border-top:1px solid var(--border-subtle);background:var(--bg-surface)}
+.store-ui .quick-login .kiosk-network-wrapper {width:100%;max-width:860px;margin:0 auto}
+.store-ui .quick-login .login-setup {grid-template-columns:minmax(0,1fr);max-width:540px;width:100%;align-self:center}
+@media(max-width:700px) {
+ .store-ui .quick-login .login-console {grid-template-columns:minmax(0,1fr)}
+ .store-ui .quick-login .login-console .profile-picker {border-right:0;border-bottom:1px solid var(--border-subtle);padding:18px}
+ .store-ui .quick-login .login-console .profile-grid {max-height:200px}
+ .store-ui .quick-login .login-console .kiosk-unlock {padding:22px}
+}
