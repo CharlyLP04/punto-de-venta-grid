@@ -3,5 +3,5 @@
   "productName": "Mario POS", "version": "0.1.0", "identifier": "mx.grid.mario-pos",
   "build": { "beforeDevCommand": "npm run dev", "devUrl": "http://localhost:1420", "beforeBuildCommand": "npm run build", "frontendDist": "../dist" },
   "app": { "windows": [{ "label": "main", "devtools": false, "title": "Super Mario Tienda · Grid MX", "width": 1440, "height": 940, "minWidth": 1050, "minHeight": 720 }], "security": { "csp": "default-src 'self'; script-src 'self'; object-src 'none'; base-uri 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; connect-src ipc: http://ipc.localhost" } },
-  "bundle": { "active": true, "targets": ["nsis"], "windows": { "webviewInstallMode": { "type": "offlineInstaller" } } }
+  "bundle": { "active": true, "targets": ["nsis"], "windows": { "webviewInstallMode": { "type": "offlineInstaller", "silent": true } } }
 }

@@ -49,7 +49,7 @@ Se instalaron las dependencias y se compiló correctamente el ejecutable Windows
 - **Grid MX:** outbox local de ventas, sin transportador, endpoint, credenciales ni confirmaciones del servidor. No hay sincronización ni dashboard móvil ni WhatsApp automático.
 - **Pendiente:** devoluciones/cancelaciones compensatorias, configuración fiscal/CFDI, importación del catálogo verificado, restauración asistida de respaldos, autoinicio y actualizaciones firmadas. No hay promesas de latencia o tamaño del instalador.
 - **Datos:** archivo `mario.sqlite` dentro del directorio de datos de Tauri para `mx.grid.mario-pos`. Respaldos en su subdirectorio `respaldos`. La interfaz muestra la ruta completa al crearlos. La desinstalación/limpieza manual del sistema sigue requiriendo cuidado; copiar respaldos fuera del disco.
-- **Instalación offline:** el instalador está configurado para incluir WebView2 offline; aumenta considerablemente el tamaño y exige conexión durante su construcción. La caja instalada no necesita internet para sus operaciones locales.
+- **Instalación offline:** el instalador está configurado para incluir WebView2 offline; aumenta considerablemente el tamaño y exige conexión durante su construcción. La caja instalada no necesita internet para sus operaciones locales. El runtime incluido se instala en modo silencioso cuando falta. Distribuir el `-setup.exe` completo de `src-tauri/target/release/bundle/nsis`, nunca el ejecutable suelto de `target/release`: ese binario no instala WebView2. Objetivo: Windows 10/11 x64. Windows 7, 8 y 8.1 no son compatibles (WebView2 109 fue la última versión para ellos), y no hay paquete x86 ni ARM64. Falta probar el instalador en una PC limpia sin red y en equipos antiguos.
 
 ## Estructura
 
