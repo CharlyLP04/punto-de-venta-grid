@@ -31,7 +31,7 @@ type Result<T> = std::result::Result<T, String>;
 fn err(e: impl std::fmt::Display) -> String { e.to_string() }
 
 fn rows(db: &Connection, sql: &str) -> Result<Vec<Value>> {
-    let mut stmt = db.prepare(sql).map_err(err)?;
+    let mut stmt = db.prepare_cached(sql).map_err(err)?;
     let names: Vec<String> = stmt.column_names().iter().map(|s| s.to_string()).collect();
     let mapped = stmt.query_map([], |r| {
         let mut object = serde_json::Map::new();
@@ -66,7 +66,22 @@ fn initialize(db: &mut Connection) -> Result<()> {
         tx.execute("INSERT OR REPLACE INTO settings(key,value) VALUES('catalog_seeded','1'),('seeded','1')", []).map_err(err)?;
         tx.commit().map_err(err)?;
     }
+    db.execute_batch("CREATE INDEX IF NOT EXISTS idx_sales_created ON sales(created);
+      CREATE INDEX IF NOT EXISTS idx_sales_user_created ON sales(user_id,created);
+      CREATE INDEX IF NOT EXISTS idx_refunds_created ON refunds(created);
+      CREATE INDEX IF NOT EXISTS idx_refunds_user_created ON refunds(user_id,created);
+      CREATE INDEX IF NOT EXISTS idx_ledger_customer_created ON ledger(customer,created);
+      CREATE INDEX IF NOT EXISTS idx_inventory_product ON inventory(product);").map_err(err)?;
     Ok(())
+}
+
+// ISO UTC bounds let SQLite seek today's rows without parsing the full sales history.
+fn daily_stats(db:&Connection,user:Option<i64>)->Result<Vec<Value>> {
+    let own=user.map(|id|format!(" AND s.user_id={id}")).unwrap_or_default();
+    let window="s.created>=strftime('%Y-%m-%dT%H:%M:%fZ','now','localtime','start of day','utc') AND s.created<strftime('%Y-%m-%dT%H:%M:%fZ','now','localtime','start of day','+1 day','utc')";
+    rows(db,&format!("SELECT coalesce(sum(revenue),0) AS today,coalesce(sum(CASE WHEN revenue>0 THEN 1 ELSE 0 END),0) AS tickets FROM (
+      SELECT s.total AS revenue FROM sales s WHERE {window}{own}
+      UNION ALL SELECT -original.total FROM refunds s JOIN sales original ON original.id=s.sale WHERE {window}{own})"))
 }
 
 #[tauri::command]
@@ -76,7 +91,22 @@ pub(crate) fn snapshot_service(store:&Store, session_token:String)->Result<Value
     let actor=security::authorize(&store,&db,&session_token,"")?;
     let all=actor.can("reports.view");
     let own=if all {String::new()}else{format!(" AND s.user_id={}",actor.id)};
-    let products=rows(&db,&format!("SELECT p.id,p.code,p.name,p.category,p.icon,p.price,{} AS cost,p.cost_known,p.unit,CASE WHEN EXISTS(SELECT 1 FROM combo_items WHERE combo=p.id) THEN (SELECT min((child.stock-coalesce((SELECT sum(quantity) FROM lots WHERE product=child.id AND expires<date('now','localtime')),0))*1000/c.quantity) FROM combo_items c JOIN products child ON child.id=c.product WHERE c.combo=p.id) ELSE p.stock-coalesce((SELECT sum(quantity) FROM lots WHERE product=p.id AND expires<date('now','localtime')),0) END AS stock,p.stock AS physical_stock,coalesce((SELECT sum(quantity) FROM lots WHERE product=p.id AND expires<date('now','localtime')),0) AS expired_stock,p.minimum,p.target,p.wholesale_quantity,p.wholesale_price,p.favorite,(SELECT max(1,(p.price*(10000-max(percent))+5000)/10000) FROM promotions WHERE product=p.id AND enabled=1 AND date('now','localtime') BETWEEN starts AND ends) AS promotion_price FROM products p ORDER BY p.name",if actor.can("costs.view"){"p.cost"}else{"0"}))?;
+    let products=rows(&db,&format!("WITH today AS (SELECT date('now','localtime') AS d),
+      expired AS (SELECT product,sum(quantity) AS qty FROM lots,today WHERE expires<today.d GROUP BY product),
+      active_promos AS (SELECT product,max(percent) AS percent FROM promotions,today WHERE enabled=1 AND today.d BETWEEN starts AND ends GROUP BY product)
+      SELECT p.id,p.code,p.name,p.category,p.icon,p.price,{} AS cost,p.cost_known,p.unit,
+        CASE WHEN EXISTS(SELECT 1 FROM combo_items WHERE combo=p.id)
+          THEN (SELECT min((child.stock-coalesce(ce.qty,0))*1000/c.quantity) FROM combo_items c JOIN products child ON child.id=c.product LEFT JOIN expired ce ON ce.product=child.id WHERE c.combo=p.id)
+          ELSE p.stock-coalesce(e.qty,0)
+        END AS stock,
+        p.stock AS physical_stock,
+        coalesce(e.qty,0) AS expired_stock,
+        p.minimum,p.target,p.wholesale_quantity,p.wholesale_price,p.favorite,
+        CASE WHEN ap.percent IS NOT NULL THEN max(1,(p.price*(10000-ap.percent)+5000)/10000) END AS promotion_price
+      FROM products p
+      LEFT JOIN expired e ON e.product=p.id
+      LEFT JOIN active_promos ap ON ap.product=p.id
+      ORDER BY p.name",if actor.can("costs.view"){"p.cost"}else{"0"}))?;
     Ok(json!({
         "products":products,
         "expiry_alerts":if actor.can("inventory.view"){rows(&db,"SELECT count(*) AS count FROM lots WHERE quantity>0 AND expires<=date('now','localtime','+7 days')")?}else{vec![]},
@@ -92,7 +122,7 @@ pub(crate) fn snapshot_service(store:&Store, session_token:String)->Result<Value
         "shift":rows(&db,&format!("SELECT s.id,s.created,s.user_id,coalesce(u.name,'Histórico') AS cashier FROM shifts s LEFT JOIN users u ON u.id=s.user_id WHERE s.closed IS NULL AND s.register_id={}",network::register()))?,
         "cuts":if all{rows(&db,"SELECT s.*,coalesce(u.name,'Histórico') AS cashier FROM shifts s LEFT JOIN users u ON u.id=s.user_id WHERE s.closed IS NOT NULL ORDER BY s.id DESC LIMIT 20")?}else{vec![]},
         "settings":rows(&db,"SELECT * FROM settings WHERE key IN ('store_name','store_address','store_phone','receipt_footer','accent','density','idle_minutes','daily_goal','sound','printer','baud','scale','scale_baud')")?,
-        "stats":rows(&db,&format!("SELECT coalesce(sum(s.revenue),0) AS today,coalesce(sum(CASE WHEN s.revenue>0 THEN 1 ELSE 0 END),0) AS tickets FROM sale_metrics s WHERE date(s.created,'localtime')=date('now','localtime'){}",own))?,
+        "stats":daily_stats(&db,if all{None}else{Some(actor.id)})?,
         "pending":if all{rows(&db,"SELECT count(*) AS count FROM outbox WHERE sent IS NULL")?}else{vec![]}
     }))
 }
@@ -351,11 +381,7 @@ fn main() {
         // Interrupted jobs require an operator decision, never automatic replay.
         db.execute("UPDATE sales SET print_status='uncertain' WHERE print_status='sending'", [])?;
 
-        db.execute_batch("CREATE INDEX IF NOT EXISTS idx_sales_created ON sales(created);
-          CREATE INDEX IF NOT EXISTS idx_sales_user_created ON sales(user_id,created);
-          CREATE INDEX IF NOT EXISTS idx_ledger_customer_created ON ledger(customer,created);
-          CREATE INDEX IF NOT EXISTS idx_inventory_product ON inventory(product);
-          CREATE TRIGGER IF NOT EXISTS audit_no_update BEFORE UPDATE ON audit BEGIN SELECT RAISE(ABORT,'La bitácora no se edita'); END;
+        db.execute_batch("CREATE TRIGGER IF NOT EXISTS audit_no_update BEFORE UPDATE ON audit BEGIN SELECT RAISE(ABORT,'La bitácora no se edita'); END;
           CREATE TRIGGER IF NOT EXISTS audit_no_delete BEFORE DELETE ON audit BEGIN SELECT RAISE(ABORT,'La bitácora no se elimina'); END;")?;
         app.manage(Store { _instance:instance, db:Mutex::new(db), directory, sessions:Mutex::new(std::collections::HashMap::new()), grants:Mutex::new(std::collections::HashMap::new()) });
         let handle=app.handle().clone();

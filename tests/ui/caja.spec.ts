@@ -91,8 +91,9 @@ test('filtros paginados y desmontados al cerrar',async({page})=>{
   await expect(page.locator('.master-options input').first()).toBeChecked();
 });
 
-for(const theme of ['light','dark'])for(const mode of ['pc','touch']) {
-  test(`Caja legible a 1050x720: ${theme}, ${mode}`,async({page},testInfo)=>{
+for(const height of [720,600])for(const theme of ['light','dark'])for(const mode of ['pc','touch']) {
+  test(`Caja legible a 1050x${height}: ${theme}, ${mode}`,async({page},testInfo)=>{
+    await page.setViewportSize({width:1050,height});
     await login(page,null,theme,mode);
     await page.waitForTimeout(600);
     await page.screenshot({path:testInfo.outputPath('caja.png')});

@@ -248,3 +248,32 @@ fn customization_accepts_all_accents_and_validates_limits() {
     };
     assert!(business::operate_service(&store, "token-admin".into(), Uuid::new_v4().to_string(), invalid, None).is_err());
 }
+
+#[test]
+fn daily_totals_preserve_local_boundaries_refunds_and_cashier_scope() {
+    let db=database();cashier(&db);
+    db.execute("INSERT INTO users(id,username,name,password_hash,role) VALUES(2,'second','Otro','not-a-login','cashier')",[]).unwrap();
+    for (id,modifier,user,total) in [("before","-0.001 seconds",1,100),("start","+0 seconds",1,200),("end","+86399.999 seconds",2,300),("tomorrow","+1 day",1,400)] {
+        db.execute("INSERT INTO sales(id,shift,total,payment,receipt,user_id,created) VALUES(?,1,?,'cash','{}',?,strftime('%Y-%m-%dT%H:%M:%fZ','now','localtime','start of day',?,'utc'))",params![id,total,user,modifier]).unwrap();
+    }
+    db.execute("INSERT INTO refunds(id,sale,user_id,shift,reason,receipt,created) VALUES('refund','before',2,1,'Prueba','{}',strftime('%Y-%m-%dT%H:%M:%fZ','now','localtime','start of day','utc'))",[]).unwrap();
+    for user in [None,Some(1),Some(2)] {
+        let own=user.map(|id|format!(" AND s.user_id={id}")).unwrap_or_default();
+        let previous=rows(&db,&format!("SELECT coalesce(sum(s.revenue),0) AS today,coalesce(sum(CASE WHEN s.revenue>0 THEN 1 ELSE 0 END),0) AS tickets FROM sale_metrics s WHERE date(s.created,'localtime')=date('now','localtime'){own}")).unwrap();
+        assert_eq!(daily_stats(&db,user).unwrap(),previous);
+    }
+    assert_eq!(daily_stats(&db,None).unwrap(),vec![json!({"today":400,"tickets":2})]);
+    assert_eq!(daily_stats(&db,Some(1)).unwrap(),vec![json!({"today":200,"tickets":1})]);
+    assert_eq!(daily_stats(&db,Some(2)).unwrap(),vec![json!({"today":200,"tickets":1})]);
+    assert_eq!(daily_stats(&db,Some(99)).unwrap(),vec![json!({"today":0,"tickets":0})]);
+}
+
+#[test]
+fn upgrade_existing_v6_database_with_open_shifts() {
+    let mut db=Connection::open_in_memory().unwrap();
+    db.execute_batch(include_str!("schema.sql")).unwrap();
+    migrations::migrate(&mut db).unwrap();advanced::migrate(&mut db).unwrap();commerce::migrate(&mut db).unwrap();retail::migrate(&mut db).unwrap();
+    db.execute("INSERT INTO users(id,username,name,password_hash,role) VALUES(1,'test','Prueba','not-a-login','owner')",[]).unwrap();
+    db.execute("INSERT INTO shifts(opening,user_id) VALUES(1000000,1)",[]).unwrap();
+    initialize(&mut db).unwrap();
+}

@@ -10,6 +10,13 @@ export type CatalogFilters = {
 export const emptyFilters = ():CatalogFilters => ({categories:[],products:[],stock:'all',unit:'all',min:'',max:'',favorites:false,frequent:false,sort:'name'});
 export const normalize = (text:string) => text.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('es-MX');
 const collator=new Intl.Collator('es-MX');
+// Snapshots keep catalog arrays stable until a product changes. Sort once, not on every keystroke.
+const nameOrders=new WeakMap<Product[],Product[]>();
+function byName(products:Product[]){
+ let ordered=nameOrders.get(products);
+ if(!ordered){ordered=[...products].sort((a,b)=>collator.compare(a.name,b.name)||a.id-b.id);nameOrders.set(products,ordered);}
+ return ordered;
+}
 // Weak keys release removed products; field checks also cover in-place edits.
 const searchText=new WeakMap<Product,{source:string;text:string}>();
 function productSearchText(product:Product){
@@ -44,7 +51,7 @@ export function filterCatalog(products:Product[], filters:CatalogFilters, search
   const selectedCategories=new Set(filters.categories),selectedProducts=new Set(filters.products);
   const min=filters.min===''?0:Math.round(Number(filters.min)*100);
   const max=filters.max===''?Infinity:Math.round(Number(filters.max)*100);
-  return products.filter(p=>
+  const matches=(filters.sort==='name'?byName(products):products).filter(p=>
     (!filters.categories.length||selectedCategories.has(p.category))&&
     (!filters.products.length||selectedProducts.has(p.id))&&
     (filters.unit==='all'||p.unit===filters.unit)&&
@@ -52,7 +59,9 @@ export function filterCatalog(products:Product[], filters:CatalogFilters, search
     (!filters.favorites||!!p.favorite)&&(!filters.frequent||frequency.has(p.id))&&
     (p.promotion_price??p.price)>=min&&(p.promotion_price??p.price)<=max&&
     matchesSearch(p,words,extra)
-  ).sort((a,b)=>{
+  );
+  if(filters.sort==='name')return matches;
+  return matches.sort((a,b)=>{
     const order=filters.sort==='price-up'?(a.promotion_price??a.price)-(b.promotion_price??b.price):filters.sort==='price-down'?(b.promotion_price??b.price)-(a.promotion_price??a.price):filters.sort==='stock'?a.stock-b.stock:filters.sort==='frequency'?(frequency.get(b.id)??0)-(frequency.get(a.id)??0):0;
     return order||collator.compare(a.name,b.name)||a.id-b.id;
   });

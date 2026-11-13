@@ -12,19 +12,29 @@ pub fn at_register<T>(id:i64,f:impl FnOnce()->T)->T{
 }
 pub fn migrate(db:&mut Connection)->Result<()>{
     let version:i64=db.query_row("PRAGMA user_version",[],|r|r.get(0)).map_err(err)?;if version>=7{return Ok(());}
-    let tx=db.transaction().map_err(err)?;
-    tx.execute_batch("CREATE TABLE registers(id INTEGER PRIMARY KEY,name TEXT NOT NULL,token TEXT UNIQUE,enabled INTEGER NOT NULL DEFAULT 1);
-    INSERT INTO registers(id,name) VALUES(1,'Caja principal');
-    ALTER TABLE shifts ADD COLUMN register_id INTEGER NOT NULL DEFAULT 1 REFERENCES registers(id);
-    DROP INDEX IF EXISTS one_open_shift;
-    CREATE UNIQUE INDEX one_open_shift_per_register ON shifts(register_id) WHERE closed IS NULL;
-    CREATE TABLE cart_network(ticket INTEGER NOT NULL CHECK(ticket BETWEEN 1 AND 5000),product INTEGER NOT NULL REFERENCES products(id),quantity INTEGER NOT NULL,override_price INTEGER,reason TEXT,discount_authorized_by INTEGER REFERENCES users(id),PRIMARY KEY(ticket,product));
-    INSERT INTO cart_network SELECT ticket,product,quantity,override_price,reason,discount_authorized_by FROM cart;
-    DROP TABLE cart;ALTER TABLE cart_network RENAME TO cart;
-    CREATE TABLE common_network(id INTEGER PRIMARY KEY AUTOINCREMENT,ticket INTEGER NOT NULL CHECK(ticket BETWEEN 1 AND 5000),name TEXT NOT NULL CHECK(length(trim(name)) BETWEEN 1 AND 120),quantity INTEGER NOT NULL CHECK(quantity BETWEEN 1 AND 1000000),price INTEGER NOT NULL CHECK(price BETWEEN 1 AND 100000000),cost INTEGER CHECK(cost BETWEEN 0 AND 100000000));
-    INSERT INTO common_network SELECT * FROM common_cart;DROP TABLE common_cart;ALTER TABLE common_network RENAME TO common_cart;
-    CREATE TABLE fiscal_documents(id TEXT PRIMARY KEY,sale TEXT NOT NULL UNIQUE REFERENCES sales(id),payload TEXT NOT NULL,state TEXT NOT NULL DEFAULT 'draft',provider_id TEXT,uuid TEXT,response TEXT,created TEXT NOT NULL DEFAULT(strftime('%Y-%m-%dT%H:%M:%fZ','now')));
-    PRAGMA user_version=7;") .map_err(err)?;tx.commit().map_err(err)
+    // SQLite forbids ADD COLUMN ... REFERENCES with a non-NULL default on populated tables while foreign_keys=ON.
+    db.execute_batch("PRAGMA foreign_keys=OFF;").map_err(err)?;
+    let result=(||{
+        let tx=db.transaction().map_err(err)?;
+        tx.execute_batch("CREATE TABLE registers(id INTEGER PRIMARY KEY,name TEXT NOT NULL,token TEXT UNIQUE,enabled INTEGER NOT NULL DEFAULT 1);
+        INSERT INTO registers(id,name) VALUES(1,'Caja principal');
+        ALTER TABLE shifts ADD COLUMN register_id INTEGER NOT NULL DEFAULT 1 REFERENCES registers(id);
+        DROP INDEX IF EXISTS one_open_shift;
+        CREATE UNIQUE INDEX one_open_shift_per_register ON shifts(register_id) WHERE closed IS NULL;
+        CREATE TABLE cart_network(ticket INTEGER NOT NULL CHECK(ticket BETWEEN 1 AND 5000),product INTEGER NOT NULL REFERENCES products(id),quantity INTEGER NOT NULL,override_price INTEGER,reason TEXT,discount_authorized_by INTEGER REFERENCES users(id),PRIMARY KEY(ticket,product));
+        INSERT INTO cart_network SELECT ticket,product,quantity,override_price,reason,discount_authorized_by FROM cart;
+        DROP TABLE cart;ALTER TABLE cart_network RENAME TO cart;
+        CREATE TABLE common_network(id INTEGER PRIMARY KEY AUTOINCREMENT,ticket INTEGER NOT NULL CHECK(ticket BETWEEN 1 AND 5000),name TEXT NOT NULL CHECK(length(trim(name)) BETWEEN 1 AND 120),quantity INTEGER NOT NULL CHECK(quantity BETWEEN 1 AND 1000000),price INTEGER NOT NULL CHECK(price BETWEEN 1 AND 100000000),cost INTEGER CHECK(cost BETWEEN 0 AND 100000000));
+        INSERT INTO common_network SELECT * FROM common_cart;DROP TABLE common_cart;ALTER TABLE common_network RENAME TO common_cart;
+        CREATE TABLE fiscal_documents(id TEXT PRIMARY KEY,sale TEXT NOT NULL UNIQUE REFERENCES sales(id),payload TEXT NOT NULL,state TEXT NOT NULL DEFAULT 'draft',provider_id TEXT,uuid TEXT,response TEXT,created TEXT NOT NULL DEFAULT(strftime('%Y-%m-%dT%H:%M:%fZ','now')));
+        PRAGMA user_version=7;").map_err(err)?;
+        if tx.query_row("SELECT count(*) FROM pragma_foreign_key_check",[],|r|r.get::<_,i64>(0)).map_err(err)?!=0{
+            return Err("Error de integridad en llaves foráneas al migrar a v7".into());
+        }
+        tx.commit().map_err(err)
+    })();
+    db.execute_batch("PRAGMA foreign_keys=ON;").map_err(err)?;
+    result
 }
 #[derive(Serialize,Deserialize,Clone)]
 pub struct Pairing{url:String,certificate:String,token:String,name:String}
