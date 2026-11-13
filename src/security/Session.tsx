@@ -63,16 +63,19 @@ export default function SessionProvider({children}:{children:ReactNode}){
       <section className="mario-login-hero" aria-label="Bienvenida de tienda">
         <div className="mario-hero-badge">
           <BrandMark/>
-          <span className="mario-coin-pill"><Star size={14} aria-hidden="true"/> Caja lista</span>
+          <div>
+            <strong>SUPER MARIO TIENDA</strong>
+            <small>Punto de venta local</small>
+          </div>
         </div>
         <div className="login-heading">
           <div>
-            <h1>{setup?'Prepara tu tienda':'¡Bienvenido a tu tienda!'}</h1>
-            <p>{setup?'Crea la cuenta del propietario para comenzar a vender.':'Elige tu perfil del equipo e ingresa tu contraseña para abrir el mostrador.'}</p>
+            <h1>{setup?'Prepara tu tienda':'Inicia turno en caja'}</h1>
+            <p>{setup?'Crea la cuenta del propietario para comenzar a vender.':'Selecciona tu perfil e ingresa tu contraseña para abrir el mostrador.'}</p>
           </div>
         </div>
         <div className="mario-hero-controls">
-          <div className="mario-control-label">Modo de pantalla</div>
+          <div className="mario-control-label">Tipo de pantalla</div>
           <InputModePicker compact disabled={busy}/>
         </div>
         <div className="mario-shortcuts-strip" aria-label="Atajos rápidos de caja">
