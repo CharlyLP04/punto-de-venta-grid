@@ -110,7 +110,7 @@ function moveFocus(event: KeyboardEvent<HTMLButtonElement>) {
   if (next >= 0 && next < cards.length) cards[next].focus();
 }
 
-export default function ProductCard({ product, disabled, pulse, onAdd }: Props) {
+export default memo(function ProductCard({ product, disabled, pulse, onAdd }: Props) {
   const ref = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     if (!pulse || reducedMotion()) return;
@@ -129,7 +129,7 @@ export default function ProductCard({ product, disabled, pulse, onAdd }: Props) 
 
     <ProductCardContent product={product}/>
   </button>;
-}
+});
 
 
 

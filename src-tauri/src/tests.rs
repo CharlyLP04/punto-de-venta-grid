@@ -55,7 +55,7 @@ fn rpc_binds_sessions_to_register_and_filters_snapshot(){
     let db=database();cashier(&db);
     db.execute("INSERT INTO registers(id,name,token) VALUES(2,'Caja 2','pair-two')",[]).unwrap();
     let path=std::env::temp_dir().join(format!("grid-test-{}",Uuid::new_v4()));
-    let store=Store{_instance:std::fs::File::create(&path).unwrap(),db:Mutex::new(db),directory:std::env::temp_dir(),sessions:Mutex::new(std::collections::HashMap::from([("one".into(),(1,std::time::Instant::now(),1)),("two".into(),(1,std::time::Instant::now(),2))])),grants:Mutex::new(Default::default())};
+    let store=Store{_instance:std::fs::File::create(&path).unwrap(),db:Mutex::new(db),directory:std::env::temp_dir(),sessions:Mutex::new(std::collections::HashMap::from([("one".into(),(1,std::time::Instant::now(),1)),("two".into(),(1,std::time::Instant::now(),2))])),grants:Mutex::new(Default::default()),frequencies:Mutex::new((-1,Vec::new()))};
     assert!(network::process(&store,"wrong-pair","auth_status",json!({})).is_err());
     assert!(network::process(&store,"pair-two","snapshot",json!({"sessionToken":"one"})).is_err());
     assert!(network::process(&store,"pair-two","snapshot",json!([])).is_err());
@@ -219,7 +219,7 @@ fn migration_from_v5_preserves_stock_and_marks_unknown_costs() {
 fn customization_accepts_all_accents_and_validates_limits() {
     let db=database();let actor=cashier(&db);
     let path=std::env::temp_dir().join(format!("grid-test-cust-{}",Uuid::new_v4()));
-    let store=Store{_instance:std::fs::File::create(&path).unwrap(),db:Mutex::new(db),directory:std::env::temp_dir(),sessions:Mutex::new(std::collections::HashMap::from([("token-admin".into(),(actor.id,std::time::Instant::now(),1))])),grants:Mutex::new(Default::default())};
+    let store=Store{_instance:std::fs::File::create(&path).unwrap(),db:Mutex::new(db),directory:std::env::temp_dir(),sessions:Mutex::new(std::collections::HashMap::from([("token-admin".into(),(actor.id,std::time::Instant::now(),1))])),grants:Mutex::new(Default::default()),frequencies:Mutex::new((-1,Vec::new()))};
     for accent in ["classic","gold","green","blue","rose","emerald","slate"] {
         let op = business::Operation::Customize {
             store_name: "Mi Tiendita".into(),

@@ -93,7 +93,7 @@
 .sales-history .record-meta-col{flex:1;min-width:240px;display:flex;flex-direction:column;gap:4px}
 .sales-history .record-folio-line{display:flex;align-items:center;gap:10px}
 .sales-history .ticket-eye-btn{display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:var(--bg-surface-elevated);border:1px solid var(--border-subtle);color:var(--text-primary);cursor:pointer;transition:all 120ms ease;flex-shrink:0;padding:0}
-.sales-history .ticket-eye-btn:hover,.sales-history .ticket-eye-btn.active{background:color-mix(in srgb,var(--action) 20%,var(--bg-surface));border-color:var(--action);color:var(--action-ink,var(--text-primary))}
+.sales-history .ticket-eye-btn:hover,.sales-history .ticket-eye-btn.active{background:color-mix(in srgb,var(--action) 20%,var(--bg-surface));border-color:var(--action);color:var(--text-primary)}
 .sales-history .record-folio{font-size:15px;font-weight:700;letter-spacing:-.3px;color:var(--text-primary)}
 .sales-history .items-count-pill{font-size:11px;font-weight:600;padding:2px 8px;border-radius:6px;background:color-mix(in srgb,var(--action) 15%,var(--bg-surface-elevated));color:var(--text-primary);border:1px solid color-mix(in srgb,var(--action) 30%,transparent)}
 .sales-history .refunded-pill{font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;background:var(--accent-red);color:#fff;letter-spacing:.5px}

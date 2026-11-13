@@ -6,7 +6,7 @@ import CommonProductFields from './ui/CommonProductFields';
 import AudioControls from './ui/AudioControls';
 import ToastMessages from './ui/ToastMessages';
 import {openWhatsApp} from './management/whatsapp';
-import { lazy, Suspense, useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
+import { lazy, Suspense, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { isTauri } from '@tauri-apps/api/core';
 import { invoke, getSessionToken } from './api';
 import { useSession } from './security/Session';
@@ -130,7 +130,8 @@ export default function App() {
     }
   },[settings.idle_minutes]);
   const frequency=useMemo(()=>new Map((data?.frequencies??[]).map(f=>[f.product,f.count])),[data?.frequencies]);
-  const filtered=useMemo(()=>filterCatalog(data?.products??[],catalogFilters,query,data?.aliases??[],frequency),[data?.products,data?.aliases,catalogFilters,query,frequency]);
+  const deferredQuery=useDeferredValue(query);
+  const filtered=useMemo(()=>filterCatalog(data?.products??[],catalogFilters,deferredQuery,data?.aliases??[],frequency),[data?.products,data?.aliases,catalogFilters,deferredQuery,frequency]);
   const filteredIds=useMemo(()=>new Set(filtered.map(p=>p.id)),[filtered]);
   const customerIndex=useMemo(()=>new Map((data?.customers??[]).map(customer=>[customer.id,customer])),[data?.customers]);
   const customerBalance=useMemo(()=>(data?.customers??[]).reduce((sum,customer)=>sum+customer.balance,0),[data?.customers]);
@@ -173,6 +174,7 @@ export default function App() {
   const favorites=useMemo(()=>{const result:Product[]=[];for(const p of data?.products??[]){if(p.favorite)result.push(p);if(result.length===9)break;}return result;},[data?.products]);
   const latest=useRef({modal,busy,add,scan,pay,ticket,selected,canAdjust,write,favorites,products});
   latest.current={modal,busy,add,scan,pay,ticket,selected,canAdjust,write,favorites,products};
+  const onAddProduct=useCallback((p:Product)=>latest.current.add(p),[]);
   useEffect(()=>{
     let buffer='';let last=0;
     const keydown=(e:KeyboardEvent)=>{
@@ -284,7 +286,7 @@ export default function App() {
           <MasterFilters compact products={data.products} value={catalogFilters} onChange={setCatalogFilters} search={query} onSearch={setQuery} count={filtered.length}/>
           <div className="catalog-meta"><span>Productos<b>{filtered.length}</b></span><span><Keyboard size={13}/> Flechas para explorar · Enter para agregar</span></div>
           <div className="product-grid" aria-label="Catálogo de productos" aria-busy={busy}>
-            {filtered.slice(Math.max(0,Math.min(catalogLimit,Math.ceil(filtered.length/36)*36)-36),Math.min(catalogLimit,Math.ceil(filtered.length/36)*36)).map(p=><ProductCard key={p.id} product={p} disabled={busy} pulse={addPulse.id===p.id?addPulse.token:0} onAdd={add}/>)}
+            {filtered.slice(Math.max(0,Math.min(catalogLimit,Math.ceil(filtered.length/36)*36)-36),Math.min(catalogLimit,Math.ceil(filtered.length/36)*36)).map(p=><ProductCard key={p.id} product={p} disabled={busy} pulse={addPulse.id===p.id?addPulse.token:0} onAdd={onAddProduct}/>)}
             {filtered.length>36&&<nav className="catalog-pagination" aria-label="Páginas del catálogo"><button type="button" disabled={catalogLimit<=36} onClick={()=>{setCatalogLimit(n=>Math.max(36,n-36));input.current?.closest('.catalog')?.querySelector('.product-grid')?.scrollTo({top:0});}}>Anterior</button><span role="status">Página {Math.min(catalogLimit/36,Math.ceil(filtered.length/36))} de {Math.ceil(filtered.length/36)}</span><button type="button" disabled={catalogLimit>=filtered.length} onClick={()=>{setCatalogLimit(n=>n+36);input.current?.closest('.catalog')?.querySelector('.product-grid')?.scrollTo({top:0});}}>Siguiente</button></nav>}
             {!filtered.length&&<div className="empty"><Package size={32} strokeWidth={1.3}/><h3>Sin coincidencias con estos filtros</h3><p>Ajusta los criterios o limpia los filtros para ver el catálogo completo.</p><button className="light" onClick={()=>{setCatalogFilters(emptyFilters());setQuery('');}}>Ver todos</button></div>}
           </div>

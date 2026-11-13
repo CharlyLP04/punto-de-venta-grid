@@ -26,7 +26,7 @@ mod rpc;
 mod fiscal;
 #[cfg(test)] mod tests;
 
-struct Store { _instance:std::fs::File, db: Mutex<Connection>, directory: PathBuf, sessions: Mutex<security::Sessions>, grants:Mutex<security::Grants> }
+struct Store { _instance:std::fs::File, db: Mutex<Connection>, directory: PathBuf, sessions: Mutex<security::Sessions>, grants:Mutex<security::Grants>, frequencies: Mutex<(i64, Vec<Value>)> }
 type Result<T> = std::result::Result<T, String>;
 fn err(e: impl std::fmt::Display) -> String { e.to_string() }
 
@@ -71,6 +71,7 @@ fn initialize(db: &mut Connection) -> Result<()> {
       CREATE INDEX IF NOT EXISTS idx_refunds_created ON refunds(created);
       CREATE INDEX IF NOT EXISTS idx_refunds_user_created ON refunds(user_id,created);
       CREATE INDEX IF NOT EXISTS idx_ledger_customer_created ON ledger(customer,created);
+      CREATE INDEX IF NOT EXISTS idx_repayments_created ON repayment_receipts(created DESC);
       CREATE INDEX IF NOT EXISTS idx_inventory_product ON inventory(product);").map_err(err)?;
     Ok(())
 }
@@ -82,6 +83,15 @@ fn daily_stats(db:&Connection,user:Option<i64>)->Result<Vec<Value>> {
     rows(db,&format!("SELECT coalesce(sum(revenue),0) AS today,coalesce(sum(CASE WHEN revenue>0 THEN 1 ELSE 0 END),0) AS tickets FROM (
       SELECT s.total AS revenue FROM sales s WHERE {window}{own}
       UNION ALL SELECT -original.total FROM refunds s JOIN sales original ON original.id=s.sale WHERE {window}{own})"))
+}
+
+fn cached_frequencies(store:&Store, db:&Connection)->Result<Vec<Value>> {
+    let latest_sale:i64=db.query_row("SELECT coalesce(max(rowid),0) FROM sales",[],|r|r.get(0)).map_err(err)?;
+    let mut cache=store.frequencies.lock().map_err(err)?;
+    if cache.0==latest_sale{return Ok(cache.1.clone());}
+    let computed=rows(db,"SELECT CAST(json_extract(item.value,'$.id') AS INTEGER) AS product,count(*) AS count FROM (SELECT receipt FROM sales ORDER BY rowid DESC LIMIT 500) s,json_each(s.receipt,'$.items') item GROUP BY product ORDER BY count DESC")?;
+    *cache=(latest_sale,computed.clone());
+    Ok(computed)
 }
 
 #[tauri::command]
@@ -111,7 +121,7 @@ pub(crate) fn snapshot_service(store:&Store, session_token:String)->Result<Value
         "products":products,
         "expiry_alerts":if actor.can("inventory.view"){rows(&db,"SELECT count(*) AS count FROM lots WHERE quantity>0 AND expires<=date('now','localtime','+7 days')")?}else{vec![]},
         "aliases":rows(&db,"SELECT * FROM product_codes")?,
-        "frequencies": rows(&db, "SELECT CAST(json_extract(item.value,'$.id') AS INTEGER) AS product,count(*) AS count FROM (SELECT receipt FROM sales ORDER BY rowid DESC LIMIT 500) s,json_each(s.receipt,'$.items') item GROUP BY product ORDER BY count DESC")?,
+        "frequencies": cached_frequencies(store, &db)?,
         "lines":rows(&db,&format!("SELECT ticket-{} AS ticket,product,quantity,override_price,reason FROM cart WHERE ticket BETWEEN {} AND {} UNION ALL SELECT ticket-{},-id,quantity,NULL,NULL FROM common_cart WHERE ticket BETWEEN {} AND {}",(network::register()-1)*5,(network::register()-1)*5+1,network::register()*5,(network::register()-1)*5,(network::register()-1)*5+1,network::register()*5))?,
         "common_products":rows(&db,&format!("SELECT -id AS id,name,price,0 AS cost,cost IS NOT NULL AS cost_known,'pieza' AS unit,'Productos comunes' AS category,'auto' AS icon,'' AS code,0 AS stock,0 AS physical_stock,0 AS expired_stock,0 AS minimum,0 AS target,0 AS wholesale_quantity,0 AS wholesale_price,0 AS favorite,NULL AS promotion_price,1 AS common FROM common_cart WHERE ticket BETWEEN {} AND {}",(network::register()-1)*5+1,network::register()*5))?,
         "customers":if actor.can("sales.create")||actor.can("credit.use")||actor.can("credit.repay")||actor.can("customers.manage"){rows(&db,"SELECT * FROM customers ORDER BY name")?}else{vec![]},
@@ -189,7 +199,7 @@ pub(crate) fn mutate_service(store:&Store, session_token:String, request_id:Stri
             if unit == "pieza" && delta % 1000 != 0 { return Err("Este producto se vende por pieza".into()); }
             tx.execute("INSERT INTO cart(ticket,product,quantity) VALUES(?,?,?) ON CONFLICT(ticket,product) DO UPDATE SET quantity=quantity+excluded.quantity", params![ticket,product,delta]).map_err(err)?;
             tx.execute("DELETE FROM cart WHERE quantity<=0", []).map_err(err)?;
-            let qty: i64 = tx.query_row("SELECT coalesce(max(quantity),0) FROM cart", [], |r| r.get(0)).map_err(err)?;
+            let qty: i64 = tx.query_row("SELECT coalesce(max(quantity),0) FROM cart WHERE ticket=? AND product=?", params![ticket,product], |r| r.get(0)).map_err(err)?;
             if qty > 1_000_000 { return Err("Máximo 1,000 unidades por línea".into()); }
             }
         },
@@ -383,7 +393,7 @@ fn main() {
 
         db.execute_batch("CREATE TRIGGER IF NOT EXISTS audit_no_update BEFORE UPDATE ON audit BEGIN SELECT RAISE(ABORT,'La bitácora no se edita'); END;
           CREATE TRIGGER IF NOT EXISTS audit_no_delete BEFORE DELETE ON audit BEGIN SELECT RAISE(ABORT,'La bitácora no se elimina'); END;")?;
-        app.manage(Store { _instance:instance, db:Mutex::new(db), directory, sessions:Mutex::new(std::collections::HashMap::new()), grants:Mutex::new(std::collections::HashMap::new()) });
+        app.manage(Store { _instance:instance, db:Mutex::new(db), directory, sessions:Mutex::new(std::collections::HashMap::new()), grants:Mutex::new(std::collections::HashMap::new()), frequencies:Mutex::new((-1,Vec::new())) });
         let handle=app.handle().clone();
         std::thread::spawn(move || {
             loop {
