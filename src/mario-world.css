@@ -1,0 +1,338 @@
+/* Super Mario Tienda — Nintendo Mario (Dark: Rojo + Blanco) & Luigi (Light: Verde + Blanco) */
+
+:root[data-theme=light] {
+  color-scheme: light;
+  --character: #1B8A3D;
+  --character-ink: #ffffff;
+  --character-soft: #e2f5e7;
+  --bg-canvas: #eef7f0;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #e3f2e7;
+  --bg-input: #ffffff;
+  --text-primary: #102819;
+  --text-secondary: #375a43;
+  --border-subtle: #c8e2cf;
+  --border-strong: #87bc97;
+  --accent-gold: #C88A00;
+  --focus: #1B8A3D;
+}
+
+:root[data-theme=dark] {
+  color-scheme: dark;
+  --character: #D61F1B;
+  --character-ink: #ffffff;
+  --character-soft: #43181a;
+  --bg-canvas: #13090b;
+  --bg-surface: #1f1013;
+  --bg-surface-elevated: #2c171b;
+  --bg-input: #170b0e;
+  --text-primary: #ffffff;
+  --text-secondary: #e5c6cb;
+  --border-subtle: #3d1e24;
+  --border-strong: #6d343e;
+  --accent-gold: #FFD166;
+  --focus: #FFD166;
+}
+
+html[data-theme=light] .shell {
+  --price-ink: #7a5200;
+  --stock-ink: #14532d;
+  --stock-bg: #e7f6ec;
+}
+
+html[data-theme=dark] .shell {
+  --price-ink: #FFD166;
+  --stock-ink: #c8f3d4;
+  --stock-bg: #1b3826;
+}
+
+/* Nintendo ribbon along the very top of the window */
+.mario-login::before,
+.store-ui .shell::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #D61F1B 0% 42%, #FDB813 42% 58%, #1B8A3D 58% 100%);
+  z-index: 60;
+  pointer-events: none;
+}
+
+/* Tactile Nintendo block feel on primary CTAs & cards */
+.store-ui .primary,
+.store-ui .charge,
+.store-ui .kiosk-submit {
+  background: var(--action, var(--character));
+  color: var(--action-ink, var(--character-ink));
+  border: 1.5px solid color-mix(in srgb, var(--action, var(--character)) 72%, #000);
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--action, var(--character)) 55%, #000);
+  transition: transform 90ms ease, box-shadow 90ms ease, filter 120ms ease;
+}
+
+.store-ui .primary:hover:not(:disabled),
+.store-ui .charge:hover:not(:disabled),
+.store-ui .kiosk-submit:hover:not(:disabled) {
+  filter: brightness(1.06);
+}
+
+.store-ui .primary:active:not(:disabled),
+.store-ui .charge:active:not(:disabled),
+.store-ui .kiosk-submit:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--action, var(--character)) 55%, #000);
+}
+
+/* Dark Mario / Light Luigi sidebar & topbar polish */
+html[data-theme=dark] .store-ui .sidebar.workspace-sidebar {
+  background: linear-gradient(180deg, #1b0d10 0%, #14090b 100%);
+  border-right: 1.5px solid var(--border-subtle);
+}
+
+html[data-theme=light] .store-ui .sidebar.workspace-sidebar {
+  background: linear-gradient(180deg, #ffffff 0%, #f1faf3 100%);
+  border-right: 1.5px solid var(--border-subtle);
+}
+
+.store-ui .sidebar.workspace-sidebar nav button.active,
+.store-ui .sidebar.workspace-sidebar nav button[aria-current=page] {
+  background: var(--action, var(--character));
+  color: var(--action-ink, var(--character-ink));
+  border-color: transparent;
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--action, var(--character)) 58%, #000);
+}
+
+.store-ui .sidebar.workspace-sidebar nav button.active small,
+.store-ui .sidebar.workspace-sidebar nav button[aria-current=page] small {
+  color: color-mix(in srgb, var(--action-ink, #fff) 86%, transparent);
+}
+
+.store-ui .topbar {
+  border-bottom: 1.5px solid var(--border-subtle);
+}
+
+.store-ui .topbar-stats .stat-pill:first-child strong,
+.store-ui .topbar-stats strong {
+  color: var(--price-ink);
+}
+
+/* Spacious 2-Column Mario & Luigi Login Console */
+.kiosk-console.mario-login {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding: 6px 4vw 10px;
+}
+
+html[data-theme=dark] .kiosk-console.mario-login {
+  background:
+    radial-gradient(circle at 16% 24%, #d61f1b24, transparent 46%),
+    radial-gradient(circle at 86% 80%, #fdb81314, transparent 40%),
+    radial-gradient(var(--border-subtle) 1px, transparent 1px),
+    var(--bg-canvas);
+  background-size: auto, auto, 22px 22px, auto;
+}
+
+html[data-theme=light] .kiosk-console.mario-login {
+  background:
+    radial-gradient(circle at 16% 24%, #1b8a3d1c, transparent 46%),
+    radial-gradient(circle at 86% 80%, #fdb8131a, transparent 40%),
+    radial-gradient(var(--border-subtle) 1px, transparent 1px),
+    var(--bg-canvas);
+  background-size: auto, auto, 22px 22px, auto;
+}
+
+.kiosk-console.mario-login .kiosk-body.mario-login-grid {
+  max-width: 1120px;
+  width: 100%;
+  margin: auto;
+  display: grid;
+  grid-template-columns: minmax(310px, 0.92fr) minmax(420px, 1.18fr);
+  gap: 28px;
+  align-items: stretch;
+  padding: 20px 0;
+}
+
+.mario-login-hero {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 28px;
+  border-radius: 24px;
+  border: 1.5px solid var(--border-strong);
+  background: var(--bg-surface);
+  box-shadow: 0 12px 30px #0000001c;
+}
+
+html[data-theme=dark] .mario-login-hero {
+  background: linear-gradient(155deg, #271116 0%, #190b0e 100%);
+}
+
+html[data-theme=light] .mario-login-hero {
+  background: linear-gradient(155deg, #ffffff 0%, #e7f6eb 100%);
+}
+
+.mario-hero-badge {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.mario-hero-badge .brand-mark {
+  width: 54px;
+  height: 54px;
+}
+
+.mario-coin-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 750;
+  background: var(--character-soft);
+  color: var(--character);
+  border: 1px solid color-mix(in srgb, var(--character) 35%, transparent);
+}
+
+html[data-theme=dark] .mario-coin-pill {
+  color: #ffffff;
+  background: #d61f1b38;
+  border-color: #d61f1b88;
+}
+
+.mario-login-hero .login-heading {
+  margin: 0;
+}
+
+.mario-login-hero .login-heading h1 {
+  font-size: clamp(26px, 2.7vw, 34px);
+  line-height: 1.12;
+  margin: 0 0 8px;
+}
+
+.mario-login-hero .login-heading p {
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.mario-hero-controls {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border-radius: 16px;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+}
+
+.mario-control-label {
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.mario-hero-controls .input-mode-picker {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.mario-shortcuts-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.mario-shortcuts-strip span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+}
+
+.kiosk-console.mario-login .kiosk-access.login-console {
+  display: flex;
+  flex-direction: column;
+  border-radius: 24px;
+  border: 1.5px solid var(--border-strong);
+  background: var(--bg-surface);
+  overflow: hidden;
+}
+
+.kiosk-console.mario-login .profile-picker {
+  padding: 22px 24px 18px;
+  border-bottom: 1.5px solid var(--border-subtle);
+}
+
+.kiosk-console.mario-login .profile-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  max-height: 230px;
+  overflow-y: auto;
+}
+
+.kiosk-console.mario-login .profile-choice {
+  padding: 10px 12px;
+  min-height: 60px;
+  border-radius: 14px;
+  border: 1.5px solid var(--border-subtle);
+}
+
+.kiosk-console.mario-login .profile-choice.selected {
+  border-color: var(--character);
+  background: var(--character-soft);
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--character) 35%, transparent);
+}
+
+.kiosk-console.mario-login .kiosk-unlock {
+  padding: 22px 24px 24px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+@media (max-width: 880px) {
+  .kiosk-console.mario-login .kiosk-body.mario-login-grid {
+    grid-template-columns: 1fr;
+    max-width: 560px;
+  }
+}
+
+/* Productos table: single-line crisp action pills */
+.store-ui .inventory-actions {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.store-ui .inventory-actions .inventory-action {
+  min-height: 34px;
+  padding: 6px 10px;
+  font-size: 12px;
+  border-radius: 9px;
+  white-space: nowrap;
+  gap: 5px;
+}
+
+@media (max-width: 900px) {
+  .store-ui .inventory-actions {
+    flex-wrap: wrap;
+  }
+}
