@@ -145,6 +145,7 @@ enum Action {
     Product { id: Option<i64>, code: String, name: String, category: String, price: i64, cost: Option<i64>, unit: String, #[serde(default)] icon: Option<String> },
     Restock { product: i64, quantity: i64, note: String },
     Customer { name: String, phone: String, limit: i64, #[serde(default)] id:Option<i64>, #[serde(default)] email:String, #[serde(default)] address:String, #[serde(default)] credit_enabled:Option<bool> },
+    DeleteCustomer { id: i64 },
     Repay { customer: i64, amount: i64 },
     Movement { amount: i64, note: String },
     Open { amount: i64 },
@@ -165,7 +166,7 @@ pub(crate) fn mutate_service(store:&Store, session_token:String, request_id:Stri
     Uuid::parse_str(&request_id).map_err(err)?;
     let permission=match &action {
         Action::Common{..}|Action::Cart{..}|Action::Remove{..}=>"sales.create",Action::Product{..}=>"products.edit",Action::Restock{..}=>"inventory.manage",
-        Action::Customer{..}=>"customers.manage",Action::Repay{..}=>"credit.repay",Action::Movement{..}=>"cash.move",
+        Action::Customer{..}|Action::DeleteCustomer{..}=>"customers.manage",Action::Repay{..}=>"credit.repay",Action::Movement{..}=>"cash.move",
         Action::Open{..}=>"shifts.open",Action::Close{..}=>"shifts.close",Action::Settings{..}=>"settings.manage",Action::Preferences{..}=>""
     };
     let audit = serde_json::to_string(&action).map_err(err)?;
@@ -251,6 +252,15 @@ pub(crate) fn mutate_service(store:&Store, session_token:String, request_id:Stri
             if let Some(id)=id {
                 if tx.execute("UPDATE customers SET name=?,phone=?,credit_limit=?,email=?,address=?,credit_enabled=? WHERE id=? AND balance<=?",params![name.trim(),phone,limit,email,address,credit_enabled.unwrap_or(true),id,limit]).map_err(err)?!=1{return Err("Cliente inexistente o límite inferior a su saldo pendiente".into());}
             }else{tx.execute("INSERT INTO customers(name,phone,credit_limit,email,address,credit_enabled) VALUES(?,?,?,?,?,?)",params![name.trim(),phone,limit,email,address,credit_enabled.unwrap_or(true)]).map_err(err)?;}
+        },
+        Action::DeleteCustomer { id } => {
+            if actor.role != "owner" { return Err("Solo el administrador puede borrar clientes".into()); }
+            let balance: i64 = tx.query_row("SELECT balance FROM customers WHERE id=?", [id], |r| r.get(0)).map_err(|_| "Cliente inexistente".to_string())?;
+            if balance != 0 { return Err("No se puede borrar un cliente con saldo pendiente. Liquida su saldo primero.".into()); }
+            tx.execute("UPDATE sales SET customer_id=NULL WHERE customer_id=?", [id]).map_err(err)?;
+            tx.execute("DELETE FROM ledger WHERE customer=?", [id]).map_err(err)?;
+            tx.execute("DELETE FROM repayment_receipts WHERE customer=?", [id]).map_err(err)?;
+            if tx.execute("DELETE FROM customers WHERE id=?", [id]).map_err(err)? != 1 { return Err("Cliente inexistente".into()); }
         },
         Action::Repay { customer, amount } => {
             positive(amount)?;

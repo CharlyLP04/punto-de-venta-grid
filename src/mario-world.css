@@ -112,7 +112,9 @@ html.store-ui[data-theme=dark] .shell:not([data-accent=classic]) {
 html.store-ui .primary,
 html.store-ui .charge,
 html.store-ui .kiosk-submit,
-html.store-ui .kiosk-console .kiosk-submit {
+html.store-ui .kiosk-console .kiosk-submit,
+html.store-ui .arcade-button.arcade-primary,
+html.store-ui .modal-submit.arcade-primary {
   background: var(--action, var(--character));
   color: var(--action-ink, #ffffff) !important;
   border: 1px solid color-mix(in srgb, var(--action, var(--character)) 80%, #000);
@@ -122,6 +124,19 @@ html.store-ui .kiosk-console .kiosk-submit {
   min-height: 44px;
   border-radius: 12px;
   transition: transform 100ms ease, filter 120ms ease;
+}
+
+html.store-ui .danger-action {
+  color: #f87171 !important;
+  border-color: rgba(248, 113, 113, 0.35) !important;
+  margin-top: 8px;
+  width: 100%;
+  justify-content: center;
+}
+
+html.store-ui[data-theme=light] .danger-action {
+  color: #b91c1c !important;
+  border-color: rgba(185, 28, 28, 0.35) !important;
 }
 
 html.store-ui .kiosk-console .kiosk-submit {
