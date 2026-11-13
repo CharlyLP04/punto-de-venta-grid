@@ -578,42 +578,44 @@ html.store-ui textarea:focus {
 }
 
 /* 4. Tables (Productos, Clientes, Ventas, Bitácora): elevated headers & readable rows */
-html.store-ui .table-wrap {
+html.store-ui .table-wrap,
+html.store-ui .table-scroll {
   border-radius: 14px;
   border: 1px solid var(--border-subtle);
   overflow: auto;
   background: var(--bg-surface);
 }
 
-html.store-ui table.table {
+html.store-ui .shell table {
   border-collapse: separate;
   border-spacing: 0;
   width: 100%;
 }
 
-html.store-ui table.table thead th {
+html.store-ui .shell table thead th {
   background: var(--bg-surface-elevated);
   color: var(--text-secondary);
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  padding: 12px 14px;
+  padding: 12px 14px !important;
+  vertical-align: middle !important;
   border-bottom: 1px solid var(--border-subtle);
 }
 
-html.store-ui table.table tbody td {
-  padding: 12px 14px;
+html.store-ui .shell table tbody td {
+  padding: 13px 14px;
   border-bottom: 1px solid var(--border-subtle);
   vertical-align: middle;
   font-variant-numeric: tabular-nums;
 }
 
-html.store-ui table.table tbody tr:last-child td {
+html.store-ui .shell table tbody tr:last-child td {
   border-bottom: 0;
 }
 
-html.store-ui table.table tbody tr:hover td {
+html.store-ui .shell table tbody tr:hover td {
   background: color-mix(in srgb, var(--action) 5%, var(--bg-surface));
 }
 
@@ -870,4 +872,81 @@ html.store-ui .customer-workspace .customer > details,
 html.store-ui .customer-workspace .customer > .customer-history {
   flex: 1 0 100%;
   width: 100%;
+}
+
+/* 9. Color picker alignment, compact Categorías pill & Inventory spacing/table polish */
+html.store-ui .shell .store-settings :is(.color-options, .density-options) > label {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 12px 14px !important;
+  min-height: 50px;
+}
+
+html.store-ui .shell .store-settings :is(.color-options, .density-options) > label input[type="radio"] {
+  margin: 0 !important;
+  align-self: center !important;
+  flex-shrink: 0;
+}
+
+html.store-ui .shell .store-settings .color-options > label > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 1.2;
+}
+
+html.store-ui .shell .counter-filter-bar {
+  align-items: center !important;
+  height: auto !important;
+  flex: none !important;
+}
+
+html.store-ui .shell .category-disclosure {
+  flex: 0 1 auto !important;
+  height: auto !important;
+  min-height: 0 !important;
+  align-self: flex-start !important;
+}
+
+html.store-ui .shell .category-disclosure > summary {
+  min-height: 40px !important;
+  padding: 9px 14px !important;
+}
+
+html.store-ui .shell .workspace > .panel + .panel,
+html.store-ui .shell .inventory-panel + .panel,
+html.store-ui .shell .panel + .catalog-import,
+html.store-ui .shell .inventory-valuation,
+html.store-ui .shell .catalog-import {
+  margin-top: 16px !important;
+}
+
+html.store-ui .shell .catalog-load-more {
+  margin-top: 14px !important;
+  position: relative;
+  z-index: 1;
+}
+
+html.store-ui .shell .catalog-import > summary {
+  padding: 14px 18px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+html.store-ui[data-theme=dark] .shell .inventory-actions .action-restock {
+  background: var(--action) !important;
+  color: var(--action-ink, #ffffff) !important;
+  border-color: transparent !important;
+}
+
+html.store-ui[data-theme=light] .shell .inventory-actions .action-restock {
+  background: var(--action-soft);
+  color: var(--action);
+  border: 1px solid color-mix(in srgb, var(--action) 28%, transparent);
+}
+
+html.store-ui .shell .stock-health {
+  padding: 8px 12px;
+  border-radius: 10px;
 }
