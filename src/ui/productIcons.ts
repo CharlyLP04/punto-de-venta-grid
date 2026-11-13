@@ -258,6 +258,15 @@ export const BRAND_PRESETS = [
   { label: 'Suerox', detail: 'Bebidas', tone: 'suerox' },
   { label: 'Corona', detail: 'Bebidas', tone: 'corona' },
   { label: 'Nestlé', detail: 'Abarrotes', tone: 'nestle' },
+  { label: 'Aspirina', detail: 'Farmacia', tone: 'cola' },
+  { label: 'Bayer', detail: 'Farmacia', tone: 'skarch' },
+  { label: 'Pepto-Bismol', detail: 'Farmacia', tone: 'tiarosa' },
+  { label: 'Cheetos', detail: 'Botanas', tone: 'doritos' },
+  { label: 'Gatorade', detail: 'Bebidas', tone: 'jugos' },
+  { label: 'Nescafé', detail: 'Café', tone: 'fud' },
+  { label: 'Colgate', detail: 'Cuidado personal', tone: 'cola' },
+  { label: 'Knorr', detail: 'Abarrotes', tone: 'nutrioli' },
+  { label: 'Red Bull', detail: 'Bebidas', tone: 'lala' },
 ];
 
 export const BRAND_TONES = [

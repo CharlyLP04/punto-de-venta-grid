@@ -27,7 +27,7 @@ export const supplierBrands = [
   ['La Moderna', 'LM', 'la-moderna'],
   ['Lala', 'LA', 'lala'],
   ['Alpura', 'AL', 'alpura'],
-  ['Danone', 'DA'],
+  ['Danone', 'DA', 'danone'],
   ['Yakult', 'YA', 'yakult'],
   ['Santa Clara', 'SC'],
   ['FUD', 'FU', 'fud'],
@@ -37,7 +37,19 @@ export const supplierBrands = [
   ['Verde Valle', 'VV', 'verde-valle'],
   ['Cloralex', 'CL', 'cloralex'],
   ['Zote', 'ZO', 'zote'],
-  ['AriZona', 'AZ', 'arizona']
+  ['AriZona', 'AZ', 'arizona'],
+  ['Aspirina', 'AS', 'aspirina'],
+  ['Bayer', 'BA', 'bayer'],
+  ['Pepto-Bismol', 'PB', 'pepto-bismol'],
+  ['Doritos', 'DO', 'doritos'],
+  ['Cheetos', 'CH', 'cheetos'],
+  ['Gatorade', 'GA', 'gatorade'],
+  ['Nescafé', 'NC', 'nescafe'],
+  ['Colgate', 'CO', 'colgate'],
+  ['Knorr', 'KN', 'knorr'],
+  ['McCormick', 'MC', 'mccormick'],
+  ['Red Bull', 'RB', 'red-bull'],
+  ['Corona', 'CR', 'corona']
 ];
 
 const logoByKey = new Map(Object.entries(logos).map(([path, url]) => [path.replace(/^.*\//, '').replace(/\.[^.]+$/, ''), url]));
@@ -61,8 +73,8 @@ const subBrandMappings: [string, string][] = [
   ['churritos barcel', 'Barcel'],
 
   // Sabritas
-  ['doritos', 'Sabritas'],
-  ['cheetos', 'Sabritas'],
+  ['doritos', 'Doritos'],
+  ['cheetos', 'Cheetos'],
   ['ruffles', 'Sabritas'],
   ['fritos', 'Sabritas'],
   ['tostitos', 'Sabritas'],
@@ -135,7 +147,7 @@ const subBrandMappings: [string, string][] = [
   ['squirt', 'Pepsi'],
   ['manzanita sol', 'Pepsi'],
   ['epura', 'Pepsi'],
-  ['gatorade', 'Pepsi'],
+  ['gatorade', 'Gatorade'],
   ['lipton', 'Pepsi'],
 
   // AriZona
@@ -180,7 +192,7 @@ const subBrandMappings: [string, string][] = [
   ['nestle', 'Nestlé'],
   ['nido', 'Nestlé'],
   ['carnation', 'Nestlé'],
-  ['nescafe', 'Nestlé'],
+  ['nescafe', 'Nescafé'],
   ['carlos v', 'Nestlé'],
   ['abuelita', 'Nestlé'],
   ['media crema', 'Nestlé'],
@@ -236,7 +248,29 @@ const subBrandMappings: [string, string][] = [
   ['verde valle', 'Verde Valle'],
 
   // Yakult
-  ['yakult', 'Yakult']
+  ['yakult', 'Yakult'],
+
+  // Farmacia y cuidado personal
+  ['aspirina', 'Aspirina'],
+  ['cafiaspirina', 'Aspirina'],
+  ['aspirin', 'Aspirina'],
+  ['bayer', 'Bayer'],
+  ['alka seltzer', 'Bayer'],
+  ['tabcin', 'Bayer'],
+  ['canesten', 'Bayer'],
+  ['bepanthen', 'Bayer'],
+  ['pepto bismol', 'Pepto-Bismol'],
+  ['pepto', 'Pepto-Bismol'],
+  ['colgate', 'Colgate'],
+
+  // Abarrotes y bebidas adicionales
+  ['knorr', 'Knorr'],
+  ['mccormick', 'McCormick'],
+  ['red bull', 'Red Bull'],
+  ['corona', 'Corona'],
+  ['danone', 'Danone'],
+  ['activia', 'Danone'],
+  ['danonino', 'Danone']
 ];
 
 export function brandLogo(name: string) {

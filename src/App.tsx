@@ -245,7 +245,7 @@ export default function App() {
         case 'customer':action={type:'customer',id:modal.customer??null,name:text('name'),phone:text('phone'),limit:decimal(text('amount')),email:text('email'),address:text('address'),credit_enabled:form.get('credit_enabled')==='on'};break;
         case 'repay':action={type:'repay',customer:modal.customer,amount:decimal(text('amount'))};break;
         case 'product':{
-          const iconVal=text('icon')||undefined;
+          const iconVal=text('icon');
           if(iconVal&&iconVal.startsWith('brand:')){
             const parsed=parseBrandBadge(iconVal);
             if(parsed&&parsed.label.trim())saveBrandToStorage(parsed);

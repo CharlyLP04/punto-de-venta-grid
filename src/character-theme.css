@@ -271,7 +271,7 @@ html[data-theme] .quick-login.character-login .arcade-primary{background:var(--c
 .shell .product-card .category-size{font-weight:750;color:var(--text-primary);opacity:.9}
 
 /* Brand picker tabs and custom controls in IconPicker */
-.icon-picker-tabs{display:flex;gap:6px;border-bottom:1px solid var(--border-subtle);padding-bottom:8px;margin-bottom:6px;overflow-x:auto}
+.icon-picker-tabs{display:flex;flex-wrap:wrap;gap:6px;border-bottom:1px solid var(--border-subtle);padding-bottom:8px;margin-bottom:6px}
 .icon-picker-tab{display:inline-flex;align-items:center;padding:7px 12px;font-size:12px;font-weight:600;border-radius:9px;border:1px solid var(--border-subtle);background:var(--bg-surface);color:var(--text-secondary);cursor:pointer;white-space:nowrap;transition:all .15s}
 .icon-picker-tab:hover{border-color:var(--border-strong);color:var(--text-primary)}
 .icon-picker-tab.active{border-color:var(--character);background:var(--character-soft);color:var(--character);font-weight:750}

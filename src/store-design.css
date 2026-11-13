@@ -1477,3 +1477,7 @@ html.store-ui[data-input-mode=touch] .shell .category-disclosure :is(summary,but
 .store-ui .shell[data-density=compact] .sale-product-card .stock-badge {font-size:10px;padding:2px 6px}
 html.store-ui[data-input-mode=touch] .shell[data-density=compact] .product-grid {grid-template-columns:repeat(auto-fill,minmax(min(180px,100%),1fr));gap:8px}
 html.store-ui[data-input-mode=touch] .shell[data-density=compact] .sale-product-card {min-height:112px;padding:10px}
+.store-ui .product-visual.brand-badge.compact {width:64px;height:44px;min-height:44px;padding:4px}
+.store-ui .product-visual.brand-badge.compact .brand-lettering {font-size:10px;line-height:1.05;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.store-ui .shell[data-density=compact] .sale-product-card .product-visual.brand-badge.compact {width:46px;height:36px;min-height:36px;padding:3px}
+.store-ui .shell[data-density=compact] .sale-product-card .product-visual.brand-badge.compact .brand-lettering {font-size:8.5px}

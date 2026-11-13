@@ -34,29 +34,19 @@ export const brandBadges = [
   { match: /\b(?:arizona)\b/i, label: 'AriZona', tone: 'arizona', detail: 'Bebidas' },
   { match: /\b(?:red cola)\b/i, label: 'Red Cola', tone: 'redcola', detail: 'Bebidas' },
   { match: /\b(?:del valle)\b/i, label: 'Del Valle', tone: 'valle', detail: 'Jugos' },
+  { match: /\b(?:aspirin[ae]?|cafiaspirina)\b/i, label: 'Aspirina', tone: 'cola', detail: 'Farmacia' },
+  { match: /\b(?:bayer|alka\s*seltzer|tabcin|bepanthen|canesten)\b/i, label: 'Bayer', tone: 'skarch', detail: 'Farmacia' },
+  { match: /\b(?:pepto[\s-]?bismol)\b/i, label: 'Pepto-Bismol', tone: 'tiarosa', detail: 'Farmacia' },
+  { match: /\b(?:cheetos)\b/i, label: 'Cheetos', tone: 'doritos', detail: 'Botanas' },
+  { match: /\b(?:gatorade)\b/i, label: 'Gatorade', tone: 'jugos', detail: 'Bebidas' },
+  { match: /\b(?:nescaf[eé])\b/i, label: 'Nescafé', tone: 'fud', detail: 'Café' },
+  { match: /\b(?:colgate)\b/i, label: 'Colgate', tone: 'cola', detail: 'Cuidado personal' },
+  { match: /\b(?:knorr)\b/i, label: 'Knorr', tone: 'nutrioli', detail: 'Abarrotes' },
+  { match: /\b(?:red\s*bull)\b/i, label: 'Red Bull', tone: 'lala', detail: 'Bebidas' },
 ];
 
 export const ProductVisual = memo(function ProductVisual({ product, compact = false }: { product: Product; compact?: boolean }) {
   const [failedLogo,setFailedLogo]=useState('');
-  const namedBrand=productBrandName(product.name, product.category);
-  const configuredBrand=parseBrandBadge(product.icon);
-  // A brand present in the product name takes precedence over an old icon assignment.
-  const logo=brandLogo(namedBrand??configuredBrand?.label??'');
-  if(logo&&failedLogo!==logo){
-    return <span className={`product-visual product-brand-logo ${compact?'compact':''}`} aria-hidden="true">
-      <img src={logo} alt="" width={64} height={44} decoding="async" draggable={false} onError={()=>setFailedLogo(logo)}/>
-    </span>;
-  }
-  const explicitBrand = !namedBrand||namedBrand===configuredBrand?.label?configuredBrand:null;
-  if (explicitBrand) {
-    return (
-      <span className={`product-visual brand-badge brand-${explicitBrand.tone} ${compact ? 'compact' : ''}`} aria-hidden="true">
-        <span className="brand-lettering">{compact ? explicitBrand.label.slice(0, 2).toUpperCase() : explicitBrand.label}</span>
-        {!compact && explicitBrand.detail && <span className="brand-detail">{explicitBrand.detail}</span>}
-      </span>
-    );
-  }
-
   const custom = customIconKey(product);
   if (custom) {
     const { Icon } = productIcons[custom] ?? productIcons.paquete;
@@ -67,11 +57,35 @@ export const ProductVisual = memo(function ProductVisual({ product, compact = fa
     );
   }
 
+  const configuredBrand=parseBrandBadge(product.icon);
+  if (configuredBrand) {
+    const configuredLogo=brandLogo(configuredBrand.label);
+    if(configuredLogo&&failedLogo!==configuredLogo){
+      return <span className={`product-visual product-brand-logo ${compact?'compact':''}`} aria-hidden="true">
+        <img src={configuredLogo} alt="" width={64} height={44} decoding="async" draggable={false} onError={()=>setFailedLogo(configuredLogo)}/>
+      </span>;
+    }
+    return (
+      <span className={`product-visual brand-badge brand-${configuredBrand.tone} ${compact ? 'compact' : ''}`} aria-hidden="true">
+        <span className="brand-lettering">{configuredBrand.label}</span>
+        {!compact && configuredBrand.detail && <span className="brand-detail">{configuredBrand.detail}</span>}
+      </span>
+    );
+  }
+
+  const namedBrand=productBrandName(product.name, product.category);
+  const logo=brandLogo(namedBrand??'');
+  if(logo&&failedLogo!==logo){
+    return <span className={`product-visual product-brand-logo ${compact?'compact':''}`} aria-hidden="true">
+      <img src={logo} alt="" width={64} height={44} decoding="async" draggable={false} onError={()=>setFailedLogo(logo)}/>
+    </span>;
+  }
+
   const autoBrand = brandBadges.find(b => b.match.test(product.name || ''));
   if (autoBrand) {
     return (
       <span className={`product-visual brand-badge brand-${autoBrand.tone} ${compact ? 'compact' : ''}`} aria-hidden="true">
-        <span className="brand-lettering">{compact ? autoBrand.label.slice(0, 2).toUpperCase() : autoBrand.label}</span>
+        <span className="brand-lettering">{autoBrand.label}</span>
         {!compact && <span className="brand-detail">{autoBrand.detail}</span>}
       </span>
     );

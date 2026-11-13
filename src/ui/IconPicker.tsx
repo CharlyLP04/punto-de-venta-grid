@@ -11,6 +11,7 @@ import {
   BRAND_TONES,
 } from './productIcons';
 import { brandBadges } from './ProductCard';
+import { brandLogo } from './brandAssets';
 import type { Product } from '../model';
 
 const STORAGE_KEY = 'mario_custom_brand_badges_v1';
@@ -214,7 +215,15 @@ export default function IconPicker({ product, products, name = '', category = ''
 
       {/* Head preview */}
       <div className="icon-picker-head">
-        {isBrandVisual ? (
+        {isBrandVisual && brandLogo(activeBrandLabel) ? (
+          <span
+            className="product-visual product-brand-logo"
+            style={{ width: '88px', height: '56px', minHeight: '56px', padding: '6px 8px', borderRadius: '12px' }}
+            aria-hidden="true"
+          >
+            <img src={brandLogo(activeBrandLabel)} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+          </span>
+        ) : isBrandVisual ? (
           <span
             className={`product-visual brand-badge brand-${activeBrandTone}`}
             style={{
@@ -286,7 +295,7 @@ export default function IconPicker({ product, products, name = '', category = ''
           }}
         >
           <Tag size={13} style={{ marginRight: '4px' }} />
-          Insignia de Marca (como Coca-Cola, Bimbo...) {mode === 'brand' && <Check size={13} style={{ marginLeft: '4px' }} />}
+          Insignia de marca {mode === 'brand' && <Check size={13} style={{ marginLeft: '4px' }} />}
         </button>
 
         <button
@@ -298,7 +307,7 @@ export default function IconPicker({ product, products, name = '', category = ''
           }}
         >
           <Package size={13} style={{ marginRight: '4px' }} />
-          Icono de Abarrotes {mode === 'icon' && <Check size={13} style={{ marginLeft: '4px' }} />}
+          Icono de abarrotes {mode === 'icon' && <Check size={13} style={{ marginLeft: '4px' }} />}
         </button>
       </div>
 
@@ -441,6 +450,7 @@ export default function IconPicker({ product, products, name = '', category = ''
             <div className="brand-picker-presets">
               {filteredBrands.map((preset) => {
                 const isSelected = brandTone === preset.tone && brandLabel === preset.label;
+                const presetLogo = brandLogo(preset.label);
                 return (
                   <button
                     type="button"
@@ -448,14 +458,27 @@ export default function IconPicker({ product, products, name = '', category = ''
                     className={`brand-preset-btn brand-${preset.tone}`}
                     aria-pressed={isSelected}
                     onClick={() => selectBrandPreset(preset)}
-                    style={{ background: 'var(--badge-bg)', color: 'var(--badge-ink)', borderColor: 'var(--badge-border)' }}
+                    style={presetLogo
+                      ? { background: '#f3f6f8', color: '#0f172a', borderColor: isSelected ? 'var(--action)' : '#cbd5e1', gap: '3px' }
+                      : { background: 'var(--badge-bg)', color: 'var(--badge-ink)', borderColor: 'var(--badge-border)' }}
                   >
-                    <span className="brand-lettering" style={{ fontSize: '13px', lineHeight: 1.1 }}>
-                      {preset.label}
-                    </span>
-                    <span className="brand-detail" style={{ fontSize: '6px', marginTop: '2px' }}>
-                      {preset.detail}
-                    </span>
+                    {presetLogo ? (
+                      <>
+                        <img src={presetLogo} alt="" style={{ width: '56px', height: '24px', objectFit: 'contain' }} />
+                        <span className="brand-detail" style={{ fontSize: '8px', opacity: 0.85 }}>
+                          {preset.label}
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="brand-lettering" style={{ fontSize: '13px', lineHeight: 1.1 }}>
+                          {preset.label}
+                        </span>
+                        <span className="brand-detail" style={{ fontSize: '6px', marginTop: '2px' }}>
+                          {preset.detail}
+                        </span>
+                      </>
+                    )}
                   </button>
                 );
               })}
