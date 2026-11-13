@@ -1,4 +1,4 @@
-import {useEffect,useState} from 'react';
+import {useEffect,useMemo,useState} from 'react';
 import {invoke} from '../api';
 import {useSession} from '../security/Session';
 import type {Snapshot} from '../model';
@@ -8,12 +8,14 @@ export default function PendingCenter({data,onOpen}:{data:Snapshot;onOpen:(page:
   const {can}=useSession();const [backupError,setBackupError]=useState('');const [lookupError,setLookupError]=useState('');
   const canBackup=can('backup.create');
   useEffect(()=>{let active=true;if(canBackup)void invoke<{error:string}>('backup_center').then(result=>{if(active)setBackupError(result.error);}).catch(()=>{if(active)setLookupError('No se pudo consultar el estado del respaldo.');});return()=>{active=false;};},[canBackup]);
+  const lowCount=useMemo(()=>data.products.reduce((count,p)=>count+Number(p.stock<=p.minimum),0),[data.products]);
+  const printCount=useMemo(()=>data.sales.reduce((count,s)=>count+Number(s.print_status==='sending'||s.print_status==='uncertain'),0),[data.sales]);
   const items:{label:string;count:number;page:Page}[]=[];
   if(can('inventory.view')){
-    items.push({label:'Productos por surtir',count:data.products.filter(p=>p.stock<=p.minimum).length,page:'Surtido'});
+    items.push({label:'Productos por surtir',count:lowCount,page:'Surtido'});
     items.push({label:'Lotes por revisar',count:data.expiry_alerts[0]?.count??0,page:'Lotes'});
   }
-  if(can('receipt.print'))items.push({label:'Impresiones inciertas en ventas recientes',count:data.sales.filter(s=>['sending','uncertain'].includes(s.print_status)).length,page:'Historial'});
+  if(can('receipt.print'))items.push({label:'Impresiones inciertas en ventas recientes',count:printCount,page:'Historial'});
   if(canBackup&&backupError)items.push({label:'Respaldo automático con error',count:1,page:'Respaldos'});
   const pending=items.filter(item=>item.count>0);
   if(!items.length&&!lookupError)return null;

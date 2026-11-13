@@ -1,0 +1,6 @@
+<svg viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+  <rect width="120" height="60" rx="8" fill="#00358E"/>
+  <path d="M60 8 C53 8 47 13 47 20 C47 28 60 36 60 36 C60 36 73 28 73 20 C73 13 67 8 60 8 Z" fill="#E31837"/>
+  <circle cx="60" cy="18" r="4" fill="#FFFFFF"/>
+  <text x="60" y="50" font-family="'Arial Black', sans-serif" font-size="15" font-weight="900" fill="#FFFFFF" text-anchor="middle" letter-spacing="1">alpura</text>
+</svg>

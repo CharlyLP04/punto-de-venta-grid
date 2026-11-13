@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { invoke } from '../api';
 import { useSession } from '../security/Session';
 import { HardDrive, RotateCcw, Plus, Clock, AlertTriangle, CheckCircle, ShieldAlert } from 'lucide-react';
@@ -117,6 +117,41 @@ export default function BackupCenter() {
     });
   }
 
+  const backupRows=useMemo(()=>data?.files.map(f => {
+            const isAuto = f.name.includes('-auto-');
+            const isPreRestore = f.name.includes('-antes-restaurar-');
+            return (
+              <div className="record backup-record-card" key={f.name}>
+                <div className="backup-file-info">
+                  <div className="backup-badges">
+                    <span className={`status-pill ${isPreRestore ? 'warning' : isAuto ? 'neutral' : 'success'}`}>
+                      {isPreRestore ? 'Antes de restaurar' : isAuto ? 'Automático' : 'Manual'}
+                    </span>
+                    <strong className="file-date">{formatDate(f.modified)}</strong>
+                  </div>
+                  <span className="file-name">{f.name}</span>
+                  <small className="file-size">{formatBytes(f.bytes)}</small>
+                </div>
+
+                {user.role === 'owner' && (
+                  <button
+                    type="button"
+                    className="light restore-btn"
+                    disabled={busy}
+                    onClick={() => {
+                      setRestoreTarget(f);
+                      setConfirmWord('');
+                      setError('');
+                    }}
+                  >
+                    <RotateCcw size={15} />
+                    <span>Restaurar</span>
+                  </button>
+                )}
+              </div>
+            );
+          }),[data?.files,user.role,busy]);
+  const backupOptions=useMemo(()=>data?.files.map(file=><option key={file.name}>{file.name}</option>),[data?.files]);
   return (
     <div className="backup-center-hub">
       {error && <div className="alert error" role="alert">{error}</div>}
@@ -156,7 +191,7 @@ export default function BackupCenter() {
 
         <article className="panel">
           <h2>Copia externa</h2><p className="muted">Conserva otra copia en una memoria USB. Una copia en el mismo disco no protege contra una falla de ese disco.</p>
-          <label className="field"><span>Respaldo a copiar</span><select value={exportName} onChange={e=>setExportName(e.target.value)}><option value="">Selecciona una copia</option>{data?.files.map(file=><option key={file.name}>{file.name}</option>)}</select></label>
+          <label className="field"><span>Respaldo a copiar</span><select value={exportName} onChange={e=>setExportName(e.target.value)}><option value="">Selecciona una copia</option>{backupOptions}</select></label>
           <label className="field"><span>Carpeta existente de destino</span><input value={destination} onChange={e=>setDestination(e.target.value)} placeholder="Ej. E:\Respaldos"/></label>
           <button type="button" className="light" disabled={busy||!exportName||!destination.trim()} onClick={async()=>{setBusy(true);setError('');try{const path=await invoke<string>('export_backup',{name:exportName,destination});setNotice(`Copia externa guardada: ${path}`);}catch(e){setError(String(e));}finally{setBusy(false);}}}>Copiar sin reemplazar archivos</button>
           <h2 className="mt">Automatización</h2>
@@ -194,40 +229,7 @@ export default function BackupCenter() {
           {!data?.files.length && (
             <div className="calm-empty">No hay archivos de respaldo aún. Haz clic en "Crear Respaldo Ahora".</div>
           )}
-          {data?.files.map(f => {
-            const isAuto = f.name.includes('-auto-');
-            const isPreRestore = f.name.includes('-antes-restaurar-');
-            return (
-              <div className="record backup-record-card" key={f.name}>
-                <div className="backup-file-info">
-                  <div className="backup-badges">
-                    <span className={`status-pill ${isPreRestore ? 'warning' : isAuto ? 'neutral' : 'success'}`}>
-                      {isPreRestore ? 'Antes de restaurar' : isAuto ? 'Automático' : 'Manual'}
-                    </span>
-                    <strong className="file-date">{formatDate(f.modified)}</strong>
-                  </div>
-                  <span className="file-name">{f.name}</span>
-                  <small className="file-size">{formatBytes(f.bytes)}</small>
-                </div>
-
-                {user.role === 'owner' && (
-                  <button
-                    type="button"
-                    className="light restore-btn"
-                    disabled={busy}
-                    onClick={() => {
-                      setRestoreTarget(f);
-                      setConfirmWord('');
-                      setError('');
-                    }}
-                  >
-                    <RotateCcw size={15} />
-                    <span>Restaurar</span>
-                  </button>
-                )}
-              </div>
-            );
-          })}
+          {backupRows}
         </div>
       </article>
 

@@ -1,9 +1,10 @@
+import { memo } from 'react';
 import { money } from '../model';
 
 const digits = Array.from({ length: 10 }, (_, n) => n);
 
 // Animates presentation only: every accessible label and every transaction uses exact cents.
-export default function NumberTicker({ cents, className = '' }: { cents: number; className?: string }) {
+function NumberTicker({ cents, className = '' }: { cents: number; className?: string }) {
   const formatted = money(cents);
   return <span className={`number-ticker ${className}`} role="img" aria-label={formatted}>
     <span className="ticker-reels" aria-hidden="true">
@@ -17,3 +18,5 @@ export default function NumberTicker({ cents, className = '' }: { cents: number;
     </span>
   </span>;
 }
+
+export default memo(NumberTicker);

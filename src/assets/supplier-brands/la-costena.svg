@@ -1,0 +1,5 @@
+<svg viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+  <path d="M10 30 C10 12, 30 6, 60 6 C90 6, 110 12, 110 30 C110 48, 90 54, 60 54 C30 54, 10 48, 10 30 Z" fill="#D31018" stroke="#F8C300" stroke-width="3"/>
+  <path d="M42 16 C38 12, 32 15, 30 18 C34 19, 38 17, 42 16 Z" fill="#2E7D32"/>
+  <text x="60" y="36" font-family="'Arial Black', Impact, sans-serif" font-size="14.5" font-weight="900" fill="#FFFFFF" text-anchor="middle" letter-spacing="-0.3">La Costeña</text>
+</svg>

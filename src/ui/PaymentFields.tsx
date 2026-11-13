@@ -1,14 +1,14 @@
 import {useState} from 'react';
-import {money,decimal,type Customer} from '../model';
+import {money,paymentAmounts,previewCents,type Customer} from '../model';
 const labels={cash:'Efectivo',card:'Tarjeta',transfer:'Transferencia',voucher:'Vale',check:'Cheque',credit:'Fiado'};
 type Method=keyof typeof labels;
 export default function PaymentFields({total,customers,allowCredit,creditOnly=false}:{total:number;customers:Customer[];allowCredit:boolean;creditOnly?:boolean}){
   const [mode,setMode]=useState(creditOnly?'credit':'cash');
   const [parts,setParts]=useState<Record<Method,string>>({cash:'0',card:'0',transfer:'0',voucher:'0',check:'0',credit:'0'});
   const [received,setReceived]=useState('');const [usd,setUsd]=useState('');const [rate,setRate]=useState('');
-  const cents=(value:string)=>{try{return decimal(value||'0');}catch{return 0;}};
+  const cents=previewCents;
   const methods=(Object.keys(labels) as Method[]).filter(method=>method!=='credit'||allowCredit);
-  const amounts=Object.fromEntries(methods.map(method=>[method,mode===method?total:mode==='mixed'?cents(parts[method]):0])) as Record<Method,number>;
+  const amounts=paymentAmounts(total,mode,parts,allowCredit);
   const cash=amounts.cash??0,credit=amounts.credit??0;
   const external=(amounts.card??0)+(amounts.transfer??0)+(amounts.voucher??0)+(amounts.check??0);
   const equivalent=Math.round(cents(usd)*cents(rate)/100);

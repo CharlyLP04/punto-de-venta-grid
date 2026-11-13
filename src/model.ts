@@ -30,3 +30,29 @@ export function decimal(text:string, digits=2) {
 }
 
 
+
+// Currency remains integer cents; quantities remain integer thousandths.
+export function lineTotal(product:Product|undefined,line:Line):number {
+  const value=linePrice(product,line)*line.quantity;
+  if(!Number.isSafeInteger(value)||value<0)throw new Error('Importe fuera de rango');
+  return Math.floor((value+500)/1000);
+}
+export function ticketTotal(products:ReadonlyMap<number,Product>,lines:readonly Line[]):number {
+  return lines.reduce((sum,line)=>{
+    const total=sum+lineTotal(products.get(line.product),line);
+    if(!Number.isSafeInteger(total))throw new Error('Total fuera de rango');
+    return total;
+  },0);
+}
+
+export const paymentMethods=['cash','card','transfer','voucher','check','credit'] as const;
+export type PaymentMethod=typeof paymentMethods[number];
+// Incomplete input has no amount for preview; submit still uses strict decimal().
+export function previewCents(value:string):number {
+  try { return decimal(value||'0'); } catch { return 0; }
+}
+export function paymentAmounts(total:number,mode:string,parts:Record<PaymentMethod,string>,allowCredit:boolean):Record<PaymentMethod,number> {
+  return Object.fromEntries(paymentMethods.map(method=>[method,
+    method==='credit'&&!allowCredit?0:mode===method?total:mode==='mixed'?previewCents(parts[method]):0
+  ])) as Record<PaymentMethod,number>;
+}

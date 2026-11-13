@@ -29,6 +29,7 @@ pub fn audit(db:&Connection, actor:i64, mut event:Value)->Result<()> {
     db.execute("INSERT INTO audit(user_id,event) VALUES(?,?)",params![actor,event.to_string()]).map_err(err)?; Ok(())
 }
 pub fn authorize(store:&Store, db:&Connection, token:&str, permission:&str)->Result<Actor> {
+    if crate::lifecycle::closing(){return Err("La caja se está cerrando. Espera a que termine.".into());}
     let mut sessions=store.sessions.lock().map_err(err)?;
     let timeout=setting(db,"idle_minutes","15").parse::<u64>().unwrap_or(15).clamp(1,120);
     sessions.retain(|_,(_,last,_)|last.elapsed()<Duration::from_secs(timeout*60));
@@ -51,14 +52,14 @@ fn check_identity(username:&str,name:&str)->Result<()> {
     if username.len()<3 || username.len()>40 || !username.chars().all(|c|c.is_ascii_alphanumeric()||c=='_'||c=='-') || name.trim().is_empty() || name.len()>100 {return Err("Usuario: 3–40 letras, números, guion o guion bajo. Indica también el nombre.".into());} Ok(())
 }
 #[tauri::command]
-pub fn auth_status(store:State<Store>)->Result<Value> { auth_status_service(&store) }
+pub fn auth_status(store:State<Store>)->Result<Value> { let _operation=crate::lifecycle::enter()?; auth_status_service(&store) }
 pub(crate) fn auth_status_service(store:&Store)->Result<Value> {
     let db=store.db.lock().map_err(err)?;
     let count:i64=db.query_row("SELECT count(*) FROM users",[],|r|r.get(0)).map_err(err)?;
     Ok(json!({"setup":count==0,"profiles":rows(&db,"SELECT id,username,name,role FROM users WHERE enabled=1 ORDER BY name")?}))
 }
 #[tauri::command]
-pub fn bootstrap_owner(store:State<Store>,username:String,name:String,password:String)->Result<()> {
+pub fn bootstrap_owner(store:State<Store>,username:String,name:String,password:String)->Result<()> { let _operation=crate::lifecycle::enter()?;
     check_identity(&username,&name)?;
     let mut db=store.db.lock().map_err(err)?;
     let tx=db.transaction().map_err(err)?;
@@ -72,7 +73,7 @@ pub fn bootstrap_owner(store:State<Store>,username:String,name:String,password:S
     tx.commit().map_err(err)
 }
 #[tauri::command]
-pub fn login(store:State<Store>,username:String,password:String)->Result<Value> { login_service(&store, username, password) }
+pub fn login(store:State<Store>,username:String,password:String)->Result<Value> { let _operation=crate::lifecycle::enter()?; login_service(&store, username, password) }
 pub(crate) fn login_service(store:&Store, username:String,password:String)->Result<Value> {
     if username.len()>40||password.len()>128{return Err("Credenciales inválidas".into());}
     let db=store.db.lock().map_err(err)?;
@@ -108,7 +109,7 @@ pub fn approve(db:&Connection,approval:Approval,permission:&str)->Result<Actor> 
     db.execute("UPDATE users SET failures=0,locked_until=0 WHERE id=?",[id]).map_err(err)?;Ok(actor)
 }
 #[tauri::command]
-pub fn logout(store:State<Store>,session_token:String)->Result<()> { logout_service(&store, session_token) }
+pub fn logout(store:State<Store>,session_token:String)->Result<()> { let _operation=crate::lifecycle::enter()?; logout_service(&store, session_token) }
 pub(crate) fn logout_service(store:&Store, session_token:String)->Result<()> {
     let db=store.db.lock().map_err(err)?;
     if let Ok(actor)=authorize(&store,&db,&session_token,""){audit(&db,actor.id,json!({"type":"session.locked"}))?;}
@@ -119,7 +120,7 @@ pub(crate) fn logout_service(store:&Store, session_token:String)->Result<()> {
 #[derive(Deserialize)]
 pub struct UserInput {id:Option<i64>,username:String,name:String,role:String,permissions:Vec<String>,enabled:bool,password:Option<String>,#[serde(default)] discount_limit:i64}
 #[tauri::command]
-pub fn users_list(store:State<Store>,session_token:String)->Result<Value> { users_list_service(&store, session_token) }
+pub fn users_list(store:State<Store>,session_token:String)->Result<Value> { let _operation=crate::lifecycle::enter()?; users_list_service(&store, session_token) }
 pub(crate) fn users_list_service(store:&Store, session_token:String)->Result<Value> {
     let db=store.db.lock().map_err(err)?;
     let actor=authorize(&store,&db,&session_token,"users.manage")?;
@@ -127,7 +128,7 @@ pub(crate) fn users_list_service(store:&Store, session_token:String)->Result<Val
     Ok(json!({"users":rows(&db,"SELECT id,username,name,role,permissions,enabled,discount_limit FROM users ORDER BY name")?,"permissions":PERMISSIONS}))
 }
 #[tauri::command]
-pub fn user_save(store:State<Store>,session_token:String,input:UserInput)->Result<()> { user_save_service(&store, session_token, input) }
+pub fn user_save(store:State<Store>,session_token:String,input:UserInput)->Result<()> { let _operation=crate::lifecycle::enter()?; user_save_service(&store, session_token, input) }
 pub(crate) fn user_save_service(store:&Store, session_token:String,input:UserInput)->Result<()> {
     let mut db=store.db.lock().map_err(err)?;
     let actor=authorize(&store,&db,&session_token,"users.manage")?;
@@ -165,7 +166,7 @@ pub(crate) fn user_save_service(store:&Store, session_token:String,input:UserInp
 pub struct Grant {session:String,request:String,body:String,supervisor:i64,created:Instant}
 pub type Grants=HashMap<String,Grant>;
 #[tauri::command]
-pub fn approve_operation(store:State<Store>,session_token:String,request_id:String,operation:crate::business::Operation,approval:Approval)->Result<String> { approve_operation_service(&store, session_token, request_id, operation, approval) }
+pub fn approve_operation(store:State<Store>,session_token:String,request_id:String,operation:crate::business::Operation,approval:Approval)->Result<String> { let _operation=crate::lifecycle::enter()?; approve_operation_service(&store, session_token, request_id, operation, approval) }
 pub(crate) fn approve_operation_service(store:&Store, session_token:String,request_id:String,operation:crate::business::Operation,approval:Approval)->Result<String> {
     Uuid::parse_str(&request_id).map_err(err)?;
     let permission=match &operation{crate::business::Operation::Discount{..}=>"sales.discount",crate::business::Operation::Refund{..}=>"sales.refund",_=>return Err("Operación no autorizable".into())};

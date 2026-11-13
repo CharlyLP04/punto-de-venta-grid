@@ -1,21 +1,19 @@
 use crate::{err,setting,Result,Store,security};
 use serde_json::{json,Value};
-use std::{io::Write,time::Duration};
+
 use tauri::State;
 
 fn send(port:String,baud:u32,text:String,drawer:bool)->Result<()> {
-    // All physical writes share one queue, including repayment receipts.
-    static PRINTER: std::sync::Mutex<()> = std::sync::Mutex::new(());
-    let _printer=PRINTER.lock().map_err(err)?;
+
     let mut bytes=vec![0x1b,0x40];
     bytes.extend(text.chars().map(|c|match c{'á'=>'a','é'=>'e','í'=>'i','ó'=>'o','ú'=>'u','ñ'=>'n','Á'=>'A','É'=>'E','Í'=>'I','Ó'=>'O','Ú'=>'U','Ñ'=>'N','\n'=>'\n',c if c.is_ascii()&&!c.is_control()=>c,_=>'?'}).map(|c|c as u8));
     bytes.extend([10,10,10,0x1d,0x56,0]);
     if drawer{bytes.extend([0x1b,0x70,0,25,250]);}
-    let mut device=serialport::new(port,baud).timeout(Duration::from_secs(3)).open().map_err(err)?;
-    device.write_all(&bytes).map_err(err)?;device.flush().map_err(err)
+    crate::print_queue::send(port,baud,bytes)
 }
 #[tauri::command]
 pub async fn print_sale(store:State<'_,Store>,session_token:String,id:String,reprint:bool)->Result<()> {
+    let _operation=crate::lifecycle::enter()?;
     let (port,baud,text,drawer,actor_id)={
         let db=store.db.lock().map_err(err)?;
         let actor=security::authorize(&store,&db,&session_token,"receipt.print")?;
@@ -33,19 +31,27 @@ pub async fn print_sale(store:State<'_,Store>,session_token:String,id:String,rep
         let refunded:i64=db.query_row("SELECT count(*) FROM refunds WHERE sale=?",[&id],|r|r.get(0)).map_err(err)?;
         if refunded>0{text.push_str("VENTA DEVUELTA\n");}
         let drawer=!reprint&&refunded==0&&(receipt["tender"]["cash"].as_i64().unwrap_or(0)>0||receipt["payment"]=="cash"||receipt["tender"]["usd"].as_i64().unwrap_or(0)>0);
-        db.execute("UPDATE sales SET print_status='sending' WHERE id=?",[&id]).map_err(err)?;
-        security::audit(&db,actor.id,json!({"type":"receipt.sending","sale":id,"copy":reprint,"drawer":drawer}))?;
+        let tx=db.unchecked_transaction().map_err(err)?;
+        tx.execute("UPDATE sales SET print_status='sending' WHERE id=?",[&id]).map_err(err)?;
+        security::audit(&tx,actor.id,json!({"type":"receipt.sending","sale":id,"copy":reprint,"drawer":drawer}))?;
+        tx.commit().map_err(err)?;
         (port,setting(&db,"baud","9600").parse::<u32>().unwrap_or(9600),text,drawer,actor.id)
     };
-    let outcome=tauri::async_runtime::spawn_blocking(move||send(port,baud,text,drawer)).await.map_err(err)?;
+    let outcome=tauri::async_runtime::spawn_blocking(move||send(port,baud,text,drawer)).await.map_err(err).and_then(|result|result);
     let db=store.db.lock().map_err(err)?;
     match outcome {
-        Ok(())=>{db.execute("UPDATE sales SET print_status='sent' WHERE id=?",[&id]).map_err(err)?;security::audit(&db,actor_id,json!({"type":"receipt.sent","sale":id}))?;Ok(())},
+        Ok(())=>{
+            let tx=db.unchecked_transaction().map_err(err)?;
+            tx.execute("UPDATE sales SET print_status='sent' WHERE id=?",[&id]).map_err(err)?;
+            security::audit(&tx,actor_id,json!({"type":"receipt.sent","sale":id}))?;
+            tx.commit().map_err(err)
+        },
         Err(error)=>{db.execute("UPDATE sales SET print_status='uncertain' WHERE id=?",[&id]).map_err(err)?;Err(format!("Envío incierto: {}. Revisa el papel y solicita una copia si hace falta.",error))}
     }
 }
 #[tauri::command]
 pub async fn print_repayment(store:State<'_,Store>,session_token:String,id:String)->Result<()> {
+    let _operation=crate::lifecycle::enter()?;
     let (port,baud,text)={
         let db=store.db.lock().map_err(err)?;let actor=security::authorize(&store,&db,&session_token,"receipt.print")?;actor.require("credit.repay")?;
         let (name,amount,previous,balance,created,owner):(String,i64,i64,i64,String,i64)=db.query_row("SELECT c.name,r.amount,r.previous_balance,r.balance,r.created,r.user_id FROM repayment_receipts r JOIN customers c ON c.id=r.customer WHERE r.id=?",[&id],|r|Ok((r.get(0)?,r.get(1)?,r.get(2)?,r.get(3)?,r.get(4)?,r.get(5)?))).map_err(err)?;
@@ -58,9 +64,14 @@ pub async fn print_repayment(store:State<'_,Store>,session_token:String,id:Strin
 }
 #[tauri::command]
 pub fn resolve_print(store:State<Store>,session_token:String,id:String)->Result<()> {
+    if crate::print_queue::busy(){return Err("Espera a que termine el envío antes de confirmar o pedir una copia.".into());}
     let db=store.db.lock().map_err(err)?;let actor=security::authorize(&store,&db,&session_token,"receipt.print")?;
     let owner:Option<i64>=db.query_row("SELECT user_id FROM sales WHERE id=?",[&id],|r|r.get(0)).map_err(err)?;
     if owner!=Some(actor.id)&&!actor.can("reports.view"){return Err("Venta de otro usuario".into());}
-    db.execute("UPDATE sales SET print_status='sent' WHERE id=? AND print_status IN ('sending','uncertain')",[&id]).map_err(err)?;
-    security::audit(&db,actor.id,json!({"type":"receipt.uncertainty_acknowledged","sale":id}))
+    let tx=db.unchecked_transaction().map_err(err)?;
+    if tx.execute("UPDATE sales SET print_status='sent' WHERE id=? AND print_status='uncertain'",[&id]).map_err(err)?!=1 {
+        return Err("Este ticket no tiene un envío incierto pendiente de revisión.".into());
+    }
+    security::audit(&tx,actor.id,json!({"type":"receipt.uncertainty_acknowledged","sale":id}))?;
+    tx.commit().map_err(err)
 }

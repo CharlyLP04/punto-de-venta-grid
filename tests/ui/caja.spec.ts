@@ -41,8 +41,8 @@ async function login(page:Page,permissions:string[]|null=null,theme='light',mode
       };
       return [];
     }};
-    localStorage.setItem('grid_kiosk_theme',theme);
-    localStorage.setItem('grid_input_mode_v1',mode);
+    localStorage.setItem('mario_kiosk_theme',theme);
+    localStorage.setItem('mario_input_mode_v1',mode);
   },{permissions,theme,mode});
   await page.goto('/');
   await page.getByRole('button',{name:/Prueba/}).click();
@@ -98,6 +98,10 @@ for(const theme of ['light','dark'])for(const mode of ['pc','touch']) {
     await page.screenshot({path:testInfo.outputPath('caja.png')});
     const bounds=await page.locator('.product-card').first().evaluate(e=>({card:e.getBoundingClientRect().bottom,area:e.parentElement!.getBoundingClientRect().bottom}));
     expect(bounds.card).toBeLessThanOrEqual(bounds.area);
+    const catalog=await page.locator('.catalog').boundingBox();
+    const ticket=await page.locator('.ticket-panel').boundingBox();
+    expect(catalog!.x+catalog!.width).toBeLessThanOrEqual(ticket!.x);
+    await expect(page.locator('.charge')).toBeInViewport({ratio:1});
     expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(1050);
     await expect(page.getByText('DEMO',{exact:true})).toHaveCount(0);
     const results=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze();
@@ -127,6 +131,7 @@ test('importación: errores bloquean la confirmación',async({page})=>{
 test('CFDI: revisión y credenciales de prueba antes del envío',async({page})=>{
  await login(page);
  await page.getByRole('navigation',{name:'Áreas principales'}).getByRole('button',{name:'Ventas',exact:true}).click();
+ await page.locator('button[data-section="CFDI"]').click();
  await page.getByLabel('Venta pagada').selectOption('sale-test');
  await page.getByLabel('RFC del receptor').fill('URE180429TM6');
  await page.getByLabel('Razón social exacta').fill('UNIVERSIDAD ROBOTICA ESPAÑOLA');
@@ -145,4 +150,40 @@ test('CFDI: revisión y credenciales de prueba antes del envío',async({page})=>
  await expect(send).toBeEnabled();
  await send.click();
  await expect(page.getByRole('status').filter({hasText:'Facturama confirmó el comprobante de prueba.'})).toBeVisible();
+});
+
+test('acceso Mario: identidad, perfiles y multicaja no invasiva',async({page})=>{
+ await page.addInitScript(()=>{
+  const w=window as any;
+  w.isTauri=true;
+  w.__TAURI_INTERNALS__={invoke:async(command:string,args:any)=>{
+   if(command==='connection_call'){command=args.command;args=args.args;}
+   if(command==='connection_status')return {remote:false,name:'Caja principal'};
+   if(command==='auth_status')return {setup:false,profiles:[{id:1,username:'charly',name:'Charlydev',role:'owner',permissions:[]}]};
+   return [];
+  }};
+ });
+ await page.goto('/');
+ const choice=page.getByRole('button',{name:/Charlydev/});
+ await expect(choice).toBeVisible();
+ await expect(choice.locator('.profile-monogram svg')).toBeVisible();
+ await expect(page.locator('.kiosk-wordmark')).toContainText('SUPER MARIO');
+ await expect(page.getByRole('button',{name:'Entrar',exact:false})).toBeVisible();
+ const multicaja=page.locator('.kiosk-network-wrapper .network-settings');
+ await expect(multicaja).toBeVisible();
+ await expect(multicaja).not.toHaveAttribute('open');
+});
+
+test('Mario conserva las preferencias de tema por usuario al bloquear y entrar',async({page})=>{
+ await login(page,null,'dark');
+ const toggle=page.getByRole('switch',{name:'Modo Mario oscuro activo'});
+ await toggle.click();
+ await expect(page.locator('html')).toHaveAttribute('data-theme','light');
+ expect(await page.evaluate(()=>localStorage.getItem('mario_theme_user_1'))).toBe('light');
+ await page.locator('.sidebar-account').click();
+ await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
+ await page.locator('input[name=password]').fill('test-password');
+ await page.getByRole('button',{name:'Entrar',exact:false}).click();
+ await expect(page.locator('html')).toHaveAttribute('data-theme','light');
+ await expect(page.getByRole('switch',{name:'Modo Luigi claro activo'})).toBeVisible();
 });

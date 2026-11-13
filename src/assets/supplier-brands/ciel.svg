@@ -1,0 +1,7 @@
+<svg viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+  <rect width="120" height="60" rx="8" fill="#0094D8"/>
+  <circle cx="28" cy="30" r="14" fill="#FFFFFF" opacity="0.2"/>
+  <circle cx="28" cy="30" r="8" fill="#FFFFFF" opacity="0.4"/>
+  <circle cx="28" cy="30" r="3" fill="#FFFFFF"/>
+  <text x="74" y="38" font-family="'Brush Script MT', cursive, sans-serif" font-size="26" font-weight="bold" fill="#FFFFFF" text-anchor="middle">ciel</text>
+</svg>

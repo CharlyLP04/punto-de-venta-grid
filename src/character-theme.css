@@ -35,8 +35,10 @@ html[data-theme] .shell .goal-track>span{color:var(--text-secondary)}
   .checkout-shell .common-product-trigger{font-size:12px;padding:8px}
 }
 
-/* The accent chosen in "Mi tienda" owns the whole interface; "classic" keeps Mario (dark) / Luigi (light). */
-html[data-theme=light] .shell[data-accent=gold]{--character:#C88A00;--character-ink:#fff;--character-soft:#FFF8E1;--focus:#FDB813}
+/* Grid POS Theme system: palettes adapt seamlessly between light and dark modes. */
+html[data-theme=light] .shell[data-accent=emerald]{--character:#059669;--character-ink:#fff;--character-soft:#ecfdf5;--focus:#10b981}
+html[data-theme=light] .shell[data-accent=slate]{--character:#0f172a;--character-ink:#fff;--character-soft:#f1f5f9;--focus:#00e676}
+html[data-theme=light] .shell[data-accent=gold]{--character:#C88A00;--character-ink:#1F1500;--character-soft:#FFF8E1;--focus:#78350f}
 html[data-theme=light] .shell[data-accent=green]{--character:#2d7a3c;--character-ink:#fff;--character-soft:#e3f0e1}
 html[data-theme=light] .shell[data-accent=blue]{--character:#1f66a6;--character-ink:#fff;--character-soft:#e0ecf8}
 html[data-theme=light] .shell[data-accent=rose]{--character:#c0463b;--character-ink:#fff;--character-soft:#fae5e2}
@@ -528,3 +530,28 @@ html[data-theme] .quick-login.character-login .arcade-primary{background:var(--c
 .network-settings textarea{width:100%;max-width:100%;font-family:monospace}
 .fiscal-panel td small{display:block;overflow-wrap:anywhere}
 .catalog-import,.network-settings{margin-block:16px;padding:20px}
+
+/* Shared interaction guarantees, after the theme geometry rules. */
+:root { --change-ink: #235534; }
+:root[data-theme=dark] { --change-ink: #c5edce; }
+.retail-dialog .change { color: var(--change-ink); font-variant-numeric: tabular-nums; }
+html[data-input-mode=touch] .theme-toggle {
+  height:48px!important; min-height:48px!important; max-height:48px!important;
+}
+html[data-input-mode=touch] .quick-mute {
+  width:48px!important; height:48px!important; min-width:48px!important; min-height:48px!important;
+}
+form > kbd,
+.kbd-badge,
+kbd {
+  color: #17384e !important;
+  background: #edf2f5 !important;
+  border-color: #a5b6c3 !important;
+}
+html[data-theme=dark] form > kbd,
+html[data-theme=dark] .kbd-badge,
+html[data-theme=dark] kbd {
+  color: #f2f6f8 !important;
+  background: #2a3d4b !important;
+  border-color: #718b9e !important;
+}

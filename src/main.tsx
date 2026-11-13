@@ -10,6 +10,8 @@ import './accessibility.css';
 import './refinements.css';
 import './workspace-redesign.css';
 import './character-theme.css';
+import './store-design.css';
+document.documentElement.classList.add('store-ui');
 import {InputModeProvider} from './ui/InputMode';
 import {ThemeProvider} from './ui/Theme';
 

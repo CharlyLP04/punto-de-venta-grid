@@ -3,6 +3,7 @@ use crate::{err,Result,Store};
 use serde_json::Value;
 fn arg<T:serde::de::DeserializeOwned>(args:&Value,key:&str)->Result<T>{serde_json::from_value(args[key].clone()).map_err(|_|format!("Parámetro inválido: {}",key))}
 pub fn dispatch(store:&Store,command:&str,mut args:Value)->Result<Value>{
+    let _operation=crate::lifecycle::enter()?;
     if !args.is_object(){return Err("Los parámetros deben ser un objeto".into());}
     // Only public ticket numbers are accepted. Internal tickets are isolated per register.
     for key in ["ticket","action","operation"] {
