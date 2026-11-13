@@ -45,16 +45,6 @@ export const brandBadges = [
   { match: /\b(?:red\s*bull)\b/i, label: 'Red Bull', tone: 'lala', detail: 'Bebidas' },
 ];
 
-function compactBadgeText(label: string): string {
-  const clean = label.trim();
-  if (clean.length <= 8) return clean;
-  const words = clean.split(/\s+/).filter(Boolean);
-  if (words.length >= 2) {
-    return words.slice(0, 2).map((w) => w[0]).join('').toUpperCase();
-  }
-  return clean;
-}
-
 export const ProductVisual = memo(function ProductVisual({ product, compact = false }: { product: Product; compact?: boolean }) {
   const [failedLogo,setFailedLogo]=useState('');
   const custom = customIconKey(product);
@@ -75,12 +65,6 @@ export const ProductVisual = memo(function ProductVisual({ product, compact = fa
         <img src={configuredLogo} alt="" width={64} height={44} decoding="async" draggable={false} onError={()=>setFailedLogo(configuredLogo)}/>
       </span>;
     }
-    return (
-      <span className={`product-visual brand-badge brand-${configuredBrand.tone} ${compact ? 'compact' : ''}`} aria-hidden="true">
-        <span className="brand-lettering">{compact ? compactBadgeText(configuredBrand.label) : configuredBrand.label}</span>
-        {!compact && configuredBrand.detail && <span className="brand-detail">{configuredBrand.detail}</span>}
-      </span>
-    );
   }
 
   const namedBrand=productBrandName(product.name, product.category);
@@ -89,16 +73,6 @@ export const ProductVisual = memo(function ProductVisual({ product, compact = fa
     return <span className={`product-visual product-brand-logo ${compact?'compact':''}`} aria-hidden="true">
       <img src={logo} alt="" width={64} height={44} decoding="async" draggable={false} onError={()=>setFailedLogo(logo)}/>
     </span>;
-  }
-
-  const autoBrand = brandBadges.find(b => b.match.test(product.name || ''));
-  if (autoBrand) {
-    return (
-      <span className={`product-visual brand-badge brand-${autoBrand.tone} ${compact ? 'compact' : ''}`} aria-hidden="true">
-        <span className="brand-lettering">{compact ? compactBadgeText(autoBrand.label) : autoBrand.label}</span>
-        {!compact && <span className="brand-detail">{autoBrand.detail}</span>}
-      </span>
-    );
   }
 
   const { Icon } = productIcons[iconKeyFor(product)] ?? productIcons.paquete;
