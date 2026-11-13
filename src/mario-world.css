@@ -480,3 +480,144 @@ html[data-theme=light] .store-ui .sidebar.workspace-sidebar {
     max-width: 580px;
   }
 }
+
+/* ==========================================================================
+   Visual Polish: Thumbnails, Buttons, Inputs, Tables, Cards & Modals
+   ========================================================================== */
+
+/* 1. Compact brand thumbnails: never clip with ugly "..." ellipsis */
+html.store-ui .brand-badge.compact {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 5px;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+html.store-ui .brand-badge.compact .brand-lettering {
+  white-space: normal;
+  text-overflow: clip;
+  overflow: visible;
+  text-align: center;
+  line-height: 1.05;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  word-break: break-word;
+}
+
+/* 2. Buttons: crisp borders, hover lift, tactile press, clear disabled state */
+html.store-ui button.light,
+html.store-ui button.ghost,
+html.store-ui button.icon-button,
+html.store-ui button.inventory-action,
+html.store-ui button.filter-pill,
+html.store-ui button.primary,
+html.store-ui button.charge {
+  transition: background-color 140ms ease, border-color 140ms ease, box-shadow 140ms ease, transform 90ms ease;
+}
+
+html.store-ui button.light,
+html.store-ui button.inventory-action {
+  border-radius: 10px;
+  border: 1px solid var(--border-subtle);
+}
+
+html.store-ui button.light:hover:not(:disabled),
+html.store-ui button.inventory-action:hover:not(:disabled) {
+  border-color: var(--border-strong);
+  box-shadow: 0 2px 8px #00000014;
+}
+
+html.store-ui button.primary,
+html.store-ui button.charge {
+  border-radius: 11px;
+  box-shadow: 0 2px 10px color-mix(in srgb, var(--action) 25%, transparent);
+}
+
+html.store-ui button.primary:hover:not(:disabled),
+html.store-ui button.charge:hover:not(:disabled) {
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--action) 34%, transparent);
+}
+
+html.store-ui button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+/* 3. Inputs, selects & search fields: clean padding, crisp focus ring */
+html.store-ui input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+html.store-ui select,
+html.store-ui textarea {
+  border-radius: 10px;
+  border: 1px solid var(--border-subtle);
+  transition: border-color 140ms ease, box-shadow 140ms ease, background-color 140ms ease;
+}
+
+html.store-ui input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,
+html.store-ui select:focus,
+html.store-ui textarea:focus {
+  outline: none;
+  border-color: var(--action);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--action) 22%, transparent);
+}
+
+/* 4. Tables (Productos, Clientes, Ventas, Bitácora): elevated headers & readable rows */
+html.store-ui .table-wrap {
+  border-radius: 14px;
+  border: 1px solid var(--border-subtle);
+  overflow: auto;
+  background: var(--bg-surface);
+}
+
+html.store-ui table.table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+}
+
+html.store-ui table.table thead th {
+  background: var(--bg-surface-elevated);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+html.store-ui table.table tbody td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border-subtle);
+  vertical-align: middle;
+  font-variant-numeric: tabular-nums;
+}
+
+html.store-ui table.table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+html.store-ui table.table tbody tr:hover td {
+  background: color-mix(in srgb, var(--action) 5%, var(--bg-surface));
+}
+
+/* 5. Panels, cards & modals: refined elevation & separation */
+html.store-ui .panel,
+html.store-ui .metric-card {
+  border-radius: 16px;
+  border: 1px solid var(--border-subtle);
+}
+
+html.store-ui .retail-dialog {
+  border-radius: 18px;
+  border: 1px solid var(--border-strong);
+  box-shadow: 0 22px 48px #00000038;
+}
+
+html.store-ui .margin-badge,
+html.store-ui .stock-badge,
+html.store-ui .status-pill {
+  border-radius: 999px;
+  font-variant-numeric: tabular-nums;
+}

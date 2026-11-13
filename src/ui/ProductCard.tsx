@@ -45,6 +45,16 @@ export const brandBadges = [
   { match: /\b(?:red\s*bull)\b/i, label: 'Red Bull', tone: 'lala', detail: 'Bebidas' },
 ];
 
+function compactBadgeText(label: string): string {
+  const clean = label.trim();
+  if (clean.length <= 8) return clean;
+  const words = clean.split(/\s+/).filter(Boolean);
+  if (words.length >= 2) {
+    return words.slice(0, 2).map((w) => w[0]).join('').toUpperCase();
+  }
+  return clean;
+}
+
 export const ProductVisual = memo(function ProductVisual({ product, compact = false }: { product: Product; compact?: boolean }) {
   const [failedLogo,setFailedLogo]=useState('');
   const custom = customIconKey(product);
@@ -67,7 +77,7 @@ export const ProductVisual = memo(function ProductVisual({ product, compact = fa
     }
     return (
       <span className={`product-visual brand-badge brand-${configuredBrand.tone} ${compact ? 'compact' : ''}`} aria-hidden="true">
-        <span className="brand-lettering">{configuredBrand.label}</span>
+        <span className="brand-lettering">{compact ? compactBadgeText(configuredBrand.label) : configuredBrand.label}</span>
         {!compact && configuredBrand.detail && <span className="brand-detail">{configuredBrand.detail}</span>}
       </span>
     );
@@ -85,7 +95,7 @@ export const ProductVisual = memo(function ProductVisual({ product, compact = fa
   if (autoBrand) {
     return (
       <span className={`product-visual brand-badge brand-${autoBrand.tone} ${compact ? 'compact' : ''}`} aria-hidden="true">
-        <span className="brand-lettering">{autoBrand.label}</span>
+        <span className="brand-lettering">{compact ? compactBadgeText(autoBrand.label) : autoBrand.label}</span>
         {!compact && <span className="brand-detail">{autoBrand.detail}</span>}
       </span>
     );
