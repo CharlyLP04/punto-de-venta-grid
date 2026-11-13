@@ -947,6 +947,138 @@ html.store-ui[data-theme=light] .shell .inventory-actions .action-restock {
 }
 
 html.store-ui .shell .stock-health {
-  padding: 8px 12px;
+  padding: 6px 10px;
   border-radius: 10px;
+  min-width: 148px;
+}
+
+/* 10. Clean & spacious Productos (InventoryWorkspace) layout */
+html.store-ui .shell .inventory-workspace {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-bottom: 24px;
+}
+
+html.store-ui .shell .inventory-workspace > .panel {
+  margin: 0 !important;
+}
+
+html.store-ui .shell .inventory-products-panel {
+  padding: 18px 20px;
+}
+
+html.store-ui .shell .inventory-table-scroll {
+  border-radius: 14px;
+  border: 1px solid var(--border-subtle);
+  overflow: auto;
+  background: var(--bg-surface);
+  margin-top: 12px;
+}
+
+html.store-ui .shell .inventory-table-scroll .inventory-actions {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 6px;
+  align-items: center;
+}
+
+html.store-ui .shell .inventory-table-scroll .inventory-actions button {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  min-height: 34px;
+  padding: 6px 10px;
+  font-size: 12.5px;
+}
+
+html.store-ui .shell .inventory-summary-drawer,
+html.store-ui .shell .catalog-import {
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+html.store-ui .shell .inventory-summary-drawer > summary,
+html.store-ui .shell .catalog-import > summary {
+  padding: 14px 18px;
+  cursor: pointer;
+}
+
+html.store-ui .shell .inventory-summary-drawer .summary-drawer-content {
+  padding: 0 18px 18px;
+}
+
+html.store-ui .shell .catalog-import > :not(summary) {
+  margin-left: 18px;
+  margin-right: 18px;
+}
+
+html.store-ui .shell .catalog-import > :last-child {
+  margin-bottom: 18px;
+}
+
+/* 11. Global Modo Compacto: applies across Caja, Productos, Clientes, Ventas & Admin */
+html.store-ui .shell[data-density="compact"] .topbar {
+  min-height: 52px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+html.store-ui .shell[data-density="compact"] .sidebar nav button {
+  min-height: 40px;
+  padding: 6px 10px;
+  font-size: 13.5px;
+}
+
+html.store-ui .shell[data-density="compact"] .panel,
+html.store-ui .shell[data-density="compact"] .inventory-products-panel {
+  padding: 12px 14px;
+  border-radius: 12px;
+}
+
+html.store-ui .shell[data-density="compact"] .inventory-workspace {
+  gap: 10px;
+}
+
+html.store-ui .shell[data-density="compact"] table thead th {
+  padding: 8px 10px !important;
+  font-size: 11px;
+}
+
+html.store-ui .shell[data-density="compact"] table tbody td {
+  padding: 7px 10px;
+  font-size: 13px;
+}
+
+html.store-ui .shell[data-density="compact"] .inventory-table-scroll .inventory-actions button {
+  min-height: 30px;
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+html.store-ui .shell[data-density="compact"] .stock-health {
+  padding: 4px 8px;
+  font-size: 11.5px;
+  min-width: 128px;
+}
+
+html.store-ui .shell[data-density="compact"] .customer-workspace .customer-grid {
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 10px;
+}
+
+html.store-ui .shell[data-density="compact"] .customer-workspace .customer {
+  padding: 10px 12px;
+  gap: 6px 8px;
+  border-radius: 12px;
+}
+
+html.store-ui .shell[data-density="compact"] .customer-workspace .customer > button.light {
+  min-height: 32px;
+  padding: 5px 8px;
+  font-size: 12px;
+}
+
+html.store-ui .shell[data-density="compact"] .metric-card {
+  padding: 10px 12px;
+  border-radius: 12px;
 }
