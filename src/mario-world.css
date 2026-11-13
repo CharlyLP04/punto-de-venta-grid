@@ -46,7 +46,6 @@ html.store-ui[data-theme=dark],
   --focus: #FFD166;
 }
 
-html.store-ui[data-theme=light] .shell,
 html.store-ui[data-theme=light] .shell[data-accent=classic] {
   --action: #177A35;
   --action-ink: #ffffff;
@@ -57,12 +56,23 @@ html.store-ui[data-theme=light] .shell[data-accent=classic] {
   --stock-bg: #dcfce7;
 }
 
-html.store-ui[data-theme=dark] .shell,
 html.store-ui[data-theme=dark] .shell[data-accent=classic] {
   --action: #D61F1B;
   --action-ink: #ffffff;
   --action-soft: rgba(214, 31, 27, 0.22);
-  --focus: #FFD166;
+  --focus: #f87171;
+  --price-ink: #FFD166;
+  --stock-ink: #bbf7d0;
+  --stock-bg: #143622;
+}
+
+html.store-ui[data-theme=light] .shell:not([data-accent=classic]) {
+  --price-ink: #92400e;
+  --stock-ink: #14532d;
+  --stock-bg: #dcfce7;
+}
+
+html.store-ui[data-theme=dark] .shell:not([data-accent=classic]) {
   --price-ink: #FFD166;
   --stock-ink: #bbf7d0;
   --stock-bg: #143622;
@@ -104,7 +114,7 @@ html.store-ui .charge,
 html.store-ui .kiosk-submit,
 html.store-ui .kiosk-console .kiosk-submit {
   background: var(--action, var(--character));
-  color: #ffffff !important;
+  color: var(--action-ink, #ffffff) !important;
   border: 1px solid color-mix(in srgb, var(--action, var(--character)) 80%, #000);
   box-shadow: 0 4px 12px color-mix(in srgb, var(--action, var(--character)) 26%, transparent);
   font-size: 15px;
@@ -114,9 +124,8 @@ html.store-ui .kiosk-console .kiosk-submit {
   transition: transform 100ms ease, filter 120ms ease;
 }
 
-html.store-ui .shell[data-accent=gold] .primary,
-html.store-ui .shell[data-accent=gold] .charge {
-  color: #111827 !important;
+html.store-ui .kiosk-console .kiosk-submit {
+  color: #ffffff !important;
 }
 
 .store-ui .primary:hover:not(:disabled),
@@ -773,4 +782,92 @@ html.store-ui .shell .sale-product-card .product-tile {
     padding-top: 5px;
     margin-top: 2px;
   }
+}
+
+/* 7. Clean focus rings (no yellow box on mouse click) & matching radio/checkbox accent */
+html.store-ui input[type="radio"],
+html.store-ui input[type="checkbox"] {
+  accent-color: var(--action, var(--character));
+}
+
+html.store-ui summary:focus:not(:focus-visible),
+html.store-ui button:focus:not(:focus-visible) {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+html.store-ui summary:focus-visible {
+  outline: 2px solid var(--action);
+  outline-offset: 2px;
+  border-radius: 10px;
+}
+
+html.store-ui .shell .category-disclosure {
+  flex: 0 1 320px;
+}
+
+/* 8. Compact, balanced client cards in Fiado y abonos */
+html.store-ui .customer-workspace .customer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 14px;
+  align-items: start;
+}
+
+html.store-ui .customer-workspace .customer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+}
+
+html.store-ui .customer-workspace .customer > .avatar {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+html.store-ui .customer-workspace .customer > h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  flex: 1 1 140px;
+  min-width: 0;
+}
+
+html.store-ui .customer-workspace .customer > strong {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--price-ink, var(--text-primary));
+  font-variant-numeric: tabular-nums;
+}
+
+html.store-ui .customer-workspace .customer > small {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+}
+
+html.store-ui .customer-workspace .customer > .credit-meter {
+  flex: 1 0 100%;
+  width: 100%;
+  margin: 2px 0;
+}
+
+html.store-ui .customer-workspace .customer > button.light {
+  flex: 1 1 calc(50% - 5px);
+  width: auto;
+  min-height: 36px;
+  padding: 7px 10px;
+  font-size: 13px;
+  justify-content: center;
+}
+
+html.store-ui .customer-workspace .customer > details,
+html.store-ui .customer-workspace .customer > .customer-history {
+  flex: 1 0 100%;
+  width: 100%;
 }
