@@ -9,6 +9,7 @@ target/
 *.sqlite-shm
 *.partial
 *.lock
+!src-tauri/Cargo.lock
 .desktop-update.lock
 .grid-instance.lock
 .mario-instance.lock
